@@ -92,6 +92,7 @@
     <Compile Include="Patches\LevelLoaderPatches.cs" />
     <Compile Include="Patches\LevelsListPatches.cs" />
     <Compile Include="Patches\PaqueretteActionResolverPatches.cs" />
+    <Compile Include="Patches\PlatformSpecificManagerPatches.cs" />
     <Compile Include="Patches\ReleasedBunnyController.cs" />
     <Compile Include="Patches\SaveFileManipulationUtilityPatches.cs" />
     <Compile Include="Patches\SettingsManagerPatches.cs" />
