@@ -18,6 +18,7 @@ namespace Bunject.NewYardSystem.Model
     public string Indicator { get; set; }
     public string Style { get; set; } = "Pink";
     public bool HasSurfaceEntry { get; set; }
+    public bool IsVoid { get; set; }
 
     public int UpperBunnyCount { get; set; }
     public int TempleBunnyCount { get; set; }

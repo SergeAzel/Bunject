@@ -56,7 +56,7 @@ namespace Bunject.NewYardSystem
         Logger.LogInfo("Initial Load Almost Done!");
         foreach (var burrow in CustomWorlds.SelectMany(cw => cw.Burrows))
         {
-          burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator);
+          burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
         }
 
         BunjectAPI.Register(this);
