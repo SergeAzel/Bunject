@@ -67,6 +67,10 @@ namespace Bunject.NewYardSystem
       {
         Logger.LogInfo("All worlds empty! Please configure a burrow with a surface entrance, and depth of at least 1!");
       }
+      // for now the patches are on Yard System
+      // but probably should be moved to Bunject
+      // so all Yard has to do is register the elevators
+      new Harmony("bunject.NewYardSystem").PatchAll(Assembly.GetExecutingAssembly());
     }
 
     //IBunjector Members
@@ -163,6 +167,14 @@ namespace Bunject.NewYardSystem
           CustomWorld world = LoadWorldConfig(configFile);
           if (world != null)
           {
+            if (world.Burrows.Any(x => x.ElevatorDepths.Any()))
+            {
+              foreach (var burrow in world.Burrows)
+              {
+                foreach (var depth in burrow.ElevatorDepths)
+                  ModElevatorController.Instance.RegisterElevator(burrow.Indicator, depth);
+              }
+            }
             if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
               continue;
 

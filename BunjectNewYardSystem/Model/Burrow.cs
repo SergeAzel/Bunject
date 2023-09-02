@@ -25,6 +25,7 @@ namespace Bunject.NewYardSystem.Model
     public int Depth { get; set; }
 
     public BurrowLinks Links { get; set; } = new BurrowLinks();
+    public List<int> ElevatorDepths { get; set; } = new List<int>();
 
     [JsonIgnore]
     public LevelsList Levels { get; set; }
