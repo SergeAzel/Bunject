@@ -25,7 +25,7 @@ namespace Bunject.Internal
 
     public static int CustomBunburrowThreshold => 50;
 
-    internal static int RegisterBurrow(string name, string indicator)
+    internal static int RegisterBurrow(string name, string indicator, bool isVoid = false)
     {
       if (Bunburrows.Any(bb => bb.Name == name))
         throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
@@ -41,7 +41,8 @@ namespace Bunject.Internal
         Name = name, 
         ComparisonIndex = id,
         IsCustom = true,
-        Indicator = indicator 
+        Indicator = indicator,
+        IsVoid = isVoid
       };
       instance.bunburrows.Add(bunburrow);
 

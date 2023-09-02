@@ -32,9 +32,9 @@ namespace Bunject
       Instance.bunjectors.Add(bunjector);
     }
 
-    public static int RegisterBurrow(string name, string indicator)
+    public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
     {
-      return BunburrowManager.RegisterBurrow(name, indicator);
+      return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
     }
 
     private List<IBunjector> bunjectors;
