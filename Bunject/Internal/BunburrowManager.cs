@@ -11,7 +11,7 @@ namespace Bunject.Internal
   {
     private static BunburrowManager instance = null;
     internal static bool IsInitialized => instance != null;
-    internal static IReadOnlyList<CustomBunburrow> Bunburrows
+    internal static IReadOnlyList<ModBunburrow> Bunburrows
     {
       get
       {
@@ -35,7 +35,7 @@ namespace Bunject.Internal
 
       var id = ++instance.maxID;
 
-      var bunburrow = new CustomBunburrow()
+      var bunburrow = new ModBunburrow()
       {
         ID = id,
         Name = name, 
@@ -52,7 +52,7 @@ namespace Bunject.Internal
     private BunburrowManager()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>
-        new CustomBunburrow()
+        new ModBunburrow()
         {
           ID = (int)burrowEnum,
           Name = burrowEnum.ToBunburrowName(),
@@ -65,7 +65,7 @@ namespace Bunject.Internal
       // pad out some space - ids are internally generated in our mods, but we're reusing them for a bunch of different internal identifiers
     }
 
-    private List<CustomBunburrow> bunburrows;
+    private List<ModBunburrow> bunburrows;
     private int maxID;
   }
 }
