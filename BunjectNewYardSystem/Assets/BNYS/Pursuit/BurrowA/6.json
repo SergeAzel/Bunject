@@ -1,0 +1,11 @@
+{
+    "Name": "Graveyard",
+    "Style": "Spooky",
+    "Tools": 
+    {
+        "Pickaxes": 1,
+        "Shovels": 1
+    },
+    "IsTemple": false,
+    "IsHell": true 
+}

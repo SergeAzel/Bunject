@@ -1,0 +1,11 @@
+{
+    "Name": "Switchbacks",
+    "Tools":
+    {
+        "Traps": 1,
+        "Pickaxes": 1,
+        "Carrots": 1
+    },
+    "IsTemple": false,
+    "IsHell": false
+}

@@ -1,0 +1,9 @@
+{
+    "Name": "Cauldron",
+    "Style": "Hell",
+    "Tools": {
+        "Pickaxes": 1
+    },
+    "IsTemple": false,
+    "IsHell": true 
+}

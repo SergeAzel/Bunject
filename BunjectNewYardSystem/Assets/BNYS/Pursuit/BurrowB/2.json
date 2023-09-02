@@ -1,0 +1,9 @@
+{
+    "Name": "Konigsberg",
+    "Tools":
+    {
+        "Traps": 1
+    },
+    "IsTemple": false,
+    "IsHell": false
+}

@@ -115,6 +115,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>REM xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f
+REM xcopy "$(MSBuildProjectDirectory)\Assets\BNYS" "$(PaquerettePluginPath)\BNYS" /E /C /I /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

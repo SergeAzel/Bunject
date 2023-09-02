@@ -1,0 +1,9 @@
+R,R,R,R,R,R,R,T,R,R,R,R,R,R,R
+R,R{RD},R{LR},R{LR},R{LR},T,T,S,T,T,R{LR},R{LR},R{LR},R{LD},R
+R,T,T,T,T,T,R,R{UD},R,T,T,T,T,T,R
+R,T,R,T,T,R,T{C},E,T{C},R,T,T,R,T,R
+T,T,R,T,T,R,T{T},S,T{T},R,T,T,R,T,T
+R,T,R,T,T,R,T,T{T},T,R,T,T,R,T,R
+R,T,T,T,T,T,R,R{UD},R,T,T,T,T,T,R
+R,R{UR},R{LR},R{LR},R{LR},T,T,B,T,T,R{LR},R{LR},R{LR},R{LU},R
+R,R,R,R,R,R,R,T,R,R,R,R,R,R,R
