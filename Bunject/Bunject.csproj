@@ -74,11 +74,12 @@
     <Compile Include="IBunjector.cs" />
     <Compile Include="Internal\AssetsManagerRewiring.cs" />
     <Compile Include="Internal\BunnyReleaser.cs" />
-    <Compile Include="Internal\CustomBunburrow.cs" />
+    <Compile Include="Internal\ModBunburrow.cs" />
     <Compile Include="Internal\BunburrowManager.cs" />
     <Compile Include="Internal\CustomBunburrowExtension.cs" />
     <Compile Include="Internal\ForwardingBunjector.cs" />
     <Compile Include="Internal\OnLoadLevel.cs" />
+    <Compile Include="Internal\SaveFileModUtility.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />
     <Compile Include="BunjectAPI.cs" />
     <Compile Include="Patches\BunburrowEntryTilePatches.cs" />
