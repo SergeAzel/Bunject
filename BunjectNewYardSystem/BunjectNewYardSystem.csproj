@@ -91,9 +91,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
+    <Compile Include="Levels\CustomBunburrowCache.cs" />
     <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
+    <Compile Include="Model\CustomBunburrowModel.cs" />
     <Compile Include="Model\CustomWorld.cs" />
     <Compile Include="Model\LevelMetadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -111,6 +113,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>REM xcopy "$(TargetDir)\*.dll" "C:\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx\plugins" /y /f</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)\*.dll" "C:\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx\plugins" /y /f</PostBuildEvent>
   </PropertyGroup>
 </Project>

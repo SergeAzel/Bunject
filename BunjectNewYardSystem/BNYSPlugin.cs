@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
+using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
 using Dialogue;
@@ -25,7 +26,7 @@ namespace Bunject.NewYardSystem
   public class BNYSPlugin : BaseBunjector
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
-    public const string pluginName = "[BNYS]";
+    public const string pluginName = "BNYS";
     public const string pluginVersion = "1.0.9";
 
     public static string rootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BNYS");
@@ -37,6 +38,14 @@ namespace Bunject.NewYardSystem
       Logger.LogInfo($"Bunject New Yard System [BNYS] Plugin Awakened. v{pluginVersion}");
 
       BunjectAPI.SaveFolder = "BNYS";
+
+      // Get cached worlds first - to preserve registration order (which preserves IDs generated)
+      // Not the most elegant solution, but I'm just trying to get it functional for now.
+      var cache = new CustomBunburrowCache();
+      foreach (var cachedBurrow in cache.CustomBurrows)
+      {
+        cachedBurrow.ID = BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator);
+      }
 
       try
       {
@@ -56,7 +65,16 @@ namespace Bunject.NewYardSystem
         Logger.LogInfo("Initial Load Almost Done!");
         foreach (var burrow in CustomWorlds.SelectMany(cw => cw.Burrows))
         {
-          burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator);
+          var cachedBurrow = cache.CustomBurrows.FirstOrDefault(cb => cb.Name == burrow.Name);
+          if (cachedBurrow == null)
+          {
+            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator);
+            cache.CacheBunburrow(burrow.Name, burrow.Indicator, burrow.ID);
+          }
+          else
+          {
+            burrow.ID = cachedBurrow.ID;
+          }
         }
 
         BunjectAPI.Register(this);
