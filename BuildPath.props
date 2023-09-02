@@ -1,0 +1,6 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PaquerettePath>C:\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows</PaquerettePath>
+    <PaquerettePluginPath>$(PaquerettePath)\BepInEx\plugins</PaquerettePluginPath>
+  </PropertyGroup>
+</Project>
