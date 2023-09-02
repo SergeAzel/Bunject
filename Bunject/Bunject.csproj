@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\BuildPath.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,18 +36,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx OLD\core\0Harmony.dll</HintPath>
+      <HintPath>$(PaquerettePath)\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx OLD\core\BepInEx.dll</HintPath>
+      <HintPath>$(PaquerettePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx.Harmony">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx OLD\core\BepInEx.Harmony.dll</HintPath>
+      <HintPath>$(PaquerettePath)\BepInEx\core\BepInEx.Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="netstandard, Version=2.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,19 +54,19 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Unity.ResourceManager">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.ResourceManager.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

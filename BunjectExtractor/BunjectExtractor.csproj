@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\BuildPath.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -33,10 +34,10 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>$(PaquerettePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,10 +48,10 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +66,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>REM xcopy "$(TargetDir)\*.dll" "C:\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\BepInEx\plugins" /y /f</PostBuildEvent>
+    <PostBuildEvent>REM xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f</PostBuildEvent>
   </PropertyGroup>
 </Project>
