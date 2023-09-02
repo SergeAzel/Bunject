@@ -1,0 +1,9 @@
+{
+    "Name": "Big Fishy",
+    "Tools":
+    {
+        "Traps": 1
+    },
+    "IsTemple": false,
+    "IsHell": false
+}

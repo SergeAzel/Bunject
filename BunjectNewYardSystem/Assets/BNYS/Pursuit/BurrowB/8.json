@@ -1,0 +1,10 @@
+{
+    "Name": "Resolve",
+    "Style": "HellTemple",
+    "Tools": 
+    {
+        "Pickaxes": 2
+    },
+    "IsTemple": false,
+    "IsHell": true 
+}

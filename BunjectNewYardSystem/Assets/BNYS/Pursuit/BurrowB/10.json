@@ -1,0 +1,10 @@
+{
+    "Name": "Abode of a God",
+    "Style": "HellTemple",
+    "Tools": 
+    {
+        "Pickaxes": 4
+    },
+    "IsTemple": false,
+    "IsHell": true 
+}
