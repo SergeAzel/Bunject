@@ -44,7 +44,7 @@ namespace Bunject.NewYardSystem
       var cache = new CustomBunburrowCache();
       foreach (var cachedBurrow in cache.CustomBurrows)
       {
-        cachedBurrow.ID = BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator);
+        cachedBurrow.ID = BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator, cachedBurrow.IsVoid);
       }
 
       try
@@ -68,8 +68,8 @@ namespace Bunject.NewYardSystem
           var cachedBurrow = cache.CustomBurrows.FirstOrDefault(cb => cb.Name == burrow.Name);
           if (cachedBurrow == null)
           {
-            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator);
-            cache.CacheBunburrow(burrow.Name, burrow.Indicator, burrow.ID);
+            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
+            cache.CacheBunburrow(burrow.Name, burrow.Indicator, burrow.ID, burrow.IsVoid);
           }
           else
           {
