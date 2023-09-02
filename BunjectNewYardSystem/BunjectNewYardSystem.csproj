@@ -99,6 +99,7 @@
     <Compile Include="Model\CustomWorld.cs" />
     <Compile Include="Model\LevelMetadata.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\DefaultLevel.cs" />
     <Compile Include="Resources\ImportImage.cs" />
     <Compile Include="Levels\SurfaceBurrowsPatch.cs" />
   </ItemGroup>

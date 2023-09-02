@@ -13,8 +13,6 @@ namespace Bunject.NewYardSystem.Model
 
     public string Indicator { get; set; }
 
-    public bool IsVoid { get; set; }
-
     [JsonIgnore]
     public int ID { get; set; }
   }

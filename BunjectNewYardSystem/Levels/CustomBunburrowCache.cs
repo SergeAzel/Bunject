@@ -40,10 +40,15 @@ namespace Bunject.NewYardSystem.Internal
       }
     }
 
-    public void CacheBunburrow(string name, string indicator, int id, bool isVoid)
+    public CustomBunburrowModel CacheBunburrow(string name, string indicator)
     {
-      CustomBurrows.Add(new CustomBunburrowModel { Name = name, Indicator = indicator, ID = id, IsVoid = isVoid });
+      var burrow = new CustomBunburrowModel { Name = name, Indicator = indicator };
+      CustomBurrows.Add(burrow);
+      return burrow;
+    }
 
+    public void SaveCache()
+    {
       using (var writer = new StreamWriter(cachePath))
       {
         new JsonSerializer().Serialize(writer, CustomBurrows);
