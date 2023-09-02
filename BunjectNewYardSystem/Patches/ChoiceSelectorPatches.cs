@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Bunject.NewYardSystem.Addon.Patches.ChoiceSelectorPatches
+namespace Bunject.NewYardSystem.Patches.ChoiceSelectorPatches
 {
 	[HarmonyPatch(typeof(ChoiceSelector), nameof(ChoiceSelector.StartListeningToInputs))]
 	internal class StartListeningToInputsPatch

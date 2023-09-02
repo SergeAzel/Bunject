@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace Bunject.NewYardSystem.Addon.GeneralProgressionPatches
+namespace Bunject.NewYardSystem.GeneralProgressionPatches
 {
 	[HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.HandleElevatorUnlock))]
 	internal class HandleElevatorUnlockPatch

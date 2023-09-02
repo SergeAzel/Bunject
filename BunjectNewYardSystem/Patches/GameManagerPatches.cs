@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bunject.NewYardSystem.Addon.Patches.GameManagerPatches
+namespace Bunject.NewYardSystem.Patches.GameManagerPatches
 {
 	[HarmonyPatch(typeof(GameManager), nameof(GameManager.HandleSurfaceElevatorUse))]
 	internal class HandleSurfaceElevatorUsePatch
