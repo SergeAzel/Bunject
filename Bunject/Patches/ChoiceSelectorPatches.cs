@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Internal;
 using Dialogue;
 using HarmonyLib;
 using Levels;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Bunject.NewYardSystem.Patches.ChoiceSelectorPatches
+namespace Bunject.Patches.ChoiceSelectorPatches
 {
 	[HarmonyPatch(typeof(ChoiceSelector), nameof(ChoiceSelector.StartListeningToInputs))]
 	internal class StartListeningToInputsPatch
@@ -34,6 +35,7 @@ namespace Bunject.NewYardSystem.Patches.ChoiceSelectorPatches
 			}
 			return codes;
 		}
+
 		private static void Infix(ChoiceSelector @this)
 		{
 			var elevators = new List<ChoiceObject>();

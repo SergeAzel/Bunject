@@ -40,7 +40,8 @@ namespace Bunject.NewYardSystem.Levels
         var second = GetNext(ref entries);
         var third = GetNext(ref entries);
 
-        yield return GenerateLevel(world, FormatLevelString(first, second, third), precedingLevel);
+        precedingLevel = GenerateLevel(world, FormatLevelString(first, second, third), precedingLevel);
+        yield return precedingLevel;
       }
     }
 

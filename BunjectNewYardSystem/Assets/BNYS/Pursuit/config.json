@@ -1,6 +1,7 @@
 {
     "Enabled": true,
     "Title": "Pursuit of a God",
+    "LiveReloading": true,
     "Burrows": [
         {
             "Directory": "BurrowA",
@@ -10,14 +11,15 @@
             "HasSurfaceEntry": true,
             "UpperBunnyCount": 3,
             "TempleBunnyCount": 1,
-            "HellBunnyCount": 3,
+            "HellBunnyCount": 4,
             "Depth": 10,
             "Links": {
                 "Left": "Burrow B",
                 "Up": "Burrow A",
                 "Right": "Burrow B",
                 "Down": "Burrow A"
-            }
+            },
+            "ElevatorDepths": [5]
         },
         {
             "Directory": "BurrowB",
@@ -34,7 +36,8 @@
                 "Up": "Burrow B",
                 "Right": "Burrow A",
                 "Down": "Burrow B"
-            }
+            },
+            "ElevatorDepths": [9]
         }
     ]
 }

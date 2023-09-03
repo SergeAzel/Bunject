@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bunject.NewYardSystem
+namespace Bunject.Internal
 {
 	// Note: this class can probably be merged
 	// Note: it's probably a good idea to have Bunject itself register the elevators

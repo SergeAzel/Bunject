@@ -12,12 +12,12 @@ namespace Bunject.Patches
   {
     private static void Prefix()
     {
-      Console.WriteLine("BUNJECT - StartRelease Begins");
+      //Console.WriteLine("BUNJECT - StartRelease Begins");
     }
 
     private static void Postfix()
     {
-      Console.WriteLine("BUNJECT - StartRelease Ends");
+      //Console.WriteLine("BUNJECT - StartRelease Ends");
     }
   }
 }

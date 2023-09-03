@@ -43,7 +43,6 @@ namespace Bunject.NewYardSystem.Levels
     private static string GeneratePatchedContent(string content)
     {
       var rows = content.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-      Console.WriteLine($"PATCHING ROWS: row count {rows.Length}");
       for (var i = 4; i < 7; i++)
       {
         var cells = rows[i].Split(',');
