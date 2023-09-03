@@ -213,7 +213,7 @@ namespace Bunject.NewYardSystem
               foreach (var burrow in world.Burrows)
               {
                 foreach (var depth in burrow.ElevatorDepths)
-                  ModElevatorController.Instance.RegisterElevator(burrow.Indicator, depth);
+                  BunjectAPI.RegisterElevator(burrow.Indicator, depth);
               }
             }
             if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
