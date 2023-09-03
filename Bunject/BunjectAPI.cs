@@ -31,7 +31,10 @@ namespace Bunject
     {
       Instance.bunjectors.Add(bunjector);
     }
-
+    public static int[] RegisterBurrows((string name, string indicator, bool isVoid)[] burrows, Comparison<string> indicatorCompar)
+		{
+      return BunburrowManager.RegisterBurrows(burrows, indicatorCompar);
+    }
     public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
     {
       return BunburrowManager.RegisterBurrow(name, indicator, isVoid);

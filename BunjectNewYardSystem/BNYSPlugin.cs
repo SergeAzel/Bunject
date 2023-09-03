@@ -21,7 +21,7 @@ using System.Text;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
-namespace Bunject.NewYardSystem 
+namespace Bunject.NewYardSystem
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
   public class BNYSPlugin : BaseBunjector
@@ -59,8 +59,49 @@ namespace Bunject.NewYardSystem
 
       if (CustomWorlds.Count > 0)
       {
+
+        var customBurrows = CustomWorlds.SelectMany(cw => cw.Burrows).ToList();
+
+        // load cached first
         Logger.LogInfo("Initial Load - Registering Cached Burrows!");
 
+        var burrows = cache.CustomBurrows.Select(cached =>
+        {
+          var b = customBurrows.FirstOrDefault(x => x.Name == cached.Name);
+          if (b is null)
+          {
+            Logger.LogInfo($"Cached Burrow : {b.Name} NOT found!");
+            b = new Burrow { Name = cached.Name, Indicator = cached.Indicator };
+          }
+          else
+          {
+            Logger.LogInfo($"Cached Burrow : {b.Name} found!");
+            cached.Indicator = b.Indicator;
+          }
+          return b;
+        });
+
+        // cache and load remaining
+        Logger.LogInfo("Initial Load - Registering Uncached Burrows!");
+
+        foreach (var b in burrows.Concat(customBurrows.Where(x => !Enumerable.Contains(burrows, x))))
+        {
+          Logger.LogInfo($"Uncached Burrow : {b.Name} registered!");
+          cache.CacheBunburrow(b.Name, b.Indicator);
+          burrows = burrows.Append(b);
+        }
+
+        // register everything and order based on customBurrows order
+        var ids = BunjectAPI.RegisterBurrows(burrows.Select(x => (x.Name, x.Indicator, x.IsVoid)).ToArray(),
+          (x, y) => customBurrows.FindIndex(x1 => x1.Indicator == x) - customBurrows.FindIndex(y1 => y1.Indicator == y));
+
+        // assign IDs
+        for (int i = 0; i < ids.Length; i++)
+        {
+          customBurrows[i].ID = ids[i];
+        }
+
+        /*
         foreach (var cachedBurrow in cache.CustomBurrows)
         {
           var burrowModel = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == cachedBurrow.Name);
@@ -90,7 +131,7 @@ namespace Bunject.NewYardSystem
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
-
+        */
         cache.SaveCache();
 
         BunjectAPI.Register(this);
@@ -380,7 +421,7 @@ namespace Bunject.NewYardSystem
       }
 
       try
-      { 
+      {
         using (var reader = new StreamReader(levelConfigPath))
         {
           levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
@@ -480,7 +521,7 @@ namespace Bunject.NewYardSystem
         level.Field("dialogues").SetValue(new List<DialogueObject>());
         level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
 
-        var targetStyle =  AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
+        var targetStyle = AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
         level.Field("bunburrowStyle").SetValue(targetStyle);
         level.Field("content").SetValue(DefaultLevel.Content);
         level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
