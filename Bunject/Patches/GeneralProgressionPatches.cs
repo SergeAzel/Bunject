@@ -35,42 +35,6 @@ namespace Bunject.Patches.GeneralProgressionPatches
     }
   }
 
-
-  /*
-  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetNonVoidBunniesSpreadSort))]
-  internal class GetNonVoidBunniesSpreadSortPatches
-  {
-    static MethodInfo GetRegularBunburrowEnumerator = typeof(BunburrowExtension).GetMethod(nameof(BunburrowExtension.GetRegularBunburrowEnumerator));
-
-    private static bool Prefix()
-    {
-      Console.WriteLine($"BUNJECT - GetNonVoidBunniesSpreadSort STARTING");
-      return true;
-    }
-
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    {
-      foreach (var codeInstruction in instructions)
-      {
-        if (codeInstruction.Calls(GetRegularBunburrowEnumerator))
-        {
-          yield return CodeInstruction.Call(typeof(CustomBunburrowExtension), nameof(CustomBunburrowExtension.GetRegularAndCustomBunbrrowEnumerator));
-          continue;
-        }
-        yield return codeInstruction;
-      }
-    }
-
-    private static List<BunnyIdentity> Postfix(List<BunnyIdentity> __result)
-    {
-      //its custom... 
-      Console.WriteLine($"BUNJECT - GetNonVoidBunniesSpreadSort: ");
-      foreach (var id in __result)
-        Console.WriteLine($"BUNJECT - brw: {(int)id.Bunburrow}, lvl: {id.LevelID}, str: {id.GetIdentityString()}");
-      return __result;
-    }s
-  }*/
-
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetNonVoidBunniesCount))]
   internal class GetNonVoidBunniesCountPatches
   {
@@ -100,6 +64,7 @@ namespace Bunject.Patches.GeneralProgressionPatches
     }
   }
 
+  /*
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetCapturedBunniesFromBunburrow))]
   internal class GetCapturedBunniesFromBunburrowPatch
   {
@@ -114,8 +79,9 @@ namespace Bunject.Patches.GeneralProgressionPatches
 
       return __result;
     }
-  }
+  }*/
 
+  /*
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetBunniesCountByBunburrow))]
   internal class GetBunniesCountByBunburrowPatches
   {
@@ -124,7 +90,7 @@ namespace Bunject.Patches.GeneralProgressionPatches
       Console.WriteLine($"BUNJECT - {nameof(GetBunniesCountByBunburrowPatches)} - count: {__result.RegularBunniesCount} - BurrowID {(int)bunburrow}");
       return __result;
     }
-  }
+  }*/
 
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.FreeBunniesFromBunburrow))]
   internal class FreeBunniesFromBunburrowPatches

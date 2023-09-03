@@ -124,7 +124,7 @@ namespace Bunject.NewYardSystem
     {
       if (original == null)
       {
-        Logger.LogInfo($"LoadLevel Endpoint Called: {listName}, {depth}");
+        //Logger.LogInfo($"LoadLevel Endpoint Called: {listName}, {depth}");
         //Maybe dictionary these by name... but honestly given dataset size, doesnt matter right now.
         var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Any(b => b.Name == listName));
 
@@ -143,7 +143,7 @@ namespace Bunject.NewYardSystem
           var resultLevel = levelsTraverse.Value[depth - 1];
           if (resultLevel == null)
           {
-            var levelConfig = LoadLevelFromFile(burrow.Directory, depth, burrow.Style);
+            var levelConfig = LoadLevelFromFile(burrow.Directory, burrow.Name, depth, burrow.Style);
             resultLevel = levelConfig.Level;
 
             if (!world.LiveReloading && !levelConfig.LiveReloading)
@@ -166,7 +166,7 @@ namespace Bunject.NewYardSystem
     {
       if (original == null)
       {
-        Logger.LogInfo($"LoadLevelsList Endpoint Called: {name}");
+        //Logger.LogInfo($"LoadLevelsList Endpoint Called: {name}");
         var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == name);
         return burrow?.Levels ?? GetDefaultLevelsList();
       }
@@ -175,18 +175,18 @@ namespace Bunject.NewYardSystem
 
     public override LevelObject RappelFromBurrow(string listName, LevelObject otherwise)
     {
-      Logger.LogInfo($"Rappelling from {listName}");
+      //Logger.LogInfo($"Rappelling from {listName}");
       var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == listName);
 
       if (burrow != null)
       {
-        Logger.LogInfo($"Burrow found!");
+        //Logger.LogInfo($"Burrow found!");
         var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrow));
         var surfaceIndex = world.Burrows.Where(b => b.Depth > 0 && b.HasSurfaceEntry).ToList().IndexOf(burrow);
         if (surfaceIndex >= 0 && (surfaceIndex / 3) < world.GeneratedSurfaceLevels.Count)
           return world.GeneratedSurfaceLevels[surfaceIndex / 3];
 
-        Logger.LogInfo($"Burrow was not surfaceable / not in the list of generated surface levels!");
+        Logger.LogWarning($"Burrow was not surfaceable / not in the list of generated surface levels!");
       }
 
       return base.RappelFromBurrow(listName, otherwise);
@@ -296,8 +296,6 @@ namespace Bunject.NewYardSystem
       traverse.Field<int>("numberOfTempleBunnies").Value = burrow.TempleBunnyCount;
       traverse.Field<int>("numberOfHellBunnies").Value = burrow.HellBunnyCount;
       traverse.Field<DirectionsListOf<LevelsList>>("adjacentBunburrows").Value = new DirectionsListOf<LevelsList>(null, null, null, null);
-      //traverse.Field<int>("templeStartDepth").Value = 10; //TODO unhardcode
-      //traverse.Field<int>("hellStartDepth").Value = 20; //TODO unhardcode
       return levelsList;
     }
 
@@ -360,19 +358,29 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private LevelMetadata LoadLevelFromFile(string directory, int depth, string defaultStyle)
+    private LevelMetadata LoadLevelFromFile(string directory, string burrowName, int depth, string defaultStyle)
     {
       var levelContentPath = Path.Combine(directory, $"{depth}.level");
       var levelConfigPath = Path.Combine(directory, $"{depth}.json");
 
-      string content;
-      LevelMetadata levelConfig;
+      string content = null;
+      LevelMetadata levelConfig = null;
 
-      Logger.LogInfo("Creating Level from: " + levelContentPath);
+      //Logger.LogInfo("Creating Level from: " + levelContentPath);
       try
       {
         content = File.ReadAllText(levelContentPath);
+      }
+      catch (Exception e)
+      {
+        Logger.LogError("Error loading files related to level:");
+        Logger.LogError(Path.Combine(directory, depth.ToString()));
+        Logger.LogError(e.Message);
+        Logger.LogError(e);
+      }
 
+      try
+      { 
         using (var reader = new StreamReader(levelConfigPath))
         {
           levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
@@ -380,13 +388,41 @@ namespace Bunject.NewYardSystem
       }
       catch (Exception e)
       {
-        Logger.LogError("Error loading files related to level");
+        Logger.LogError("Error loading files related to level:");
         Logger.LogError(Path.Combine(directory, depth.ToString()));
         Logger.LogError(e.Message);
         Logger.LogError(e);
-        return null;
       }
 
+      if (levelConfig == null)
+      {
+        Logger.LogError($"{burrowName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
+
+        levelConfig = new LevelMetadata()
+        {
+          Name = "Level Metadata Failed Load",
+          LiveReloading = true,
+          Style = defaultStyle,
+          IsHell = false,
+          IsTemple = false,
+          Tools = new LevelTools()
+        };
+      }
+
+      if (string.IsNullOrEmpty(content))
+      {
+        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
+
+        content = DefaultLevel.Content;
+      }
+
+      GenerateLevelObject(levelConfig, content, defaultStyle);
+
+      return levelConfig;
+    }
+
+    private void GenerateLevelObject(LevelMetadata levelConfig, string content, string defaultStyle)
+    {
       var resultLevel = ScriptableObject.CreateInstance<LevelObject>();
       var level = Traverse.Create(resultLevel);
 
@@ -408,8 +444,6 @@ namespace Bunject.NewYardSystem
       level.Field("isHell").SetValue(levelConfig.IsHell);
 
       levelConfig.Level = resultLevel;
-
-      return levelConfig;
     }
 
     private LevelsList defaultLevelsList = null;

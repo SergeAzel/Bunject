@@ -11,7 +11,7 @@
             "HasSurfaceEntry": true,
             "UpperBunnyCount": 3,
             "TempleBunnyCount": 1,
-            "HellBunnyCount": 3,
+            "HellBunnyCount": 4,
             "Depth": 10,
             "Links": {
                 "Left": "Burrow B",

@@ -74,7 +74,6 @@ namespace Bunject.Patches.GameManagerPatches
     // signature must match StartLevelTransition
     private static void StartLevelRappellingTransition(LevelObject surfaceLevel, LevelTransitionType levelTransitionType, LevelIdentity levelIdentity, LevelIdentity? elevatorTargetLevelIdentity)
     {
-      Console.WriteLine("Rapelling to Surface Transition!");
       // get previous bunburrow
       Bunburrows.Bunburrow previous = Traverse.Create<GameManager>().Field<Bunburrows.Bunburrow>("previousBunburrow").Value;
 

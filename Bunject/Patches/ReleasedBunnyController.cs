@@ -20,7 +20,7 @@ namespace Bunject.Patches.ReleasedBunnyControllerPatches
       if ((int)bunnyIdentity.Bunburrow < BunburrowManager.CustomBunburrowThreshold)
         return true;
 
-      Console.WriteLine("BUNJECT - Releasing custom bun");
+      //Console.WriteLine("BUNJECT - Releasing custom bun");
 
       // Consider it done
       bunniesReleaseAnimator.NotifyBunnyInHole(__instance);
