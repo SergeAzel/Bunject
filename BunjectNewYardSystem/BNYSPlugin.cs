@@ -89,6 +89,8 @@ namespace Bunject.NewYardSystem
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} registered!");
             burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
+            foreach (var depth in burrow.ElevatorDepths)
+              BunjectAPI.RegisterElevator(burrow.ID, depth);
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
