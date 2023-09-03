@@ -1,7 +1,6 @@
 {
     "Enabled": true,
     "Title": "Pursuit of a God",
-    "LiveReloading": true,
     "Burrows": [
         {
             "Directory": "BurrowA",

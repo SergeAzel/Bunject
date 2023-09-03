@@ -416,6 +416,13 @@ namespace Bunject.NewYardSystem
         content = DefaultLevel.Content;
       }
 
+      if (!ContentValidator.ValidateContentTiles(content))
+      {
+        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
+
+        content = DefaultLevel.Content;
+      }
+
       GenerateLevelObject(levelConfig, content, defaultStyle);
 
       return levelConfig;

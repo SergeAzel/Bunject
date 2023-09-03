@@ -85,6 +85,7 @@
     <Compile Include="BunjectAPI.cs" />
     <Compile Include="Patches\BunburrowEntryTilePatches.cs" />
     <Compile Include="Patches\BunburrowExtensionPatches.cs" />
+    <Compile Include="Patches\BunburrowSignControllerPatches.cs" />
     <Compile Include="Patches\BunniesReleaseAnimatorPatches.cs" />
     <Compile Include="Patches\ChoiceSelectorPatches.cs" />
     <Compile Include="Patches\GameManagerPatches.cs" />

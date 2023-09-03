@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
+    <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
     <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
     <Compile Include="Model\Burrow.cs" />
