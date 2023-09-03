@@ -26,7 +26,6 @@ namespace Bunject.Internal
     public static int CustomBunburrowThreshold => 50;
     internal static int[] RegisterBurrows((string name, string indicator, bool isVoid)[] burrows, Comparison<string> indicatorCompar)
     {
-      int min = instance.maxID + 1;
       List<int> res = new List<int>();
       foreach (var (name, indicator, isVoid) in burrows)
       {
@@ -34,7 +33,7 @@ namespace Bunject.Internal
       }
       var sortedBurrows = new List<(string name, string indicator, bool isVoid)>(burrows);
       sortedBurrows.Sort((x, y) => indicatorCompar(x.indicator, y.indicator));
-      for (int compareID = min, index = 0; compareID < instance.maxID; compareID++, index++)
+      for (int compareID = instance.maxID, index = res.Count - 1; index >= 0; compareID--, index--)
       {
         instance.bunburrows.First(x => x.Indicator == sortedBurrows[index].indicator).ComparisonIndex = compareID;
       }

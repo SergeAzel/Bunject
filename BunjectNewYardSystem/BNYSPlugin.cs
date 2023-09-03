@@ -84,7 +84,7 @@ namespace Bunject.NewYardSystem
         // cache and load remaining
         Logger.LogInfo("Initial Load - Registering Uncached Burrows!");
 
-        foreach (var b in burrows.Concat(customBurrows.Where(x => !Enumerable.Contains(burrows, x))))
+        foreach (var b in customBurrows.Where(x => !Enumerable.Contains(burrows, x)))
         {
           Logger.LogInfo($"Uncached Burrow : {b.Name} registered!");
           cache.CacheBunburrow(b.Name, b.Indicator);
