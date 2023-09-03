@@ -101,10 +101,6 @@ namespace Bunject.NewYardSystem
       {
         Logger.LogInfo("All worlds empty! Please configure a burrow with a surface entrance, and depth of at least 1!");
       }
-      // for now the patches are on Yard System
-      // but probably should be moved to Bunject
-      // so all Yard has to do is register the elevators
-      new Harmony("bunject.NewYardSystem").PatchAll(Assembly.GetExecutingAssembly());
     }
 
     //IBunjector Members

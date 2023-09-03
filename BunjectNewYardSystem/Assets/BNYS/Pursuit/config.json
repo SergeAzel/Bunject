@@ -1,6 +1,7 @@
 {
     "Enabled": true,
     "Title": "Pursuit of a God",
+    "LiveReloading": true,
     "Burrows": [
         {
             "Directory": "BurrowA",
@@ -17,7 +18,8 @@
                 "Up": "Burrow A",
                 "Right": "Burrow B",
                 "Down": "Burrow A"
-            }
+            },
+            "ElevatorDepths": [5]
         },
         {
             "Directory": "BurrowB",
@@ -34,7 +36,8 @@
                 "Up": "Burrow B",
                 "Right": "Burrow A",
                 "Down": "Burrow B"
-            }
+            },
+            "ElevatorDepths": [9]
         }
     ]
 }

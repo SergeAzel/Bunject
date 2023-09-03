@@ -1,9 +1,9 @@
 R,R,R{RD},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LRD},R{LR},R{LR},R{LR}
-R,T,W{LUR},T,T,T,T,T,T,T,T,W{LUD},W,W,W
-R,T,T,T,W,T,W,W{UD},W,T,T,W{LU},W,W,W
-R,W,W,W,W,T,W,T,W,T,W,W,W,W,W
-R,W,W,W,W,T,W,S,W,T,W,W,W,W,W
-R,W,W,W,W,T,W,T,W,T,W,W,W{RD},W{LR},W{LR}
-R,W,W,W{RD},T,T,W,W{UD},W,T,W,T,B,T,W
-R,W,W,W{UD},T,T,T,T,T,T,T,T,W{LRD},T,W
+R,T,W{LUR},T,T,T,T,T,T,T,T,W{LUD},W,W,R
+R,T,T,T,R,T,W{RD},W{LURD},W{LD},T,T,W{LU},W,W,R
+R,W,W,W,R,T,W{UD},T,W{UD},T,R,W,W,W,R
+R,W,W,W,R,T,W{UD},S,W{UD},T,R,W,W,W,R
+R,W,W,W,R,T,W{UD},T,W{UD},T,R,W,W{RD},W{LR},R{LR}
+R,W,W,W{RD},T,T,W{UR},W{LURD},W{LU},T,R,T,B,T,R
+R,W,W,W{UD},T,T,T,T,T,T,T,T,W{LRD},T,R
 R,R,R,R{UR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LUR},R{LR},R{LR}

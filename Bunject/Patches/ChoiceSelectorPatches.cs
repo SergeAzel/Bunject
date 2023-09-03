@@ -35,6 +35,7 @@ namespace Bunject.Patches.ChoiceSelectorPatches
 			}
 			return codes;
 		}
+
 		private static void Infix(ChoiceSelector @this)
 		{
 			var elevators = new List<ChoiceObject>();
