@@ -70,7 +70,7 @@ namespace Bunject.NewYardSystem
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
             burrowModel.ID = BunjectAPI.RegisterBurrow(burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
             foreach (var depth in burrowModel.ElevatorDepths)
-              BunjectAPI.RegisterElevatorByBurrowId(burrowModel.ID, depth);
+              BunjectAPI.RegisterElevator(burrowModel.ID, depth);
           }
           else
           {

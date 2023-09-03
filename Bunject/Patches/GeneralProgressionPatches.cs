@@ -109,16 +109,11 @@ namespace Bunject.Patches.GeneralProgressionPatches
     public static void Postfix(GeneralProgression __instance)
     {
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
-      if (identity.Bunburrow.IsCustomBunburrow())
-      {
-        var burrow = BunburrowManager.Bunburrows.FirstOrDefault(x => x.ID == (int)identity.Bunburrow && x.Elevators.Contains(identity.Depth));
-        if (burrow != null)
+      if (ElevatorManager.ElevatorUnlock(identity, out var save))
+			{
+        if (!__instance.UnlockedElevators.ContainsEquatable(save))
         {
-          var save_key = JsonConvert.SerializeObject(new LevelIdentity(identity.Bunburrow, identity.Depth).ProduceSaveData());
-          if (!__instance.UnlockedElevators.ContainsEquatable(save_key))
-          {
-            Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(save_key);
-          }
+          Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(save);
         }
       }
     }

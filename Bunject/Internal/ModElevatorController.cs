@@ -10,7 +10,7 @@ namespace Bunject.Internal
 {
 	// Note: this class can probably be merged
 	// Note: it's probably a good idea to have Bunject itself register the elevators
-	[Obsolete("This has been refactored into ModBurrows themselves")]
+	[Obsolete("Use ElevatorManager instead")]
 	internal class ModElevatorController
 	{
 		private const string SEPARATOR = "-";

@@ -43,22 +43,11 @@ namespace Bunject.Patches.ChoiceSelectorPatches
 		{
 			var elevators = new List<ChoiceObject>();
 			var levels = new List<LevelIdentity>();
-			var stringWriter = new StringWriter();
-			var jsonTextWriter = new JsonTextWriter(stringWriter);
 			foreach (var elevator in GameManager.GeneralProgression.UnlockedElevators)
 			{
-				LevelIdentitySaveData id;
-				try
+				if (ElevatorManager.IsElevatorUnlock(elevator, out var l))
 				{
-					id = JsonConvert.DeserializeObject<LevelIdentitySaveData>(elevator);
-				}
-				catch
-				{
-					id = null;
-				}
-				if (id != null && id.Bunburrow.IsCustomBunburrow() && BunburrowManager.Bunburrows.Any(x => x.ID == (int)id.Bunburrow && x.Elevators.Contains(id.Depth)))
-				{
-					levels.Add(id.BuildLevelIdentity());
+					levels.Add(l);
 					elevators.Add(new ChoiceObject(elevator, elevator, false));
 				}
 			}

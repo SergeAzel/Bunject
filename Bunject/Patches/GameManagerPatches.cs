@@ -128,29 +128,23 @@ namespace Bunject.Patches.GameManagerPatches
 			return codes;
 		}
 
-		private static bool Infix(string elevatorName, out LevelIdentity levelIdentity)
+		private static bool Infix(string elevatorName, out LevelIdentity level)
 		{
-      LevelIdentitySaveData identity;
-      try
-			{
-        identity = JsonConvert.DeserializeObject<LevelIdentitySaveData>(elevatorName);
-      }
-			catch
-			{
-        identity = null;
-      }
-			if (identity != null
-        && identity.Bunburrow.IsCustomBunburrow()
-        && BunburrowManager.Bunburrows.Any(x => x.ID == (int)identity.Bunburrow && x.Elevators.Contains(identity.Depth)))
-			{
-				levelIdentity = identity.BuildLevelIdentity();
-				return true;
-			}
-			else
-			{
-				levelIdentity = new LevelIdentity();
-				return false;
-			}
+      return ElevatorManager.IsElevatorUnlock(elevatorName, out level);
 		}
-	}
+  }
+  [HarmonyPatch(typeof(GameManager), "Init")]
+  internal class Init
+  {
+    public static System.Collections.IEnumerator Postfix(System.Collections.IEnumerator __result)
+    {
+
+      while (__result.MoveNext())
+      {
+        var item = __result.Current;
+        yield return item;
+      }
+      yield return ElevatorManager.ExtractElevatorProgression();
+    }
+  }
 }

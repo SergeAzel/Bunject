@@ -49,10 +49,11 @@ namespace Bunject.Internal
       return id;
     }
 
+    // [Done]
     // having 3 methods might be a little excessive
     // (considering the ID one should be more than sufficient cause RegisterBurrow returns ID)
     // consider removing Indicator variant but *maybe* not name and refactor both methods to "RegisterElevator"
-    internal static void RegisterElevatorByBurrowId(int id, int depth)
+    internal static void RegisterElevator(int id, int depth)
     {
       var burrow = Bunburrows.FirstOrDefault(x => x.ID == id);
       if (burrow is null)
@@ -61,7 +62,7 @@ namespace Bunject.Internal
         throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
       burrow.Elevators.Add(depth);
     }
-    internal static void RegisterElevatorByBurrowName(string name, int depth)
+    internal static void RegisterElevator(string name, int depth)
     {
       var burrow = Bunburrows.FirstOrDefault(x => x.Name == name);
       if (burrow is null)
@@ -70,6 +71,7 @@ namespace Bunject.Internal
         throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
       burrow.Elevators.Add(depth);
     }
+    /*
     internal static void RegisterElevatorByBurrowIndicator(string indicator, int depth)
     {
       var burrow = Bunburrows.FirstOrDefault(x => x.Indicator == indicator);
@@ -79,7 +81,7 @@ namespace Bunject.Internal
         throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
       burrow.Elevators.Add(depth);
     }
-
+    */
     private BunburrowManager()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>
