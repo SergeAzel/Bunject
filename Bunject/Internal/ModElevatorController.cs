@@ -10,6 +10,7 @@ namespace Bunject.Internal
 {
 	// Note: this class can probably be merged
 	// Note: it's probably a good idea to have Bunject itself register the elevators
+	[Obsolete("This has been refactored into ModBurrows themselves")]
 	internal class ModElevatorController
 	{
 		private const string SEPARATOR = "-";
@@ -51,13 +52,16 @@ namespace Bunject.Internal
 		}
 		internal bool TryGetElevator(LevelIdentity level, out string elevator)
 		{
-			elevator = GetElevatorSaveKey(level.Bunburrow, level.Depth);
-			if (!TryGetLevel(elevator, out _))
+			if (BunburrowManager.Bunburrows.Any(x => x.ID == (int)level.Bunburrow && x.Elevators.Contains(level.Depth)))
+			{
+				elevator = GetElevatorSaveKey(level.Bunburrow, level.Depth);
+				return true;
+			}
+			else
 			{
 				elevator = "";
 				return false;
 			}
-			return true;
 		}
 		internal string GetElevatorFromLevelIdentity(LevelIdentity identity)
 		{

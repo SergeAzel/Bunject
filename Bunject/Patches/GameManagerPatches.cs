@@ -2,6 +2,8 @@
 using Bunject.Internal;
 using HarmonyLib;
 using Levels;
+using Newtonsoft.Json;
+using Saving.Architecture;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +130,27 @@ namespace Bunject.Patches.GameManagerPatches
 
 		private static bool Infix(string elevatorName, out LevelIdentity levelIdentity)
 		{
-			return ModElevatorController.Instance.TryGetLevel(elevatorName, out levelIdentity);
+      LevelIdentitySaveData identity;
+      try
+			{
+        identity = JsonConvert.DeserializeObject<LevelIdentitySaveData>(elevatorName);
+      }
+			catch
+			{
+        identity = null;
+      }
+			if (identity != null
+        && identity.Bunburrow.IsCustomBunburrow()
+        && BunburrowManager.Bunburrows.Any(x => x.ID == (int)identity.Bunburrow && x.Elevators.Contains(identity.Depth)))
+			{
+				levelIdentity = identity.BuildLevelIdentity();
+				return true;
+			}
+			else
+			{
+				levelIdentity = new LevelIdentity();
+				return false;
+			}
 		}
 	}
 }

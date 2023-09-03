@@ -31,7 +31,7 @@ namespace Bunject.Internal
         throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
 
       if (Bunburrows.Any(bb => bb.Indicator == indicator))
-        throw new ArgumentException($"Bunburrow indicator {name} is already in use!  Please use a unique indicator.");
+        throw new ArgumentException($"Bunburrow indicator {indicator} is already in use!  Please use a unique indicator.");
 
       var id = ++instance.maxID;
 
@@ -47,6 +47,37 @@ namespace Bunject.Internal
       instance.bunburrows.Add(bunburrow);
 
       return id;
+    }
+
+    // having 3 methods might be a little excessive
+    // (considering the ID one should be more than sufficient cause RegisterBurrow returns ID)
+    // consider removing Indicator variant but *maybe* not name and refactor both methods to "RegisterElevator"
+    internal static void RegisterElevatorByBurrowId(int id, int depth)
+    {
+      var burrow = Bunburrows.FirstOrDefault(x => x.ID == id);
+      if (burrow is null)
+        throw new ArgumentException($"Bunburrow id {id} does not exist!  Please use an existing id.");
+      if (burrow.Elevators.Contains(depth))
+        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
+      burrow.Elevators.Add(depth);
+    }
+    internal static void RegisterElevatorByBurrowName(string name, int depth)
+    {
+      var burrow = Bunburrows.FirstOrDefault(x => x.Name == name);
+      if (burrow is null)
+        throw new ArgumentException($"Bunburrow name {name} does not exist!  Please use an existing id.");
+      if (burrow.Elevators.Contains(depth))
+        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
+      burrow.Elevators.Add(depth);
+    }
+    internal static void RegisterElevatorByBurrowIndicator(string indicator, int depth)
+    {
+      var burrow = Bunburrows.FirstOrDefault(x => x.Indicator == indicator);
+      if (burrow is null)
+        throw new ArgumentException($"Bunburrow indicator {indicator} does not exist!  Please use an existing id.");
+      if (burrow.Elevators.Contains(depth))
+        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
+      burrow.Elevators.Add(depth);
     }
 
     private BunburrowManager()

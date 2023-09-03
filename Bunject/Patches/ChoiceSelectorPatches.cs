@@ -3,8 +3,11 @@ using Bunject.Internal;
 using Dialogue;
 using HarmonyLib;
 using Levels;
+using Newtonsoft.Json;
+using Saving.Architecture;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -40,11 +43,22 @@ namespace Bunject.Patches.ChoiceSelectorPatches
 		{
 			var elevators = new List<ChoiceObject>();
 			var levels = new List<LevelIdentity>();
+			var stringWriter = new StringWriter();
+			var jsonTextWriter = new JsonTextWriter(stringWriter);
 			foreach (var elevator in GameManager.GeneralProgression.UnlockedElevators)
 			{
-				if (ModElevatorController.Instance.TryGetLevel(elevator, out var level))
+				LevelIdentitySaveData id;
+				try
 				{
-					levels.Add(level);
+					id = JsonConvert.DeserializeObject<LevelIdentitySaveData>(elevator);
+				}
+				catch
+				{
+					id = null;
+				}
+				if (id != null && id.Bunburrow.IsCustomBunburrow() && BunburrowManager.Bunburrows.Any(x => x.ID == (int)id.Bunburrow && x.Elevators.Contains(id.Depth)))
+				{
+					levels.Add(id.BuildLevelIdentity());
 					elevators.Add(new ChoiceObject(elevator, elevator, false));
 				}
 			}

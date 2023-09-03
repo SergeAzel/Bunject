@@ -37,9 +37,20 @@ namespace Bunject
       return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
     }
 
-		public static void RegisterElevator(string indicator, int depth)
+    // having 3 methods might be a little excessive
+    // (considering the ID one should be more than sufficient cause RegisterBurrow returns ID)
+    // consider removing Indicator variant but *maybe* not name and refactor both methods to "RegisterElevator"
+    public static void RegisterElevatorByBurrowId(int id, int depth)
     {
-      ModElevatorController.Instance.RegisterElevator(indicator, depth);
+      BunburrowManager.RegisterElevatorByBurrowId(id, depth);
+    }
+    public static void RegisterElevatorByBurrowName(string name, int depth)
+    {
+      BunburrowManager.RegisterElevatorByBurrowName(name, depth);
+    }
+    public static void RegisterElevatorByBurrowIndicator(string indicator, int depth)
+    {
+      BunburrowManager.RegisterElevatorByBurrowIndicator(indicator, depth);
     }
 
     private List<IBunjector> bunjectors;
