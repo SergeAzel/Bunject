@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject.Internal
 {
@@ -75,5 +77,33 @@ namespace Bunject.Internal
       }
       return result;
     }
-  }
+
+    public bool ValidateBaseTile(LevelObject levelObject, string tile)
+    {
+      return BunjectAPI.Bunjectors.All(x => x.ValidateBaseTile(levelObject, tile));
+    }
+
+    public bool ValidateModTile(LevelObject levelObject, string tile)
+    {
+      return BunjectAPI.Bunjectors.Any(x => x.ValidateModTile(levelObject, tile));
+    }
+
+    public TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise)
+		{
+      var result = otherwise;
+      foreach (var bunjector in BunjectAPI.Bunjectors)
+      {
+        result = bunjector.LoadTile(tile, position, result);
+      }
+      return result;
+    }
+
+    public void UpdateTileSprite(TileLevelData tile)
+    {
+      foreach (var bunjector in BunjectAPI.Bunjectors)
+      {
+        bunjector.UpdateTileSprite(tile);
+      }
+    }
+	}
 }

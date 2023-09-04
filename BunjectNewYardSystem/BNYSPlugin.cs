@@ -191,9 +191,18 @@ namespace Bunject.NewYardSystem
 
       return base.RappelFromBurrow(listName, otherwise);
     }
-    //IBunjector Members End
 
-    public IEnumerable<CustomWorld> LoadCustomWorlds()
+		public override bool ValidateBaseTile(LevelObject levelObject, string tile)
+		{
+      return ContentValidator.ValidateBaseTile(levelObject, tile);
+		}
+		public override bool ValidateModTile(LevelObject levelObject, string tile)
+    {
+      return ContentValidator.ValidateModTile(levelObject, tile);
+    }
+		//IBunjector Members End
+
+		public IEnumerable<CustomWorld> LoadCustomWorlds()
     {
       // loop through all subfolders of our root
       foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
@@ -299,35 +308,6 @@ namespace Bunject.NewYardSystem
       return levelsList;
     }
 
-    private BunburrowStyle ResolveStyle(string style)
-    {
-      switch (style)
-      {
-        case "Aquatic":
-        case "Sunken":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
-        case "Hay":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Hay];
-        case "Forgotten":
-        case "Purple":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Purple];
-        case "Spooky":
-        case "Ghostly":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Ghostly];
-        case "Void":
-          return AssetsManager.BunburrowsListOfStyles.VoidB;
-        case "Temple":
-          return AssetsManager.BunburrowsListOfStyles.Temple;
-        case "Hell":
-          return AssetsManager.BunburrowsListOfStyles.Hell;
-        case "HellTemple":
-          return AssetsManager.BunburrowsListOfStyles.HellTemple;
-        case "Pink":
-        default:
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
-      }
-    }
-
     private void LinkLevelLists(List<Burrow> burrows)
     {
       foreach (var burrow in burrows)
@@ -409,28 +389,14 @@ namespace Bunject.NewYardSystem
         };
       }
 
-      if (string.IsNullOrEmpty(content))
-      {
-        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
-
-        content = DefaultLevel.Content;
-      }
-
-      if (!ContentValidator.ValidateContentTiles(content))
-      {
-        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
-
-        content = DefaultLevel.Content;
-      }
-
-      GenerateLevelObject(levelConfig, content, defaultStyle);
+      GenerateCustomLevelObject(levelConfig, content, defaultStyle, burrowName, depth);
 
       return levelConfig;
     }
-
-    private void GenerateLevelObject(LevelMetadata levelConfig, string content, string defaultStyle)
+    private void GenerateCustomLevelObject(LevelMetadata levelConfig, string content, string defaultStyle, string burrowName, int depth)
     {
-      var resultLevel = ScriptableObject.CreateInstance<LevelObject>();
+      var resultLevel = ScriptableObject.CreateInstance<CustomLevelObject>();
+      resultLevel.name = $"Level {burrowName} - {levelConfig.Name}";
       var level = Traverse.Create(resultLevel);
 
       // Prepend name with space -- hack
@@ -440,8 +406,8 @@ namespace Bunject.NewYardSystem
       level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
 
       var targetStyle = ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
-      level.Field("bunburrowStyle").SetValue(targetStyle);
-      level.Field("content").SetValue(content);
+      level.Field("bunburrowStyle").SetValue(targetStyle); 
+
       level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
       level.Field("numberOfTraps").SetValue(levelConfig?.Tools?.Traps);
       level.Field("numberOfPickaxes").SetValue(levelConfig?.Tools?.Pickaxes);
@@ -450,7 +416,50 @@ namespace Bunject.NewYardSystem
       level.Field("isTemple").SetValue(levelConfig.IsTemple);
       level.Field("isHell").SetValue(levelConfig.IsHell);
 
+      if (string.IsNullOrWhiteSpace(content))
+      {
+        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
+        level.Field("content").SetValue(DefaultLevel.Content);
+      }
+      else
+      {
+        level.Field("content").SetValue(content);
+        if (!ContentValidator.ValidateLevelObject(level, content))
+        {
+          Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
+          level.Field("content").SetValue(DefaultLevel.Content);
+        }
+      }
+
       levelConfig.Level = resultLevel;
+    }
+    private BunburrowStyle ResolveStyle(string style)
+    {
+      switch (style)
+      {
+        case "Aquatic":
+        case "Sunken":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
+        case "Hay":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Hay];
+        case "Forgotten":
+        case "Purple":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Purple];
+        case "Spooky":
+        case "Ghostly":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Ghostly];
+        case "Void":
+          return AssetsManager.BunburrowsListOfStyles.VoidB;
+        case "Temple":
+          return AssetsManager.BunburrowsListOfStyles.Temple;
+        case "Hell":
+          return AssetsManager.BunburrowsListOfStyles.Hell;
+        case "HellTemple":
+          return AssetsManager.BunburrowsListOfStyles.HellTemple;
+        case "Pink":
+        default:
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
+      }
     }
 
     private LevelsList defaultLevelsList = null;

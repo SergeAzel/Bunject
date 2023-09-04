@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject
 {
@@ -45,5 +47,26 @@ namespace Bunject
     {
       return original;
     }
-  }
+
+    public virtual bool ValidateBaseTile(LevelObject levelObject, string tile)
+    {
+      return true;
+    }
+
+    public virtual bool ValidateModTile(LevelObject levelObject, string tile)
+    {
+      return false;
+    }
+
+    public virtual TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise)
+    {
+      return otherwise;
+    }
+
+    public virtual void UpdateTileSprite(TileLevelData tile)
+		{
+
+		}
+
+	}
 }

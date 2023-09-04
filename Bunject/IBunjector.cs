@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject
 {
@@ -21,5 +23,13 @@ namespace Bunject
     LevelObject RappelFromBurrow(string listName, LevelObject otherwise);
 
     LevelObject StartLevelTransition(LevelObject original, LevelIdentity identity);
+
+    bool ValidateBaseTile(LevelObject levelObject, string tile);
+
+    bool ValidateModTile(LevelObject levelObject, string tile);
+
+    TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise);
+
+    void UpdateTileSprite(TileLevelData tile);
   }
 }

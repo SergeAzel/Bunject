@@ -66,7 +66,8 @@ namespace Bunject.NewYardSystem.Levels
 
     private static LevelObject GenerateLevel(CustomWorld world, string levelContent, LevelObject previousLevel)
     {
-      var levelObject = ScriptableObject.CreateInstance<LevelObject>();
+      var levelObject = ScriptableObject.CreateInstance<SurfaceLevelObject>();
+      levelObject.name = "SurfaceRight BNYS";
       var level = Traverse.Create(levelObject);
       level.Field("content").SetValue(levelContent);
       level.Field("isSurface").SetValue(true);
