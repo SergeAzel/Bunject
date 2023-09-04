@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Bunburrows;
+using HarmonyLib;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -88,22 +89,17 @@ namespace Bunject.Internal
       return BunjectAPI.Bunjectors.Any(x => x.ValidateModTile(levelObject, tile));
     }
 
-    public TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise)
+    public TileLevelData LoadTile(string tile, Vector2Int position)
 		{
-      var result = otherwise;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        result = bunjector.LoadTile(tile, position, result);
-      }
-      return result;
+      return BunjectAPI.Bunjectors.Select(x => x.LoadTile(tile, position)).FirstOrDefault(x => x != null);
     }
 
-    public void UpdateTileSprite(TileLevelData tile)
+    public void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)
     {
       foreach (var bunjector in BunjectAPI.Bunjectors)
       {
-        bunjector.UpdateTileSprite(tile);
+        bunjector.UpdateTileSprite(tile, style);
       }
     }
-	}
+  }
 }

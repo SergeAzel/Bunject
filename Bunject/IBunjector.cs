@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunburrows;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +29,8 @@ namespace Bunject
 
     bool ValidateModTile(LevelObject levelObject, string tile);
 
-    TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise);
+    TileLevelData LoadTile(string tile, Vector2Int position);
 
-    void UpdateTileSprite(TileLevelData tile);
+    void UpdateTileSprite(TileLevelData tile, BunburrowStyle style);
   }
 }

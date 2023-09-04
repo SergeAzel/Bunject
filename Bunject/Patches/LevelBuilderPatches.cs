@@ -96,38 +96,50 @@ namespace Bunject.Patches.LevelBuilderPatches
       // find second if condition
       int secondIf = -1;
       for (int i = firstIf; i < codes.Count; i++)
-			{
+      {
         if (codes[i].Branches(out var l) && l is Label l1)
-				{
+        {
           secondIf = codes.FindIndex(x => x.labels.Contains(l1));
           break;
-				}
-			}
+        }
+      }
 
       // backtrack to find operation that jumps at the end of the if-else chain
       for (int i = secondIf; i > firstIf; i--)
-			{
+      {
         if (codes[i].opcode == OpCodes.Br && codes[i].operand is Label endOfIfElses)
         {
           Label firstIfLabel = il.DefineLabel();
-          codes.Insert(i + 1, new CodeInstruction(OpCodes.Nop).WithLabels(firstIfLabel));
           codes.InsertRange(firstIf, new List<CodeInstruction>
           {
             new CodeInstruction(OpCodes.Ldloc, 16), // tile
             new CodeInstruction(OpCodes.Ldloc, 17), // position
             new CodeInstruction(OpCodes.Ldloca, 18), // tileData
             CodeInstruction.Call(typeof(BuildNewLevelPatch_CustomTiles), nameof(BuildNewLevelPatch_CustomTiles.TryGetTile)),
-            new CodeInstruction(OpCodes.Brfalse, firstIfLabel)
+            new CodeInstruction(OpCodes.Brfalse, firstIfLabel),
+            new CodeInstruction(OpCodes.Br, endOfIfElses),
+            new CodeInstruction(OpCodes.Nop).WithLabels(firstIfLabel)
           });
           break;
         }
 			}
-      //Debug.Log(codes.Join(x => x.ToString(), "\n"));
       return codes;
     }
     private static bool TryGetTile(string tile, Vector3Int position, out TileLevelData tileData)
 		{
-      return (tileData = BunjectAPI.Forward.LoadTile(tile, position.ToVector2Int(), null)) != null;
+      tileData = BunjectAPI.Forward.LoadTile(tile, position.ToVector2Int());
+      return tileData != null;
+    }
+  }
+  [HarmonyPatch(typeof(LevelBuilder), nameof(LevelBuilder.UpdateTilesGraphics))]
+  internal class UpdateTilesGraphicsPatch
+  {
+    private static void Postfix(BunburrowStyle bunburrowStyle, IReadOnlyList<TileLevelData> tiles)
+    {
+      foreach (var tile in tiles)
+      {
+        BunjectAPI.Forward.UpdateTileSprite(tile, bunburrowStyle);
+      }
     }
   }
 }

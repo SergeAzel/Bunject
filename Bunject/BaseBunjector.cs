@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Bunburrows;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -58,12 +59,12 @@ namespace Bunject
       return false;
     }
 
-    public virtual TileLevelData LoadTile(string tile, Vector2Int position, TileLevelData otherwise)
-    {
-      return otherwise;
+    public virtual TileLevelData LoadTile(string tile, Vector2Int position)
+		{
+      return null;
     }
 
-    public virtual void UpdateTileSprite(TileLevelData tile)
+    public virtual void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)
 		{
 
 		}

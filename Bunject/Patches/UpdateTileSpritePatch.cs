@@ -13,7 +13,7 @@ namespace Bunject.Patches.TileLevelDataPatches
 	{
 		private static void Postfix(TileLevelData __instance)
 		{
-			BunjectAPI.Forward.UpdateTileSprite(__instance);
+			BunjectAPI.Forward.UpdateTileSprite(__instance, GameManager.CurrentLevel.BaseData.BunburrowStyle);
 		}
 	}
 }
