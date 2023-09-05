@@ -59,9 +59,15 @@ namespace Bunject
       return false;
     }
 
-    public virtual TileLevelData LoadTile(string tile, Vector2Int position)
+    public virtual TileLevelData LoadTile(LevelObject levelObject, string tile, Vector2Int position,
+      out bool isBunnyTile, out bool isStartTile, out bool isHoleTile, out bool hasStartTrap, out bool hasStartCarrot)
 		{
-      return null;
+			isBunnyTile = false;
+			isStartTile = false;
+			isHoleTile = false;
+			hasStartTrap = false;
+			hasStartCarrot = false;
+			return null;
     }
 
     public virtual void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)

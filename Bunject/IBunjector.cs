@@ -29,7 +29,8 @@ namespace Bunject
 
     bool ValidateModTile(LevelObject levelObject, string tile);
 
-    TileLevelData LoadTile(string tile, Vector2Int position);
+    TileLevelData LoadTile(LevelObject levelObject, string tile, Vector2Int position,
+      out bool isBunnyTile, out bool isStartTile, out bool isHoleTile, out bool hasStartTrap, out bool hasStartCarrot);
 
     void UpdateTileSprite(TileLevelData tile, BunburrowStyle style);
   }

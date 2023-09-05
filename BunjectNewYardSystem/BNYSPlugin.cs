@@ -405,7 +405,7 @@ namespace Bunject.NewYardSystem
       level.Field("dialogues").SetValue(new List<DialogueObject>());
       level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
 
-      var targetStyle = ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
+      var targetStyle = StyleFromString(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
       level.Field("bunburrowStyle").SetValue(targetStyle); 
 
       level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
@@ -433,7 +433,7 @@ namespace Bunject.NewYardSystem
 
       levelConfig.Level = resultLevel;
     }
-    private BunburrowStyle ResolveStyle(string style)
+    public static BunburrowStyle StyleFromString(string style)
     {
       switch (style)
       {

@@ -89,12 +89,25 @@ namespace Bunject.Internal
       return BunjectAPI.Bunjectors.Any(x => x.ValidateModTile(levelObject, tile));
     }
 
-    public TileLevelData LoadTile(string tile, Vector2Int position)
+    public TileLevelData LoadTile(LevelObject levelObject, string tile, Vector2Int position, 
+      out bool isBunnyTile, out bool isStartTile, out bool isHoleTile, out bool hasStartTrap, out bool hasStartCarrot)
 		{
-      return BunjectAPI.Bunjectors.Select(x => x.LoadTile(tile, position)).FirstOrDefault(x => x != null);
-    }
+			isBunnyTile = false;
+			isStartTile = false;
+			isHoleTile = false;
+			hasStartTrap = false;
+			hasStartCarrot = false;
+			TileLevelData result = null;
+      foreach (var bunjector in BunjectAPI.Bunjectors)
+      {
+        result = bunjector.LoadTile(levelObject, tile, position, out isBunnyTile, out isStartTile, out isHoleTile, out hasStartTrap, out hasStartCarrot);
+        if (result != null)
+          break;
+      }
+      return result;
+		}
 
-    public void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)
+		public void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)
     {
       foreach (var bunjector in BunjectAPI.Bunjectors)
       {

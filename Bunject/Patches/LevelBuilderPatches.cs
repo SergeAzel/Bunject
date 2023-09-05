@@ -112,9 +112,15 @@ namespace Bunject.Patches.LevelBuilderPatches
           Label firstIfLabel = il.DefineLabel();
           codes.InsertRange(firstIf, new List<CodeInstruction>
           {
-            new CodeInstruction(OpCodes.Ldloc, 16), // tile
-            new CodeInstruction(OpCodes.Ldloc, 17), // position
-            new CodeInstruction(OpCodes.Ldloca, 18), // tileData
+            new CodeInstruction(OpCodes.Ldarg_0),     // levelObject
+            new CodeInstruction(OpCodes.Ldloc, 16),   // tile
+            new CodeInstruction(OpCodes.Ldloc, 17),   // position
+            new CodeInstruction(OpCodes.Ldloca, 18),  // tileData
+            new CodeInstruction(OpCodes.Ldloc_2),     // bunnyTiles
+            new CodeInstruction(OpCodes.Ldloc_3),     // startTiles
+            new CodeInstruction(OpCodes.Ldloc, 4),    // holeTiles
+            new CodeInstruction(OpCodes.Ldloca, 11),  // hasStartTrap
+            new CodeInstruction(OpCodes.Ldloca, 12),  // hasStartCarrot
             CodeInstruction.Call(typeof(BuildNewLevelPatch_CustomTiles), nameof(BuildNewLevelPatch_CustomTiles.TryGetTile)),
             new CodeInstruction(OpCodes.Brfalse, firstIfLabel),
             new CodeInstruction(OpCodes.Br, endOfIfElses),
@@ -125,9 +131,32 @@ namespace Bunject.Patches.LevelBuilderPatches
 			}
       return codes;
     }
-    private static bool TryGetTile(string tile, Vector3Int position, out TileLevelData tileData)
-		{
-      tileData = BunjectAPI.Forward.LoadTile(tile, position.ToVector2Int());
+    private static bool TryGetTile(LevelObject levelObject, string tile, Vector3Int position, out TileLevelData tileData, 
+      List<KeyValuePair<TileLevelData, bool>> bunnyTiles, List<TileLevelData> startTiles, List<TileLevelData> holeTiles, ref bool hasStartTrap, ref bool hasStartCarrot)
+    {
+      bool isBunnyTile;
+      bool isStartTile;
+      bool isHoleTile;
+			tileData = BunjectAPI.Forward.LoadTile(levelObject, tile, position.ToVector2Int(), 
+        out isBunnyTile, out isStartTile, out isHoleTile, out var trap, out var carrot);
+			if (tileData == null)
+			{
+				return false;
+      }
+      if (isBunnyTile)
+      {
+        bunnyTiles.Add(new KeyValuePair<TileLevelData, bool>(tileData, false));
+      }
+      if (isStartTile)
+      {
+        startTiles.Add(tileData);
+      }
+      if (isHoleTile)
+			{
+        holeTiles.Add(tileData);
+      }
+      hasStartTrap |= trap;
+      hasStartCarrot |= carrot;
       return tileData != null;
     }
   }
