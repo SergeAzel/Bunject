@@ -404,8 +404,9 @@ namespace Bunject.NewYardSystem
       var resultLevel = ScriptableObject.CreateInstance<LevelObject>();
       var level = Traverse.Create(resultLevel);
 
-      // Prepend name with space -- hack
-      level.Field("customNameKey").SetValue(" " + (levelConfig?.Name ?? "Unnamed Level"));
+      const string NO_LEVEL_CONFIG_NAME = ""; // previously "Unnamed Level";
+      // [Changed] Prepend name with space -- hack
+      level.Field("customNameKey").SetValue(levelConfig?.Name ?? NO_LEVEL_CONFIG_NAME);
 
       level.Field("dialogues").SetValue(new List<DialogueObject>());
       level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());

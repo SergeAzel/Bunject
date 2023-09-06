@@ -20,8 +20,9 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
       if (identity.Bunburrow.IsCustomBunburrow())
 			{
-        var res = LevelIndicatorGenerator.GetShortLevelIndicator() +
-          Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>();
+        var res = LevelIndicatorGenerator.GetShortLevelIndicator()
+          + Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>()
+          + " ";
         var name = GameManager.CurrentLevel.BaseData.CustomNameKey;
 				return res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
 					? LevelIndicatorGenerator.GenerateVoidLevelName()
