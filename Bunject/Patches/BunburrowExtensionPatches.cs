@@ -10,91 +10,65 @@ using System.Threading.Tasks;
 
 namespace Bunject.Patches.BunburrowExtensionPatches
 {
-  [HarmonyPatch(typeof(BunburrowExtension))]
+  [HarmonyPatch(typeof(BunburrowExtension), "ToBunburrow", new Type[] { typeof(string) })]
   internal class ToBunburrowStringPatch
   {
-    public static MethodInfo TargetMethod()
+    private static Bunburrow Postfix(Bunburrow __result, string bunburrowName)
     {
-      return typeof(BunburrowExtension).GetMethod("ToBunburrow", new Type[] { typeof(string) });
-    }
-
-    public static bool Prefix(string bunburrowName, ref Bunburrows.Bunburrow __result)
-    {
-      if (BunburrowManager.IsInitialized)
-      {
-        __result = (Bunburrows.Bunburrow)(BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.Name == bunburrowName)?.ID ?? (int)Bunburrows.Bunburrow.Pink);
-        return false;
-      }
-      return true;
+      return ((Bunburrow?)BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.Name == bunburrowName)?.ID) ?? __result;
     }
   }
 
-  [HarmonyPatch(typeof(BunburrowExtension))]
+  [HarmonyPatch(typeof(BunburrowExtension), "ToBunburrow", new Type[] { typeof(int) })]
   // updates ToBunburrow, which indices burrows unusually for core burrows
   internal class ToBunburrowIntPatch
   {
-    private static MethodInfo TargetMethod()
+    private static Bunburrow Postfix(Bunburrow __result, int bunburrowID)
     {
-      return typeof(BunburrowExtension).GetMethod("ToBunburrow", new Type[] { typeof(int) });
-    }
-
-    private static bool Prefix(int bunburrowID, ref Bunburrows.Bunburrow __result)
-    {
-      if (BunburrowManager.IsInitialized)
+      if (((Bunburrow)bunburrowID).IsCustomBunburrow())
       {
-        if (bunburrowID > BunburrowManager.CustomBunburrowThreshold)
-        {
-          __result = (Bunburrows.Bunburrow)bunburrowID;
-          return false;
-        }
+        return (Bunburrow)bunburrowID;
       }
-      return true;
+      return __result;
     }
   }
 
   [HarmonyPatch(typeof(BunburrowExtension), "ToBunburrowName")]
   internal class ToBunburrowNamePatch
   {
-    private static bool Prefix(Bunburrows.Bunburrow bunburrow, ref string __result)
-    {
-      if (BunburrowManager.IsInitialized)
-      {
-        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.Name;
-        return (__result == null);
+    private static string Postfix(string __result, Bunburrow bunburrow)
+		{
+      if (bunburrow.IsCustomBunburrow())
+			{
+        return BunburrowManager.Bunburrows.First(bb => bb.ID == (int)bunburrow).Name;
       }
-      return true;
-    }
+      return __result;
+		}
   }
 
   [HarmonyPatch(typeof(BunburrowExtension), "ToComparisonIndex")]
   internal class ToComparisonIndexPatch
   {
-    private static bool Prefix(Bunburrows.Bunburrow bunburrow, ref int __result)
+    private static int Postfix(int __result, Bunburrow bunburrow)
     {
-      if (BunburrowManager.IsInitialized)
+      if (bunburrow.IsCustomBunburrow())
       {
-        var result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ComparisonIndex;
-        if (result.HasValue)
-        {
-          __result = result.Value;
-          return false;
-        }
+        return BunburrowManager.Bunburrows.First(bb => bb.ID == (int)bunburrow).ComparisonIndex;
       }
-      return true;
+      return __result;
     }
   }
 
   [HarmonyPatch(typeof(BunburrowExtension), "ToIndicator")]
   internal class ToIndicatorPatch
   {
-    private static bool Prefix(Bunburrows.Bunburrow bunburrow, ref string __result)
+    private static string Postfix(string __result, Bunburrow bunburrow)
     {
-      if (BunburrowManager.IsInitialized)
+      if (bunburrow.IsCustomBunburrow())
       {
-        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.Indicator;
-        return (__result == null);
+        return BunburrowManager.Bunburrows.First(bb => bb.ID == (int)bunburrow).Indicator;
       }
-      return true;
+      return __result;
     }
   }
 
@@ -102,22 +76,24 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   [HarmonyPatch(typeof(BunburrowExtension), "IsNonVoidBunburrow")]
   internal class IsNonVoidBunburrowPatch
   {
-    private static bool Prefix(Bunburrows.Bunburrow bunburrow, ref bool __result)
+    private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
-      // redirect to the other function, which needs no extending
-      __result = !BunburrowExtension.IsVoidBunburrow(bunburrow);
-      return false;
+      if (bunburrow.IsCustomBunburrow())
+      {
+        return !bunburrow.IsVoidBunburrow();
+      }
+      return __result;
     }
   }
 
   [HarmonyPatch(typeof(BunburrowExtension), "IsVoidBunburrow")]
   internal class IsVoidBunburrowPatch
   {
-    private static bool Postfix(bool __result, Bunburrows.Bunburrow bunburrow)
+    private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
       // redirect to the other function, which needs no extending
-      if (bunburrow.IsCustomBunburrow() && BunburrowManager.IsInitialized)
-        return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.IsVoid ?? __result;
+      if (bunburrow.IsCustomBunburrow())
+        return BunburrowManager.Bunburrows.First(bb => bb.ID == (int)bunburrow).IsVoid;
       return __result;
     }
   }
