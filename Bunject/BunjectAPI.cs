@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Bunburrows;
 using Bunject.Internal;
 using HarmonyLib;
 using System;
@@ -32,16 +33,20 @@ namespace Bunject
       Instance.bunjectors.Add(bunjector);
     }
 
-    public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
+    public static int RegisterBurrow(string name, string indicator, string style, bool isVoid = false)
     {
-      return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
+      return BunburrowManager.RegisterBurrow(name, indicator, style, isVoid);
     }
 
-		public static void RegisterElevator(string indicator, int depth)
+    public static void RegisterElevator(string indicator, int depth)
     {
       ModElevatorController.Instance.RegisterElevator(indicator, depth);
     }
 
+    public static BunburrowStyle ResolveStyle(string style)
+    {
+      return BunburrowManager.ResolveStyle(style);
+    }
     private List<IBunjector> bunjectors;
     private BunjectAPI()
     {

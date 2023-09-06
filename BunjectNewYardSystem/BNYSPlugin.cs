@@ -60,21 +60,21 @@ namespace Bunject.NewYardSystem
       if (CustomWorlds.Count > 0)
       {
         Logger.LogInfo("Initial Load - Registering Cached Burrows!");
-
+        var burrows = CustomWorlds.SelectMany(cw => cw.Burrows);
         foreach (var cachedBurrow in cache.CustomBurrows)
         {
-          var burrowModel = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == cachedBurrow.Name);
+          var burrowModel = burrows.FirstOrDefault(b => b.Name == cachedBurrow.Name);
           if (burrowModel != null)
           {
             Logger.LogInfo($"Cached Burrow : {burrowModel.Name} found!");
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
-            burrowModel.ID = BunjectAPI.RegisterBurrow(burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
+            burrowModel.ID = BunjectAPI.RegisterBurrow(burrowModel.Name, burrowModel.Indicator, burrowModel.Style ,burrowModel.IsVoid);
           }
           else
           {
             Logger.LogInfo($"Cached Burrow : {cachedBurrow.Name} NOT found!");
             // assume levelpack was removed... register it for save file's sake
-            BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator, false);
+            BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator, null, false);
           }
         }
 
@@ -86,7 +86,7 @@ namespace Bunject.NewYardSystem
           if (cachedBurrow == null)
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} registered!");
-            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
+            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.Style, burrow.IsVoid);
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
@@ -299,35 +299,6 @@ namespace Bunject.NewYardSystem
       return levelsList;
     }
 
-    private BunburrowStyle ResolveStyle(string style)
-    {
-      switch (style)
-      {
-        case "Aquatic":
-        case "Sunken":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
-        case "Hay":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Hay];
-        case "Forgotten":
-        case "Purple":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Purple];
-        case "Spooky":
-        case "Ghostly":
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Ghostly];
-        case "Void":
-          return AssetsManager.BunburrowsListOfStyles.VoidB;
-        case "Temple":
-          return AssetsManager.BunburrowsListOfStyles.Temple;
-        case "Hell":
-          return AssetsManager.BunburrowsListOfStyles.Hell;
-        case "HellTemple":
-          return AssetsManager.BunburrowsListOfStyles.HellTemple;
-        case "Pink":
-        default:
-          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
-      }
-    }
-
     private void LinkLevelLists(List<Burrow> burrows)
     {
       foreach (var burrow in burrows)
@@ -439,7 +410,7 @@ namespace Bunject.NewYardSystem
       level.Field("dialogues").SetValue(new List<DialogueObject>());
       level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
 
-      var targetStyle = ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
+      var targetStyle = BunjectAPI.ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
       level.Field("bunburrowStyle").SetValue(targetStyle);
       level.Field("content").SetValue(content);
       level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));

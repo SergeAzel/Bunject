@@ -88,6 +88,7 @@
     <Compile Include="Patches\BunburrowSignControllerPatches.cs" />
     <Compile Include="Patches\BunniesReleaseAnimatorPatches.cs" />
     <Compile Include="Patches\ChoiceSelectorPatches.cs" />
+    <Compile Include="Patches\Class1.cs" />
     <Compile Include="Patches\GameManagerPatches.cs" />
     <Compile Include="Patches\GeneralProgressionPatches.cs" />
     <Compile Include="Patches\LevelBuilderPatches.cs" />

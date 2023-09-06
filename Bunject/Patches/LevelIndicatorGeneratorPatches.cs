@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.Patches.LevelIndicatorGeneratorPatches
 {
@@ -39,6 +40,27 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
       if (levelIdentity.Bunburrow.IsCustomBunburrow())
       {
         return AssetsManager.LevelsLists[levelIdentity.Bunburrow.ToBunburrowName()][levelIdentity.Depth].BunburrowStyle;
+      }
+      return __result;
+    }
+  }
+
+  [HarmonyPatch(typeof(LevelIndicatorGenerator), nameof(LevelIndicatorGenerator.GetShortLevelIndicatorWithStyle))]
+  internal class GetShortLevelIndicatorWithStylePatch
+  {
+    private static string Postfix(string __result, LevelIdentity levelIdentity)
+    {
+      if (levelIdentity.Bunburrow.IsCustomBunburrow())
+      {
+        string text = ColorUtility.ToHtmlStringRGB(BunburrowManager.ResolveStyle(BunburrowManager.Bunburrows.First(x => x.ID == (int)levelIdentity.Bunburrow).Style).SkyboxColor);
+        string text2 = ColorUtility.ToHtmlStringRGB(LevelIndicatorGenerator.GetLevelBunburrowStyle(levelIdentity).SkyboxColor);
+        return string.Format("<color=#{0}>{1}-</color><color=#{2}>{3}</color>", new object[]
+        {
+        text,
+        levelIdentity.Bunburrow.ToIndicator(),
+        text2,
+        levelIdentity.Depth
+        });
       }
       return __result;
     }

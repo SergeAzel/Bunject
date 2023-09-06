@@ -25,7 +25,7 @@ namespace Bunject.Internal
 
     public static int CustomBunburrowThreshold => 50;
 
-    internal static int RegisterBurrow(string name, string indicator, bool isVoid = false)
+    internal static int RegisterBurrow(string name, string indicator, string style, bool isVoid = false)
     {
       if (Bunburrows.Any(bb => bb.Name == name))
         throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
@@ -42,11 +42,42 @@ namespace Bunject.Internal
         ComparisonIndex = id,
         IsCustom = true,
         Indicator = indicator,
+        // we can now hijack AssetsManager.BunburrowsListOfStyles for burrow coloring
+        Style = style,
         IsVoid = isVoid
       };
       instance.bunburrows.Add(bunburrow);
 
       return id;
+    }
+
+    public static BunburrowStyle ResolveStyle(string style)
+    {
+      switch (style)
+      {
+        case "Aquatic":
+        case "Sunken":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
+        case "Hay":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Hay];
+        case "Forgotten":
+        case "Purple":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Purple];
+        case "Spooky":
+        case "Ghostly":
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Ghostly];
+        case "Void":
+          return AssetsManager.BunburrowsListOfStyles.VoidB;
+        case "Temple":
+          return AssetsManager.BunburrowsListOfStyles.Temple;
+        case "Hell":
+          return AssetsManager.BunburrowsListOfStyles.Hell;
+        case "HellTemple":
+          return AssetsManager.BunburrowsListOfStyles.HellTemple;
+        case "Pink":
+        default:
+          return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
+      }
     }
 
     private BunburrowManager()

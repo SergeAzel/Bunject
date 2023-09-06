@@ -17,7 +17,7 @@ namespace Bunject.Patches.BunburrowSignControllerPatches
     {
       var b = __instance.Bunburrow;
       if (!b.IsCustomBunburrow() || __instance.Bunburrow.IsVoidBunburrow() || AssetsManager.LevelsLists[b.ToBunburrowName()].Length <= 0) return;
-      BunburrowStyle bunburrowStyle = AssetsManager.LevelsLists[b.ToBunburrowName()][1].BunburrowStyle;
+      BunburrowStyle bunburrowStyle = BunburrowManager.ResolveStyle(BunburrowManager.Bunburrows.First(x => x.ID == (int)b).Style);
       var @this = Traverse.Create(__instance);
       @this.Field<SpriteRenderer>("progressFirstDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
       @this.Field<SpriteRenderer>("progressSecondDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;

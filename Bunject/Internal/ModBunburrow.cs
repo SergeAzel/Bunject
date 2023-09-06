@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bunburrows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace Bunject.Internal
     public string Name { get; set; }
     public string Indicator { get; set; }
     public bool IsCustom { get; set; }
+    public string Style { get; set; }
     public bool IsVoid { get; set; }
   }
 }
