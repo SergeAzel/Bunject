@@ -374,7 +374,13 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e);
       }
 
-      if (levelConfig == null)
+      GenerateCustomLevelObject(levelConfig, content, defaultStyle, burrowName, depth);
+
+      return levelConfig;
+    }
+    private void GenerateCustomLevelObject(LevelMetadata levelConfig, string content, string defaultStyle, string burrowName, int depth)
+    {
+      if (levelConfig is null)
       {
         Logger.LogError($"{burrowName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
 
@@ -389,30 +395,23 @@ namespace Bunject.NewYardSystem
         };
       }
 
-      GenerateCustomLevelObject(levelConfig, content, defaultStyle, burrowName, depth);
-
-      return levelConfig;
-    }
-    private void GenerateCustomLevelObject(LevelMetadata levelConfig, string content, string defaultStyle, string burrowName, int depth)
-    {
       var resultLevel = ScriptableObject.CreateInstance<CustomLevelObject>();
       resultLevel.name = $"Level {burrowName} - {levelConfig.Name}";
       var level = Traverse.Create(resultLevel);
-
-      // Prepend name with space -- hack
-      level.Field("customNameKey").SetValue(" " + (levelConfig?.Name ?? "Unnamed Level"));
-
       level.Field("dialogues").SetValue(new List<DialogueObject>());
       level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
-
-      var targetStyle = StyleFromString(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
-      level.Field("bunburrowStyle").SetValue(targetStyle); 
-
       level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
-      level.Field("numberOfTraps").SetValue(levelConfig?.Tools?.Traps);
-      level.Field("numberOfPickaxes").SetValue(levelConfig?.Tools?.Pickaxes);
-      level.Field("numberOfCarrots").SetValue(levelConfig?.Tools?.Carrots);
-      level.Field("numberOfShovels").SetValue(levelConfig?.Tools?.Shovels);
+
+        // Prepend name with space -- hack
+      level.Field("customNameKey").SetValue(" " + levelConfig.Name);
+      level.Field("bunburrowStyle").SetValue(StyleFromString(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style));
+      if (levelConfig.Tools is LevelTools tools)
+      {
+        level.Field("numberOfTraps").SetValue(tools.Traps);
+        level.Field("numberOfPickaxes").SetValue(tools.Pickaxes);
+        level.Field("numberOfCarrots").SetValue(tools.Carrots);
+        level.Field("numberOfShovels").SetValue(tools.Shovels);
+      }
       level.Field("isTemple").SetValue(levelConfig.IsTemple);
       level.Field("isHell").SetValue(levelConfig.IsHell);
 
