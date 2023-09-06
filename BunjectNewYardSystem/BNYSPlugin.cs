@@ -404,7 +404,7 @@ namespace Bunject.NewYardSystem
 
         // Prepend name with space -- hack
       level.Field("customNameKey").SetValue(" " + levelConfig.Name);
-      level.Field("bunburrowStyle").SetValue(StyleFromString(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style));
+      level.Field("bunburrowStyle").SetValue(ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style));
       if (levelConfig.Tools is LevelTools tools)
       {
         level.Field("numberOfTraps").SetValue(tools.Traps);
@@ -432,7 +432,7 @@ namespace Bunject.NewYardSystem
 
       levelConfig.Level = resultLevel;
     }
-    public static BunburrowStyle StyleFromString(string style)
+    public static BunburrowStyle ResolveStyle(string style)
     {
       switch (style)
       {
