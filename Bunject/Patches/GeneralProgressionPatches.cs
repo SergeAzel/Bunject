@@ -109,11 +109,11 @@ namespace Bunject.Patches.GeneralProgressionPatches
     public static void Postfix(GeneralProgression __instance)
     {
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
-      if (ElevatorManager.ElevatorUnlock(identity, out var save))
+      if (ElevatorManager.ElevatorUnlock(identity, out var elevatorData))
 			{
-        if (!__instance.UnlockedElevators.ContainsEquatable(save))
+        if (!__instance.UnlockedElevators.ContainsEquatable(elevatorData))
         {
-          Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(save);
+          Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(elevatorData);
         }
       }
     }

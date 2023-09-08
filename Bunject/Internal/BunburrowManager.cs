@@ -49,39 +49,15 @@ namespace Bunject.Internal
       return id;
     }
 
-    // [Done]
-    // having 3 methods might be a little excessive
-    // (considering the ID one should be more than sufficient cause RegisterBurrow returns ID)
-    // consider removing Indicator variant but *maybe* not name and refactor both methods to "RegisterElevator"
-    internal static void RegisterElevator(int id, int depth)
+    internal static void RegisterElevator(int bunburrowID, int depth)
     {
-      var burrow = Bunburrows.FirstOrDefault(x => x.ID == id);
+      var burrow = Bunburrows.FirstOrDefault(x => x.ID == bunburrowID);
       if (burrow is null)
-        throw new ArgumentException($"Bunburrow id {id} does not exist!  Please use an existing id.");
+        throw new ArgumentException($"Bunburrow id {bunburrowID} does not exist!  Please use an existing id.");
       if (burrow.Elevators.Contains(depth))
         throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
       burrow.Elevators.Add(depth);
     }
-    internal static void RegisterElevator(string name, int depth)
-    {
-      var burrow = Bunburrows.FirstOrDefault(x => x.Name == name);
-      if (burrow is null)
-        throw new ArgumentException($"Bunburrow name {name} does not exist!  Please use an existing id.");
-      if (burrow.Elevators.Contains(depth))
-        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
-      burrow.Elevators.Add(depth);
-    }
-    /*
-    internal static void RegisterElevatorByBurrowIndicator(string indicator, int depth)
-    {
-      var burrow = Bunburrows.FirstOrDefault(x => x.Indicator == indicator);
-      if (burrow is null)
-        throw new ArgumentException($"Bunburrow indicator {indicator} does not exist!  Please use an existing id.");
-      if (burrow.Elevators.Contains(depth))
-        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
-      burrow.Elevators.Add(depth);
-    }
-    */
     private BunburrowManager()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>

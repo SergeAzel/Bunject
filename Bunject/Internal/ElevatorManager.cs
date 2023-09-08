@@ -25,41 +25,41 @@ namespace Bunject.Internal
         return instance.elevatorCache;
       }
     }
-    private static bool IsValidSave(string save)
+    private static bool IsValidSave(string elevatorData)
     {
-      return !string.IsNullOrWhiteSpace(save);
+      return !string.IsNullOrWhiteSpace(elevatorData);
     }
-    public static bool IsElevatorUnlock(LevelIdentity level, out string save)
+    public static bool IsElevatorUnlock(LevelIdentity level, out string elevatorData)
 		{
-			return Elevators.TryGetValue(level, out save) && IsValidSave(save);
+			return Elevators.TryGetValue(level, out elevatorData) && IsValidSave(elevatorData);
 		}
-		public static bool IsElevatorUnlock(string save, out LevelIdentity level)
+		public static bool IsElevatorUnlock(string elevatorData, out LevelIdentity level)
     {
-      if (IsValidSave(save) && Elevators.Values.Contains(save))
+      if (IsValidSave(elevatorData) && Elevators.Values.Contains(elevatorData))
 			{
-        level = Elevators.Keys.First(l => Elevators[l] == save);
+        level = Elevators.Keys.First(l => Elevators[l] == elevatorData);
         return true;
 			}
       level = new LevelIdentity();
       return false;
     }
-    public static bool UnlockElevator(Bunburrow burrow, int depth, out string save)
+    public static bool UnlockElevator(Bunburrow burrow, int depth, out string elevatorData)
     {
-      return ElevatorUnlock(new LevelIdentity(burrow, depth), out save);
+      return ElevatorUnlock(new LevelIdentity(burrow, depth), out elevatorData);
     }
-    public static bool ElevatorUnlock(LevelIdentity level, out string save)
+    public static bool ElevatorUnlock(LevelIdentity level, out string elevatorData)
 		{
-			if (IsElevatorUnlock(level, out save))
+			if (IsElevatorUnlock(level, out elevatorData))
         return false;
 			
 			if (!level.Bunburrow.IsCustomBunburrow() || !BunburrowManager.Bunburrows.Any(burrow => burrow.ID == (int)level.Bunburrow && burrow.Elevators.Contains(level.Depth)))
 			{
-				save = "";
-				instance.elevatorCache.Add(level, save);
+				elevatorData = "";
+				instance.elevatorCache.Add(level, elevatorData);
 				return false;
 			}
-			save = JsonConvert.SerializeObject(level.ProduceSaveData());
-			instance.elevatorCache.Add(level, save);
+			elevatorData = JsonConvert.SerializeObject(level.ProduceSaveData());
+			instance.elevatorCache.Add(level, elevatorData);
 			return true;
 		}
 		public static System.Collections.IEnumerator ExtractElevatorProgression()
