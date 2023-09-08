@@ -31,7 +31,7 @@ namespace Bunject.Internal
         throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
 
       if (Bunburrows.Any(bb => bb.Indicator == indicator))
-        throw new ArgumentException($"Bunburrow indicator {name} is already in use!  Please use a unique indicator.");
+        throw new ArgumentException($"Bunburrow indicator {indicator} is already in use!  Please use a unique indicator.");
 
       var id = ++instance.maxID;
 
@@ -49,6 +49,15 @@ namespace Bunject.Internal
       return id;
     }
 
+    internal static void RegisterElevator(int bunburrowID, int depth)
+    {
+      var burrow = Bunburrows.FirstOrDefault(x => x.ID == bunburrowID);
+      if (burrow is null)
+        throw new ArgumentException($"Bunburrow id {bunburrowID} does not exist!  Please use an existing id.");
+      if (burrow.Elevators.Contains(depth))
+        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
+      burrow.Elevators.Add(depth);
+    }
     private BunburrowManager()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>

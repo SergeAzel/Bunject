@@ -4,7 +4,9 @@ using Bunject.Internal;
 using Bunject.Patches.BunburrowExtensionPatches;
 using Characters.Bunny.Data;
 using HarmonyLib;
+using Levels;
 using Misc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,11 +109,11 @@ namespace Bunject.Patches.GeneralProgressionPatches
     public static void Postfix(GeneralProgression __instance)
     {
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
-      if (ModElevatorController.Instance.TryGetElevator(identity, out var elevator))
-      {
-        if (!string.IsNullOrWhiteSpace(elevator) && !__instance.UnlockedElevators.ContainsEquatable(elevator))
+      if (ElevatorManager.ElevatorUnlock(identity, out var elevatorData))
+			{
+        if (!__instance.UnlockedElevators.ContainsEquatable(elevatorData))
         {
-          Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(elevator);
+          Traverse.Create(__instance).Field<List<string>>("unlockedElevators").Value.Add(elevatorData);
         }
       }
     }

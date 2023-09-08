@@ -69,6 +69,8 @@ namespace Bunject.NewYardSystem
             Logger.LogInfo($"Cached Burrow : {burrowModel.Name} found!");
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
             burrowModel.ID = BunjectAPI.RegisterBurrow(burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
+            foreach (var depth in burrowModel.ElevatorDepths)
+              BunjectAPI.RegisterElevator(burrowModel.ID, depth);
           }
           else
           {
@@ -87,6 +89,8 @@ namespace Bunject.NewYardSystem
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} registered!");
             burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
+            foreach (var depth in burrow.ElevatorDepths)
+              BunjectAPI.RegisterElevator(burrow.ID, depth);
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
@@ -204,14 +208,6 @@ namespace Bunject.NewYardSystem
           CustomWorld world = LoadWorldConfig(configFile);
           if (world != null)
           {
-            if (world.Burrows.Any(x => x.ElevatorDepths.Any()))
-            {
-              foreach (var burrow in world.Burrows)
-              {
-                foreach (var depth in burrow.ElevatorDepths)
-                  BunjectAPI.RegisterElevator(burrow.Indicator, depth);
-              }
-            }
             if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
               continue;
 

@@ -37,9 +37,9 @@ namespace Bunject
       return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
     }
 
-		public static void RegisterElevator(string indicator, int depth)
+    public static void RegisterElevator(int bunburrowID, int depth)
     {
-      ModElevatorController.Instance.RegisterElevator(indicator, depth);
+      BunburrowManager.RegisterElevator(bunburrowID, depth);
     }
 
     private List<IBunjector> bunjectors;
