@@ -143,7 +143,7 @@ namespace Bunject.NewYardSystem
           var resultLevel = levelsTraverse.Value[depth - 1];
           if (resultLevel == null)
           {
-            var levelConfig = LoadLevelFromFile(burrow.Directory, burrow.Name, depth, burrow.Style);
+            var levelConfig = LoadLevelFromFile(burrow.Directory, burrow.Name, depth, burrow.Style, burrow.HasSurfaceEntry && depth == 1);
             resultLevel = levelConfig.Level;
 
             if (!world.LiveReloading && !levelConfig.LiveReloading)
@@ -204,6 +204,9 @@ namespace Bunject.NewYardSystem
           CustomWorld world = LoadWorldConfig(configFile);
           if (world != null)
           {
+            if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
+              continue;
+
             if (world.Burrows.Any(x => x.ElevatorDepths.Any()))
             {
               foreach (var burrow in world.Burrows)
@@ -212,8 +215,6 @@ namespace Bunject.NewYardSystem
                   BunjectAPI.RegisterElevator(burrow.Indicator, depth);
               }
             }
-            if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
-              continue;
 
             foreach (var burrow in world.Burrows)
             {
@@ -358,7 +359,7 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private LevelMetadata LoadLevelFromFile(string directory, string burrowName, int depth, string defaultStyle)
+    private LevelMetadata LoadLevelFromFile(string directory, string burrowName, int depth, string defaultStyle, bool requireStartTile)
     {
       var levelContentPath = Path.Combine(directory, $"{depth}.level");
       var levelConfigPath = Path.Combine(directory, $"{depth}.json");
@@ -419,6 +420,13 @@ namespace Bunject.NewYardSystem
       if (!ContentValidator.ValidateContentTiles(content))
       {
         Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
+
+        content = DefaultLevel.Content;
+      }
+
+      if (requireStartTile && !ContentValidator.HasStartTile(content))
+      {
+        Logger.LogError($"{burrowName} - {depth}: Burrow has a surface entry, but no surface entry could be found on the top floor.");
 
         content = DefaultLevel.Content;
       }

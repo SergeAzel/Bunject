@@ -38,5 +38,10 @@ namespace Bunject.NewYardSystem.Levels
 
       return valid;
     }
+
+    public static bool HasStartTile(string content)
+    {
+      return content.Split(Separators, StringSplitOptions.RemoveEmptyEntries).Any(t => t == "S" || t.StartsWith("S{"));
+    }
   }
 }

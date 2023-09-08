@@ -27,11 +27,17 @@ namespace Bunject.Internal
 
     internal static int RegisterBurrow(string name, string indicator, bool isVoid = false)
     {
-      if (Bunburrows.Any(bb => bb.Name == name))
-        throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
+      var duplicateBurrow = Bunburrows.FirstOrDefault(bb => bb.Name == name);
+      if (duplicateBurrow != null)
+      {
+        throw new ArgumentException($"Registering {name} ({indicator}) - Found registered bunburrow named {duplicateBurrow.Name} already (indicator {duplicateBurrow.Indicator})!  Name is already in use!  Please use a unique name.");
+      }
 
-      if (Bunburrows.Any(bb => bb.Indicator == indicator))
-        throw new ArgumentException($"Bunburrow indicator {name} is already in use!  Please use a unique indicator.");
+      duplicateBurrow = Bunburrows.FirstOrDefault(bb => bb.Indicator == indicator);
+      if (duplicateBurrow != null)
+      {
+        throw new ArgumentException($"Registering {name} ({indicator}) - Found registered bunburrow with indicator {duplicateBurrow.Indicator} already (named {duplicateBurrow.Name})!  Indicator is already in use!  Please use a unique indicator.");
+      }
 
       var id = ++instance.maxID;
 
