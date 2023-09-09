@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Internal;
+using Characters.Bunny.Data;
 using Computer;
 using HarmonyLib;
 using Levels;
@@ -47,25 +48,33 @@ namespace Bunject.Computer.Patches.ComputerMapDrawerPatches
 		{
 			if (HandleOpenPatch.FocussedBurrow.IsCustomBunburrow())
 			{
-				var @this = Traverse.Create(__instance); 
-				LevelIdentity? identity = @this.Field<LevelIdentity?>("currentlyHoveredLevel").Value;
-				if (identity.HasValue)
+				var @this = Traverse.Create(__instance);
+				Bunburrow burrow;
+				int depth;
+				if (@this.Field<LevelIdentity?>("currentlyHoveredLevel").Value is LevelIdentity level)
 				{
-					var current = new ComputerMapCellController[1];
-					AccessTools.Method(typeof(ComputerMapDrawer), "TryGetCellOnCenter").Invoke(__instance, current);
-					if (identity.Value.Bunburrow != HandleOpenPatch.FocussedBurrow || HandleOpenPatch.FocussedController != current[0].LevelCellsController)
+					burrow = level.Bunburrow;
+					depth = level.Depth;
+				}
+				else if (@this.Field<BunnyIdentity?>("currentlyHoveredBunny").Value is BunnyIdentity bunny)
+				{
+					burrow = bunny.Bunburrow;
+					depth = bunny.InitialDepth;
+				}
+				else
+					return;
+				var current = new ComputerMapCellController[1];
+				AccessTools.Method(typeof(ComputerMapDrawer), "TryGetCellOnCenter").Invoke(__instance, current);
+				if (burrow != HandleOpenPatch.FocussedBurrow || HandleOpenPatch.FocussedController != current[0].LevelCellsController)
+				{
+					if (burrow != HandleOpenPatch.FocussedBurrow)
 					{
-						//@this.Method("TryGetCellOnCenter", current).GetValue();
-						if (identity.Value.Bunburrow != HandleOpenPatch.FocussedBurrow)
-						{
-							HandleOpenPatch.FocussedBurrow = identity.Value.Bunburrow;
-							DrawMapAtDepthPatch.Postfix(__instance, identity.Value.Depth);
-							//@this.Method("DrawMapAtDepth", identity.Value.Depth).GetValue();
-						}
-						var this_cellHolderTransform = @this.Field<RectTransform>("cellsHolderTransform").Value;
-						var this_levelCellsControllers = @this.Field<BunburrowsCompleteListOf<ComputerMapLevelCellsController>>("levelCellsControllers").Value;
-						this_cellHolderTransform.anchoredPosition -= -current[0].LevelCellsController.CenterPosition + this_levelCellsControllers[Bunburrow.Hay].CenterPosition;
+						HandleOpenPatch.FocussedBurrow = burrow;
+						DrawMapAtDepthPatch.Postfix(__instance, depth);
 					}
+					var this_cellHolderTransform = @this.Field<RectTransform>("cellsHolderTransform").Value;
+					var this_levelCellsControllers = @this.Field<BunburrowsCompleteListOf<ComputerMapLevelCellsController>>("levelCellsControllers").Value;
+					this_cellHolderTransform.anchoredPosition -= -current[0].LevelCellsController.CenterPosition + this_levelCellsControllers[Bunburrow.Hay].CenterPosition;
 				}
 			}
 		}
