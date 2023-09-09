@@ -73,139 +73,29 @@ namespace Bunject.Computer.Patches.ComputerMapDrawerPatches
 	[HarmonyPatch(typeof(ComputerMapDrawer), "DrawMapAtDepth")]
 	internal class DrawMapAtDepthPatch
 	{
-		private static readonly int[] ordering = new int[] { 0, 2, 4, 6, 1, 3, 5, 7 };
-		private static Dictionary<Bunburrow, LevelsList> ConsistentMap(Bunburrow burrow)
+		private static LevelsList GetBurrow(LevelsList burrow1, Direction dirFrom1, LevelsList burrow2, Direction dirFrom2)
+			=> burrow1 != null && burrow2 != null
+			? burrow1.AdjacentBunburrows[dirFrom1] == burrow2.AdjacentBunburrows[dirFrom2] ? burrow1.AdjacentBunburrows[dirFrom1] : null
+			: burrow1?.AdjacentBunburrows[dirFrom1] ?? burrow2?.AdjacentBunburrows[dirFrom2];
+		private static Dictionary<Bunburrow, LevelsList> GenerateMap(Bunburrow burrow)
 		{
 			var res = new Dictionary<Bunburrow, LevelsList>();
-			var center = AssetsManager.LevelsLists[burrow.ToBunburrowName()];
-			res[Bunburrow.Hay] = center;
-			var left = center.AdjacentBunburrows[Direction.Left];
-			res[Bunburrow.Pink] =left;
-			var up = center.AdjacentBunburrows[Direction.Up];
-			res[Bunburrow.Aquatic] = up;
-			var down = center.AdjacentBunburrows[Direction.Down];
-			res[Bunburrow.Ghostly]= down;
-			var right = center.AdjacentBunburrows[Direction.Right];
-			res[Bunburrow.Purple] = right;
-
-			if (left == null)
-				res[Bunburrow.NWVoid] = up?.AdjacentBunburrows[Direction.Left];
-			else if (up == null)
-				res[Bunburrow.NWVoid] = left.AdjacentBunburrows[Direction.Up];
-			else if (left.AdjacentBunburrows[Direction.Up] == up.AdjacentBunburrows[Direction.Left])
-				res[Bunburrow.NWVoid] = left.AdjacentBunburrows[Direction.Up];
-			else
-				res[Bunburrow.NWVoid] = null;
-
-			if (up == null)
-				res[Bunburrow.NEVoid] = right?.AdjacentBunburrows[Direction.Up];
-			else if (right == null)
-				res[Bunburrow.NEVoid] = up.AdjacentBunburrows[Direction.Right];
-			else if (up.AdjacentBunburrows[Direction.Right] == right.AdjacentBunburrows[Direction.Up])
-				res[Bunburrow.NEVoid] = up.AdjacentBunburrows[Direction.Right];
-			else
-				res[Bunburrow.NEVoid] = null;
-
-			if (right == null)
-				res[Bunburrow.SEVoid] = down?.AdjacentBunburrows[Direction.Right];
-			else if (down == null)
-				res[Bunburrow.SEVoid] = right.AdjacentBunburrows[Direction.Down];
-			else if (right.AdjacentBunburrows[Direction.Down] == down.AdjacentBunburrows[Direction.Right])
-				res[Bunburrow.SEVoid] = right.AdjacentBunburrows[Direction.Down];
-			else
-				res[Bunburrow.SEVoid] = null;
-
-			if (down == null)
-				res[Bunburrow.SWVoid] = left?.AdjacentBunburrows[Direction.Down];
-			else if (left == null)
-				res[Bunburrow.SWVoid] = down.AdjacentBunburrows[Direction.Left];
-			else if (down.AdjacentBunburrows[Direction.Left] == left.AdjacentBunburrows[Direction.Down])
-				res[Bunburrow.SWVoid] = down.AdjacentBunburrows[Direction.Left];
-			else
-				res[Bunburrow.SWVoid] = null;
+			var center	= res[Bunburrow.Hay]			= AssetsManager.LevelsLists[burrow.ToBunburrowName()];
+			var left		= res[Bunburrow.Pink]			= center.AdjacentBunburrows[Direction.Left];
+			var up			= res[Bunburrow.Aquatic]	= center.AdjacentBunburrows[Direction.Up];
+			var down		= res[Bunburrow.Ghostly]	= center.AdjacentBunburrows[Direction.Down];
+			var right		= res[Bunburrow.Purple]		= center.AdjacentBunburrows[Direction.Right];
+			res[Bunburrow.NWVoid]									= GetBurrow(left, Direction.Up, up, Direction.Left);
+			res[Bunburrow.NEVoid]									= GetBurrow(up, Direction.Right, right, Direction.Up);
+			res[Bunburrow.SEVoid]									= GetBurrow(right, Direction.Down, down, Direction.Right);
+			res[Bunburrow.SWVoid]									= GetBurrow(down, Direction.Left, left, Direction.Down);
 			return res;
-		}
-		private static Dictionary<Bunburrow, LevelsList> Map(Bunburrow burrow)
-		{
-			var curr = AssetsManager.LevelsLists[burrow.ToBunburrowName()];
-			const int SIZE = 8;
-			var l = new LevelsList[SIZE];
-			/*
-			1 2 3
-			0 X 4
-			7 6 5
-			*/
-			l[0] = curr.AdjacentBunburrows[Direction.Left];
-			l[2] = curr.AdjacentBunburrows[Direction.Up];
-			l[4] = curr.AdjacentBunburrows[Direction.Right];
-			l[6] = curr.AdjacentBunburrows[Direction.Down];
-			bool progress;
-			do
-			{
-				progress = false;
-				foreach (var index in ordering)
-				{
-					if (l[index] == null)
-					{
-						int search_index = (index - 1) % SIZE;
-						int direction = -1;
-						if (l[search_index = ((index - 1) % SIZE)] != null)
-						{
-							direction = (index + (2 - (index % 2))) % SIZE;
-						}
-						else if (l[search_index = ((index + 1) % SIZE)] != null)
-						{
-							direction = (index - (2 - (index % 2))) % SIZE;
-						}
-						else
-							continue;
-						LevelsList searched;
-						switch (direction)
-						{
-							case 0:
-								searched = l[search_index].AdjacentBunburrows[Direction.Left];
-								break;
-							case 2:
-								searched = l[search_index].AdjacentBunburrows[Direction.Up];
-								break;
-							case 4:
-								searched = l[search_index].AdjacentBunburrows[Direction.Right];
-								break;
-							case 6:
-								searched = l[search_index].AdjacentBunburrows[Direction.Down];
-								break;
-							default:
-								searched = null;
-								break;
-						}
-						if (searched != null)
-						{
-							l[index] = searched;
-							progress = true;
-						}
-					}
-				}
-			}
-			while (progress);
-			Dictionary<Bunburrow, LevelsList> dictionary = new Dictionary<Bunburrow, LevelsList>()
-			{
-				{ Bunburrow.Pink , l[0]},
-				{ Bunburrow.Aquatic , l[2]},
-				{ Bunburrow.Hay , curr},
-				{ Bunburrow.Ghostly , l[6]},
-				{ Bunburrow.Purple , l[4]},
-				{ Bunburrow.NWVoid , l[1]},
-				{ Bunburrow.NEVoid , l[3]},
-				{ Bunburrow.SWVoid , l[7]},
-				{ Bunburrow.SEVoid , l[5]},
-			};
-			return dictionary;
 		}
 		public static void Postfix(ComputerMapDrawer __instance, int depth)
 		{
 			if (!HandleOpenPatch.FocussedBurrow.IsCustomBunburrow())
 				return;
-			var map = ConsistentMap(HandleOpenPatch.FocussedBurrow);
+			var map = GenerateMap(HandleOpenPatch.FocussedBurrow);
 			var this_levelCellsControllers = Traverse.Create(__instance).Field<BunburrowsCompleteListOf<ComputerMapLevelCellsController>>("levelCellsControllers").Value;
 			foreach (Bunburrow burrow in BunburrowExtension.GetBunburrowsInMapOrderList())
 			{
