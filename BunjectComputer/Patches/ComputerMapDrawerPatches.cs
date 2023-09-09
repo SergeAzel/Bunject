@@ -59,7 +59,8 @@ namespace Bunject.Computer.Patches.ComputerMapDrawerPatches
 						if (identity.Value.Bunburrow != HandleOpenPatch.FocussedBurrow)
 						{
 							HandleOpenPatch.FocussedBurrow = identity.Value.Bunburrow;
-							@this.Method("DrawMapAtDepth", identity.Value.Depth).GetValue();
+							DrawMapAtDepthPatch.Postfix(__instance, identity.Value.Depth);
+							//@this.Method("DrawMapAtDepth", identity.Value.Depth).GetValue();
 						}
 						var this_cellHolderTransform = @this.Field<RectTransform>("cellsHolderTransform").Value;
 						var this_levelCellsControllers = @this.Field<BunburrowsCompleteListOf<ComputerMapLevelCellsController>>("levelCellsControllers").Value;
@@ -149,13 +150,12 @@ namespace Bunject.Computer.Patches.ComputerMapDrawerPatches
 			};
 			return dictionary;
 		}
-		private static void Postfix(ComputerMapDrawer __instance, int depth)
+		public static void Postfix(ComputerMapDrawer __instance, int depth)
 		{
 			if (!HandleOpenPatch.FocussedBurrow.IsCustomBunburrow())
 				return;
 			var map = Map(HandleOpenPatch.FocussedBurrow);
 			var this_levelCellsControllers = Traverse.Create(__instance).Field<BunburrowsCompleteListOf<ComputerMapLevelCellsController>>("levelCellsControllers").Value;
-
 			foreach (Bunburrow burrow in BunburrowExtension.GetBunburrowsInMapOrderList())
 			{
 				if (map[burrow] != null 
