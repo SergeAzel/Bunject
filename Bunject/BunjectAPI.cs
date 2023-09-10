@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using Bunject.Internal;
+using Bunject.Tiling;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -23,13 +24,20 @@ namespace Bunject
 
     internal static BunjectAPI Instance { get; private set; }
 
-    internal static IBunjector Forward { get; private set; } = new ForwardingBunjector();
+    internal static ForwardingBunjector Forward { get; private set; } = new ForwardingBunjector();
 
     internal static IReadOnlyList<IBunjector> Bunjectors { get => Instance.bunjectors; }
+
+    internal static IReadOnlyList<ITileSource> TileSources { get => Instance.tileSources; }
 
     public static void Register(IBunjector bunjector)
     {
       Instance.bunjectors.Add(bunjector);
+    }
+
+    public static void RegisterTileSource(ITileSource tileSource)
+    {
+      Instance.tileSources.Add(tileSource);
     }
 
     public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
@@ -43,9 +51,11 @@ namespace Bunject
     }
 
     private List<IBunjector> bunjectors;
+    private List<ITileSource> tileSources;
     private BunjectAPI()
     {
       bunjectors = new List<IBunjector>();
+      tileSources = new List<ITileSource>();
     }
   }
 }

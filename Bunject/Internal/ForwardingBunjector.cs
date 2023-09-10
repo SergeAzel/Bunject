@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Tiling;
 using HarmonyLib;
 using Levels;
 using System;
@@ -11,8 +12,9 @@ using UnityEngine;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjector
+  internal class ForwardingBunjector : IBunjector, ITileSource
   {
+    #region IBunjector Implementation
     public void OnAssetsLoaded()
     {
       foreach (var bunjector in BunjectAPI.Bunjectors)
@@ -78,41 +80,18 @@ namespace Bunject.Internal
       }
       return result;
     }
+    #endregion
 
-    public bool ValidateBaseTile(LevelObject levelObject, string tile)
+    #region ITileSource Implementation
+    public bool SupportsTile(string tile)
     {
-      return BunjectAPI.Bunjectors.All(x => x.ValidateBaseTile(levelObject, tile));
+      return BunjectAPI.TileSources.Any(ts => ts.SupportsTile(tile));
     }
 
-    public bool ValidateModTile(LevelObject levelObject, string tile)
+    public Tile LoadTile(LevelObject levelObject, string tile, Vector2Int position)
     {
-      return BunjectAPI.Bunjectors.Any(x => x.ValidateModTile(levelObject, tile));
+      return BunjectAPI.TileSources.FirstOrDefault(ts => ts.SupportsTile(tile))?.LoadTile(levelObject, tile, position);
     }
-
-    public TileLevelData LoadTile(LevelObject levelObject, string tile, Vector2Int position, 
-      out bool isBunnyTile, out bool isStartTile, out bool isHoleTile, out bool hasStartTrap, out bool hasStartCarrot)
-		{
-			isBunnyTile = false;
-			isStartTile = false;
-			isHoleTile = false;
-			hasStartTrap = false;
-			hasStartCarrot = false;
-			TileLevelData result = null;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        result = bunjector.LoadTile(levelObject, tile, position, out isBunnyTile, out isStartTile, out isHoleTile, out hasStartTrap, out hasStartCarrot);
-        if (result != null)
-          break;
-      }
-      return result;
-		}
-
-		public void UpdateTileSprite(TileLevelData tile, BunburrowStyle style)
-    {
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        bunjector.UpdateTileSprite(tile, style);
-      }
-    }
+    #endregion
   }
 }

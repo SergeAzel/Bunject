@@ -191,15 +191,6 @@ namespace Bunject.NewYardSystem
 
       return base.RappelFromBurrow(listName, otherwise);
     }
-
-		public override bool ValidateBaseTile(LevelObject levelObject, string tile)
-		{
-      return ContentValidator.ValidateBaseTile(levelObject, tile);
-		}
-		public override bool ValidateModTile(LevelObject levelObject, string tile)
-    {
-      return ContentValidator.ValidateModTile(levelObject, tile);
-    }
 		//IBunjector Members End
 
 		public IEnumerable<CustomWorld> LoadCustomWorlds()

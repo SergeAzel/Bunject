@@ -22,6 +22,7 @@ namespace Bunject.Patches.LevelLoaderPatches
       "\r",
       "\n"
     };
+
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
     {
       var regex_IsMatch = AccessTools.Method(typeof(Regex), nameof(Regex.IsMatch), new Type[] { typeof(string) });
@@ -32,18 +33,13 @@ namespace Bunject.Patches.LevelLoaderPatches
         {
           if (codes[++i].Branches(out var l) && l is Label elseBlock)
           {
-            Label cond2 = il.DefineLabel();
             Label ifBlock = il.DefineLabel();
             codes.Insert(i + 1, new CodeInstruction(OpCodes.Nop).WithLabels(ifBlock));
             codes.InsertRange(i, new List<CodeInstruction> {
-              new CodeInstruction(OpCodes.Brfalse, cond2),
+              new CodeInstruction(OpCodes.Brtrue, ifBlock),
               new CodeInstruction(OpCodes.Ldarg_0),
               new CodeInstruction(OpCodes.Ldloc, 4),
-              new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LoadLevelPatch), nameof(LoadLevelPatch.ValidateBaseTile))),
-              new CodeInstruction(OpCodes.Brtrue, ifBlock),
-              new CodeInstruction(OpCodes.Ldarg_0).WithLabels(cond2),
-              new CodeInstruction(OpCodes.Ldloc, 4),
-              new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LoadLevelPatch), nameof(LoadLevelPatch.ValidateModTile))),
+              new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LoadLevelPatch), nameof(LoadLevelPatch.CheckIfModSupportsTile))),
             });
             break;
           }
@@ -52,29 +48,9 @@ namespace Bunject.Patches.LevelLoaderPatches
       return codes;
     }
 
-    private static bool ValidateBaseTile(LevelObject levelObject, string tile)
+    private static bool CheckIfModSupportsTile(string tile)
     {
-      return BunjectAPI.Forward.ValidateBaseTile(levelObject, tile);
+      return BunjectAPI.Forward.SupportsTile(tile);
     }
-
-    private static bool ValidateModTile(LevelObject levelObject, string tile)
-    {
-      return BunjectAPI.Forward.ValidateModTile(levelObject, tile);
-    }
-    /*
-    private static bool Prefix(LevelObject levelObject, out List<string> __result)
-    {
-     var contents = levelObject.Content.Split(Separators, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-     foreach (var input in contents)
-     {
-	     if (!overrideRegex.IsMatch(input))
-		     UnityEngine.Debug.LogWarning("Invalid tile string: " + input);
-     }
-
-     __result = contents;
-
-     return false;
-    }*/
   }
 }

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Bunject.Tiling;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,14 @@ namespace Bunject.Patches.TileLevelDataPatches
 	[HarmonyPatch(typeof(TileLevelData), nameof(TileLevelData.UpdateTileSprite))]
 	internal class UpdateTileSpritePatch
 	{
-		private static void Postfix(TileLevelData __instance)
+		private static bool Prefix(TileLevelData __instance)
 		{
-			BunjectAPI.Forward.UpdateTileSprite(__instance, GameManager.CurrentLevel.BaseData.BunburrowStyle);
+			if (__instance is IUpdateTileSprite modTile)
+			{
+				modTile.UpdateTileSprite();
+				return false;
+			}
+			return true;
 		}
 	}
 }

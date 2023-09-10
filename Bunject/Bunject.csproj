@@ -81,6 +81,7 @@
     <Compile Include="Internal\ModElevatorController.cs" />
     <Compile Include="Internal\OnLoadLevel.cs" />
     <Compile Include="Internal\SaveFileModUtility.cs" />
+    <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />
     <Compile Include="BunjectAPI.cs" />
     <Compile Include="Patches\BunburrowEntryTilePatches.cs" />
@@ -102,6 +103,9 @@
     <Compile Include="Patches\SettingsManagerPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpecialLevel.cs" />
+    <Compile Include="Tiling\IUpdateTileSprite.cs" />
+    <Compile Include="Tiling\TileData.cs" />
+    <Compile Include="Tiling\TileSourceBase.cs" />
     <Compile Include="Utility\InjectionDictionary.cs" />
   </ItemGroup>
   <ItemGroup />

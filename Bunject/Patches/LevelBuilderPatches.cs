@@ -15,7 +15,7 @@ using UnityEngine;
 namespace Bunject.Patches.LevelBuilderPatches
 {
   [HarmonyPatch]
-  internal class BuildNewLevelPatch
+  internal class BuildNewLevelPatch_SupportMoreSurfaceEntries
   {
     static MethodInfo TargetMethod()
     {
@@ -28,7 +28,7 @@ namespace Bunject.Patches.LevelBuilderPatches
       // Not just the first character
       MethodInfo startsWith = typeof(String).GetMethod("StartsWith", new Type[] { typeof(string) });
       MethodInfo get_Chars = typeof(String).GetProperty("Chars").GetGetMethod();
-      MethodInfo char_ToString = typeof(Char).GetMethod("ToString", new Type[] { } );
+      MethodInfo char_ToString = typeof(Char).GetMethod("ToString", new Type[] { });
 
       int detectionStage = 0;
       foreach (var instructionIterate in instructions)
@@ -79,6 +79,7 @@ namespace Bunject.Patches.LevelBuilderPatches
       }
     }
   }
+
   [HarmonyPatch(typeof(LevelBuilder), "BuildNewLevel", argumentTypes: new Type[] { typeof(LevelObject), typeof(BunburrowStyle), typeof(bool) })]
   internal class BuildNewLevelPatch_CustomTiles
   {
@@ -128,21 +129,30 @@ namespace Bunject.Patches.LevelBuilderPatches
           });
           break;
         }
-			}
+      }
       return codes;
     }
-    private static bool TryGetTile(LevelObject levelObject, string tile, Vector3Int position, out TileLevelData tileData, 
+
+    private static bool TryGetTile(LevelObject levelObject, string tile, Vector3Int position, out TileLevelData tileData,
       List<KeyValuePair<TileLevelData, bool>> bunnyTiles, List<TileLevelData> startTiles, List<TileLevelData> holeTiles, ref bool hasStartTrap, ref bool hasStartCarrot)
     {
       bool isBunnyTile;
       bool isStartTile;
       bool isHoleTile;
-			tileData = BunjectAPI.Forward.LoadTile(levelObject, tile, position.ToVector2Int(), 
-        out isBunnyTile, out isStartTile, out isHoleTile, out var trap, out var carrot);
-			if (tileData == null)
-			{
-				return false;
+      var tileMetadata = BunjectAPI.Forward.LoadTile(levelObject, tile, position.ToVector2Int());
+
+      tileData = tileMetadata?.Instance;
+      if (tileData == null)
+      {
+        return false;
       }
+
+      isBunnyTile = tileMetadata.IsBunnyTile;
+      isStartTile = tileMetadata.IsStartTile;
+      isHoleTile = tileMetadata.IsHoleTile;
+      var carrot = tileMetadata.HasStartCarrot;
+      var trap = tileMetadata.HasStartTrap;
+
       if (isBunnyTile)
       {
         bunnyTiles.Add(new KeyValuePair<TileLevelData, bool>(tileData, false));
@@ -152,23 +162,14 @@ namespace Bunject.Patches.LevelBuilderPatches
         startTiles.Add(tileData);
       }
       if (isHoleTile)
-			{
+      {
         holeTiles.Add(tileData);
       }
+
       hasStartTrap |= trap;
       hasStartCarrot |= carrot;
+
       return tileData != null;
-    }
-  }
-  [HarmonyPatch(typeof(LevelBuilder), nameof(LevelBuilder.UpdateTilesGraphics))]
-  internal class UpdateTilesGraphicsPatch
-  {
-    private static void Postfix(BunburrowStyle bunburrowStyle, IReadOnlyList<TileLevelData> tiles)
-    {
-      foreach (var tile in tiles)
-      {
-        BunjectAPI.Forward.UpdateTileSprite(tile, bunburrowStyle);
-      }
     }
   }
 }

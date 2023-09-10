@@ -24,14 +24,5 @@ namespace Bunject
     LevelObject RappelFromBurrow(string listName, LevelObject otherwise);
 
     LevelObject StartLevelTransition(LevelObject original, LevelIdentity identity);
-
-    bool ValidateBaseTile(LevelObject levelObject, string tile);
-
-    bool ValidateModTile(LevelObject levelObject, string tile);
-
-    TileLevelData LoadTile(LevelObject levelObject, string tile, Vector2Int position,
-      out bool isBunnyTile, out bool isStartTile, out bool isHoleTile, out bool hasStartTrap, out bool hasStartCarrot);
-
-    void UpdateTileSprite(TileLevelData tile, BunburrowStyle style);
   }
 }
