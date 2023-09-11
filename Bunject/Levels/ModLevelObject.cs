@@ -19,7 +19,6 @@ namespace Bunject.Levels
   {
     public ModLevelObject()
     {
-      //Todo?
       Traverse.Field("dialogues").SetValue(new List<DialogueObject>());
       Traverse.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
       SideLevels = new DirectionsListOf<LevelObject>(null, null, null, null);

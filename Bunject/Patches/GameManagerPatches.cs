@@ -89,8 +89,7 @@ namespace Bunject.Patches.GameManagerPatches
   {
     private static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
     {
-      //TODO
-      //levelObject = BunjectAPI.Forward.StartLevelTransition(levelObject, levelIdentity);
+      levelObject = BunjectAPI.Forward.StartLevelTransition(levelObject, levelIdentity);
     }
   }
 

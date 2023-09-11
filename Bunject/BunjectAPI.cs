@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Bunject.Internal;
 using Bunject.Levels;
+using Bunject.Monitoring;
 using Bunject.Tiling;
 using HarmonyLib;
 using System;
@@ -10,7 +11,6 @@ using System.Text;
 
 namespace Bunject
 {
-  // This class is a mess - todo cleanup
   public class BunjectAPI
   {
     static BunjectAPI()
@@ -32,6 +32,8 @@ namespace Bunject
     internal static IEnumerable<ILevelSource> LevelSources { get => Instance.bunjectors.OfType<ILevelSource>(); }
 
     internal static IEnumerable<ITileSource> TileSources { get => Instance.bunjectors.OfType<ITileSource>(); }
+
+    internal static IEnumerable<IMonitor> Monitors { get => Instance.bunjectors.OfType<IMonitor>(); }
 
     public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {

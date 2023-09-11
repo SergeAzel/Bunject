@@ -122,21 +122,21 @@ namespace Bunject.NewYardSystem
       progression.HandleOphelinePortableComputerUnlock();
     }
 
-    public override ModLevelObject LoadLevel(string listName, int depth, ModLevelObject original)
+    public override ModLevelObject LoadLevel(ModLevelsList sourceList, int depth, ModLevelObject original)
     {
       if (original == null)
       {
-        //Logger.LogInfo($"LoadLevel Endpoint Called: {listName}, {depth}");
+        //Logger.LogInfo($"LoadLevel Endpoint Called: {sourceList.name}, {depth}");
         //Maybe dictionary these by name... but honestly given dataset size, doesnt matter right now.
-        var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Any(b => b.Name == listName));
+        var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Any(b => b.Levels == sourceList));
 
         if (world == null)
         {
-          Logger.LogWarning($"Burrow {listName} not found.");
+          Logger.LogWarning($"Burrow {sourceList.name} not found.");
           return GetDefaultLevel();
         }
 
-        var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == listName);
+        var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Levels == sourceList);
         if (burrow.Levels.Length >= depth && depth > 0)
         {
           var resultLevel = burrow.Levels[depth];
@@ -150,12 +150,12 @@ namespace Bunject.NewYardSystem
           }
 
           if (resultLevel == null)
-            Logger.LogError($"Level {listName}-{depth} failed to generate");
+            Logger.LogError($"Level {sourceList.name}-{depth} failed to generate");
 
           return resultLevel ?? GetDefaultLevel();
         }
 
-        Logger.LogError($"Level {listName}-{depth} failed to generate - Depth Check Failure!");
+        Logger.LogError($"Level {sourceList.name}-{depth} failed to generate - Depth Check Failure!");
         return GetDefaultLevel();
       }
       return original;
@@ -383,6 +383,10 @@ namespace Bunject.NewYardSystem
 
       var resultLevel = ScriptableObject.CreateInstance<ModLevelObject>();
       resultLevel.name = $"Level {burrowName} - {levelConfig.Name}";
+
+      // Store off the ever-important burrow names and such
+      resultLevel.BunburrowName = burrowName;
+      resultLevel.Depth = depth;
 
       // Prepend name with space -- hack
       resultLevel.CustomNameKey = " " + levelConfig.Name;

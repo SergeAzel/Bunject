@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Levels;
+using Bunject.Monitoring;
 using Bunject.Tiling;
 using HarmonyLib;
 using Levels;
@@ -13,7 +14,7 @@ using UnityEngine;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -34,24 +35,26 @@ namespace Bunject.Internal
     #endregion
 
     #region ILevelSource Implementation
-    public ModLevelObject LoadLevel(string listName, int index, ModLevelObject original)
+    public ModLevelObject LoadLevel(ModLevelsList list, int depth, ModLevelObject original)
     {
-      var result = original;
-      foreach (var levelSource in BunjectAPI.LevelSources)
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == list.name);
+      if (modBurrow != null) 
       {
-        result = levelSource.LoadLevel(listName, index, result);
+        return modBurrow.LevelSource.LoadLevel(list, depth, original as ModLevelObject);
       }
-      return result;
+
+      return original;
     }
 
     public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
-      var result = original;
-      foreach (var levelSource in BunjectAPI.LevelSources)
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == name);
+      if (modBurrow != null && modBurrow.LevelSource != null)
       {
-        result = levelSource.LoadLevelsList(name, result);
+        return modBurrow.LevelSource.LoadLevelsList(name, original as ModLevelsList);
       }
-      return result;
+
+      return original; 
     }
 
     public LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
@@ -64,16 +67,15 @@ namespace Bunject.Internal
       return result;
     }
 
-    /*
     public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
     {
       var result = target;
-      foreach (var levelSource in BunjectAPI.LevelSources)
+      foreach (var monitors in BunjectAPI.Monitors)
       {
-        result = levelSource.StartLevelTransition(result, identity);
+        result = monitors.StartLevelTransition(result, identity);
       }
       return result;
-    }*/
+    }
     #endregion
 
     #region ITileSource Implementation

@@ -17,16 +17,8 @@ namespace Bunject.Internal
 
     internal static LevelObject LoadLevel(LevelObject original, LevelsList sourceList, int depth)
     {
-      var burrowName = sourceList?.name;
-      if (!string.IsNullOrEmpty(burrowName))
-      {
-        var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == burrowName);
-        if (modBurrow != null) 
-        {
-          return modBurrow.LevelSource.LoadLevel(burrowName, depth, original as ModLevelObject);
-        }
-      }
-
+      if (sourceList is ModLevelsList modList)
+        return BunjectAPI.Forward.LoadLevel(modList, depth, original as ModLevelObject);
       return original;
     }
   }

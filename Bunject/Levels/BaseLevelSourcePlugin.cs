@@ -20,7 +20,7 @@ namespace Bunject.Levels
     {
     }
 
-    public virtual ModLevelObject LoadLevel(string bunburrowName, int index, ModLevelObject original)
+    public virtual ModLevelObject LoadLevel(ModLevelsList levelsList, int index, ModLevelObject original)
     {
       return original;
     }

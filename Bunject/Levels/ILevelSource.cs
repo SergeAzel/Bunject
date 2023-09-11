@@ -11,7 +11,7 @@ namespace Bunject.Levels
   {
     ModLevelsList LoadLevelsList(string bunburrowName, ModLevelsList original);
 
-    ModLevelObject LoadLevel(string bunburrowName, int depth, ModLevelObject original);
+    ModLevelObject LoadLevel(ModLevelsList sourceList, int depth, ModLevelObject original);
 
     LevelObject LoadBurrowSurfaceLevel(string bunburrowName, LevelObject otherwise);
   }
