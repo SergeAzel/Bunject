@@ -2,6 +2,7 @@
 using Bunject;
 using Bunject.Internal;
 using Bunject.Levels;
+using Bunject.Monitoring;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Bunject.Extractor
 {
 
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BunjectExtractor : BaseLevelSourcePlugin
+  public class BunjectExtractor : BaseUnityPlugin, IMonitor
   {
     public const string pluginGuid = "sergedev.bunject.extractor";
     public const string pluginName = "Bunject Extractor";
@@ -23,7 +24,7 @@ namespace Bunject.Extractor
 
     public static string rootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "EXTRACTED");
 
-    public override void Awake()
+    public void Awake()
     {
       Logger.LogInfo($"Bunject Extractor Plugin Awakened. v{pluginVersion}");
 
@@ -33,8 +34,16 @@ namespace Bunject.Extractor
       BunjectAPI.RegisterPlugin(this);
     }
 
+    public void OnAssetsLoaded()
+    {
+    }
+
+    public void OnProgressionLoaded(GeneralProgression progression)
+    {
+    }
+
     // Exports core level data on level being loaded
-    public override LevelObject StartLevelTransition(LevelObject original, LevelIdentity identity)
+    public LevelObject StartLevelTransition(LevelObject original, LevelIdentity identity)
     {
       // Serialize and output level
       if (!identity.Bunburrow.IsCustomBunburrow())
