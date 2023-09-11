@@ -1,4 +1,5 @@
-﻿using Bunject.NewYardSystem.Model;
+﻿using Bunject.Levels;
+using Bunject.NewYardSystem.Model;
 using Dialogue;
 using HarmonyLib;
 using Levels;
@@ -66,27 +67,23 @@ namespace Bunject.NewYardSystem.Levels
 
     private static LevelObject GenerateLevel(CustomWorld world, string levelContent, LevelObject previousLevel)
     {
-      var levelObject = ScriptableObject.CreateInstance<SurfaceLevelObject>();
-      levelObject.name = "SurfaceRight BNYS";
-      var level = Traverse.Create(levelObject);
-      level.Field("content").SetValue(levelContent);
-      level.Field("isSurface").SetValue(true);
-      level.Field("customNameKey").SetValue(world.Title);
-      level.Field("specificBackground").SetValue(SurfaceBurrowsPatch.ExtendedBackground);
+      var level = ScriptableObject.CreateInstance<ModLevelObject>();
+      level.name = "SurfaceRight BNYS";
+      level.Content = levelContent;
+      level.IsSurface = true;
+      level.CustomNameKey = world.Title;
+      level.SpecificBackground = SurfaceBurrowsPatch.ExtendedBackground;
 
       //Set empty / defaults
-      level.Field("dialogues").SetValue(new List<DialogueObject>());
-      level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
-
-      level.Field("bunburrowStyle").SetValue(previousLevel.BunburrowStyle);
-      level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(previousLevel, null, null, null));
+      level.BunburrowStyle = previousLevel.BunburrowStyle;
+      level.SideLevels.SetPart(Direction.Left, previousLevel);
 
       //link up with previous
       if (previousLevel != null)
       {
-        previousLevel.SideLevels.SetPart(Direction.Right, levelObject);
+        previousLevel.SideLevels.SetPart(Direction.Right, level);
       }
-      return levelObject;
+      return level;
     }
 
     private static string FormatLevelString(Burrow first, Burrow second, Burrow third)

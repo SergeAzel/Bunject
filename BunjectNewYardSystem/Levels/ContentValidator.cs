@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Bunject.Tiling;
+using HarmonyLib;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -12,33 +13,30 @@ namespace Bunject.NewYardSystem.Levels
 {
   internal class ContentValidator
   {
-    private const string VALID_BASE_LEVEL_TILES_FOR_CUSTOM = "^(S(?:{K})?|B(?:{[KB]*})?|E|\\!|T(?:{[URLDCTKB]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER)$";
-    private const string VALID_CUSTOM_LEVEL_TILES_FOR_SURFACE = "N[0-9]+";
+    /* Tiles restricted from use in BNYS custom levels:
+     *   Oph - Opheline tile
+     *   D# - Dialogue prompting or interactable tile
+     *   A - Hole at the bottom of C-27
+     *   PU - Power Up in room C-13
+     *   N# - Burrow Entrance
+     *   P# - C-27 Pillar
+     *   C - Cage in shop?
+     *   X - Cage in shop?
+     *   F - Fake bunny at start of game
+     *   Y - SPOILERS
+     */
+    private const string RESTRICTED_TILES = "^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)$";
+    private static readonly Regex restrictedTileRegex = new Regex(RESTRICTED_TILES);
 
-    private static readonly Regex customLevelLimitRegex = new Regex(VALID_BASE_LEVEL_TILES_FOR_CUSTOM);
-
-    private static readonly Regex surfaceLevelRegex = new Regex(VALID_CUSTOM_LEVEL_TILES_FOR_SURFACE);
-
-    private static readonly string[] Separators = Traverse.Create(typeof(LevelLoader)).Field<string[]>("Separators").Value;
-    public static bool ValidateBaseTile(LevelObject levelObject, string tile)
+    public static bool ValidateLevelContent(string content)
     {
-      var matched = !(levelObject is CustomLevelObject || levelObject is SurfaceLevelObject) || customLevelLimitRegex.IsMatch(tile);
-      //Debug.Log(levelObject.name + " good for base? " + matched);
-      return matched;
-    }
-    public static bool ValidateModTile(LevelObject levelObject, string tile)
-    {
-      bool matched = levelObject is SurfaceLevelObject && surfaceLevelRegex.IsMatch(tile);
-      //Debug.Log(levelObject.name + " good for mod? " + matched);
-      return matched;
-    }
-    public static bool ValidateLevelObject(LevelObject levelObject, string content)
-    {
-      return ValidateLevelObject(Traverse.Create(levelObject), content);
-    }
-    public static bool ValidateLevelObject(Traverse levelObject, string content)
-    {
-      return LevelLoader.LoadLevel(levelObject.GetValue<LevelObject>()).SequenceEqual(content.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+      var tiles = TileValidator.GetTilesFromContent(content);
+      bool result = true;
+      foreach (var tile in tiles)
+      {
+        result &= (!restrictedTileRegex.IsMatch(tile) && TileValidator.ValidateTile(tile));
+      }
+      return result;
     }
   }
 }

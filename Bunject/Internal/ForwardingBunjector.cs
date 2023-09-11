@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Levels;
 using Bunject.Tiling;
 using HarmonyLib;
 using Levels;
@@ -12,9 +13,9 @@ using UnityEngine;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjector, ITileSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource
   {
-    #region IBunjector Implementation
+    #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
     {
       foreach (var bunjector in BunjectAPI.Bunjectors)
@@ -30,56 +31,49 @@ namespace Bunject.Internal
         bunjector.OnProgressionLoaded(progression);
       }
     }
+    #endregion
 
-    public LevelObject LoadLevel(string listName, int index, LevelObject original)
+    #region ILevelSource Implementation
+    public ModLevelObject LoadLevel(string listName, int index, ModLevelObject original)
     {
       var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      foreach (var levelSource in BunjectAPI.LevelSources)
       {
-        result = bunjector.LoadLevel(listName, index, result);
+        result = levelSource.LoadLevel(listName, index, result);
       }
       return result;
     }
 
-    public LevelsList LoadLevelsList(string name, LevelsList original)
+    public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
       var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      foreach (var levelSource in BunjectAPI.LevelSources)
       {
-        result = bunjector.LoadLevelsList(name, result);
+        result = levelSource.LoadLevelsList(name, result);
       }
       return result;
     }
 
-    public LevelObject LoadSpecialLevel(SpecialLevel levelEnum, LevelObject original)
-    {
-      var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        result = bunjector.LoadSpecialLevel(levelEnum, result);
-      }
-      return result;
-    }
-
-    public LevelObject RappelFromBurrow(string listName, LevelObject otherwise)
+    public LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
     {
       var result = otherwise;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      foreach (var levelSource in BunjectAPI.LevelSources)
       {
-        result = bunjector.RappelFromBurrow(listName, result);
+        result = levelSource.LoadBurrowSurfaceLevel(listName, result);
       }
       return result;
     }
 
+    /*
     public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
     {
       var result = target;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      foreach (var levelSource in BunjectAPI.LevelSources)
       {
-        result = bunjector.StartLevelTransition(result, identity);
+        result = levelSource.StartLevelTransition(result, identity);
       }
       return result;
-    }
+    }*/
     #endregion
 
     #region ITileSource Implementation

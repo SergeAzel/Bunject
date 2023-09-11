@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Bunject;
 using Bunject.Internal;
+using Bunject.Levels;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace Bunject.Extractor
 {
 
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BunjectExtractor : BaseBunjector
+  public class BunjectExtractor : BaseLevelSourcePlugin
   {
     public const string pluginGuid = "sergedev.bunject.extractor";
     public const string pluginName = "Bunject Extractor";
@@ -29,7 +30,7 @@ namespace Bunject.Extractor
       if (!Directory.Exists(rootDirectory))
         Directory.CreateDirectory(rootDirectory);
 
-      BunjectAPI.Register(this);
+      BunjectAPI.RegisterPlugin(this);
     }
 
     // Exports core level data on level being loaded

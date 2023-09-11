@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Bunject.Tiling
 {
-  public interface ITileSource
+  public interface ITileSource : IBunjectorPlugin
   {
     bool SupportsTile(string tile);
 

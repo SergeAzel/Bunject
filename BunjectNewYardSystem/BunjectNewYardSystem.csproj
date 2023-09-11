@@ -94,7 +94,6 @@
     <Compile Include="BNYSPlugin.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
-    <Compile Include="Levels\LevelObjects.cs" />
     <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
@@ -162,7 +161,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f
-xcopy "$(MSBuildProjectDirectory)\Assets\BNYS" "$(PaquerettePluginPath)\BNYS" /E /C /I /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(MSBuildProjectDirectory)\Assets\BNYS" "$(PaquerettePluginPath)\BNYS" /E /C /I /Y
+xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f</PostBuildEvent>
   </PropertyGroup>
 </Project>

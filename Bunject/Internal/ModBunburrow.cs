@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bunject.Levels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Bunject.Internal
 {
   internal class ModBunburrow
   {
+    public ILevelSource LevelSource { get; set; }
     public int ID { get; set; }
     public int ComparisonIndex { get; set; }
     public string Name { get; set; }

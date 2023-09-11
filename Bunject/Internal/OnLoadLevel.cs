@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunject.Levels;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,26 +17,16 @@ namespace Bunject.Internal
 
     internal static LevelObject LoadLevel(LevelObject original, LevelsList sourceList, int depth)
     {
-      if (original == null)
+      var burrowName = sourceList?.name;
+      if (!string.IsNullOrEmpty(burrowName) != null)
       {
-        if (sourceList != null)
+        var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == burrowName);
+        if (modBurrow != null) 
         {
-          return BunjectAPI.Forward.LoadLevel(sourceList.name, depth, original);
+          return modBurrow.LevelSource.LoadLevel(burrowName, depth, original as ModLevelObject);
         }
       }
-      else
-      {
-        switch (original.name)
-        {
-          case "SurfaceRight":
-            return BunjectAPI.Forward.LoadSpecialLevel(SpecialLevel.SurfaceBurrows, original);
-        }
 
-        if (sourceList != null)
-        {
-          return BunjectAPI.Forward.LoadLevel(sourceList.name, depth, original);
-        }
-      }
       return original;
     }
   }

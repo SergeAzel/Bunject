@@ -3,10 +3,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
+using Bunject.Levels;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
 using Bunject.NewYardSystem.Resources;
+using Bunject.Tiling;
 using Dialogue;
 using HarmonyLib;
 using Levels;
@@ -24,7 +26,7 @@ using static UnityEngine.UI.Image;
 namespace Bunject.NewYardSystem 
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseBunjector
+  public class BNYSPlugin : BaseLevelSourcePlugin
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -68,13 +70,13 @@ namespace Bunject.NewYardSystem
           {
             Logger.LogInfo($"Cached Burrow : {burrowModel.Name} found!");
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
-            burrowModel.ID = BunjectAPI.RegisterBurrow(burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
+            burrowModel.ID = BunjectAPI.RegisterBurrow(this, burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
           }
           else
           {
             Logger.LogInfo($"Cached Burrow : {cachedBurrow.Name} NOT found!");
             // assume levelpack was removed... register it for save file's sake
-            BunjectAPI.RegisterBurrow(cachedBurrow.Name, cachedBurrow.Indicator, false);
+            BunjectAPI.RegisterBurrow(this, cachedBurrow.Name, cachedBurrow.Indicator, false);
           }
         }
 
@@ -86,14 +88,14 @@ namespace Bunject.NewYardSystem
           if (cachedBurrow == null)
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} registered!");
-            burrow.ID = BunjectAPI.RegisterBurrow(burrow.Name, burrow.Indicator, burrow.IsVoid);
+            burrow.ID = BunjectAPI.RegisterBurrow(this, burrow.Name, burrow.Indicator, burrow.IsVoid);
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
 
         cache.SaveCache();
 
-        BunjectAPI.Register(this);
+        BunjectAPI.RegisterPlugin(this);
 
         Logger.LogInfo("Initial Load Finished!");
       }
@@ -120,7 +122,7 @@ namespace Bunject.NewYardSystem
       progression.HandleOphelinePortableComputerUnlock();
     }
 
-    public override LevelObject LoadLevel(string listName, int depth, LevelObject original)
+    public override ModLevelObject LoadLevel(string listName, int depth, ModLevelObject original)
     {
       if (original == null)
       {
@@ -137,17 +139,14 @@ namespace Bunject.NewYardSystem
         var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == listName);
         if (burrow.Levels.Length >= depth && depth > 0)
         {
-          //Bypass the LevelLoad hook
-          var levelsTraverse = Traverse.Create(burrow.Levels).Field<List<LevelObject>>("list");
-
-          var resultLevel = levelsTraverse.Value[depth - 1];
+          var resultLevel = burrow.Levels[depth];
           if (resultLevel == null)
           {
             var levelConfig = LoadLevelFromFile(burrow.Directory, burrow.Name, depth, burrow.Style);
             resultLevel = levelConfig.Level;
 
             if (!world.LiveReloading && !levelConfig.LiveReloading)
-              levelsTraverse.Value[depth - 1] = resultLevel;
+              burrow.Levels[depth] = resultLevel;
           }
 
           if (resultLevel == null)
@@ -162,7 +161,7 @@ namespace Bunject.NewYardSystem
       return original;
     }
 
-    public override LevelsList LoadLevelsList(string name, LevelsList original)
+    public override ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
       if (original == null)
       {
@@ -173,7 +172,7 @@ namespace Bunject.NewYardSystem
       return original;
     }
 
-    public override LevelObject RappelFromBurrow(string listName, LevelObject otherwise)
+    public override LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
     {
       //Logger.LogInfo($"Rappelling from {listName}");
       var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == listName);
@@ -189,7 +188,7 @@ namespace Bunject.NewYardSystem
         Logger.LogWarning($"Burrow was not surfaceable / not in the list of generated surface levels!");
       }
 
-      return base.RappelFromBurrow(listName, otherwise);
+      return base.LoadBurrowSurfaceLevel(listName, otherwise);
     }
 		//IBunjector Members End
 
@@ -282,20 +281,15 @@ namespace Bunject.NewYardSystem
       Traverse.Create(endcapLevel).Field("specificBackground").SetValue(SurfaceBurrowsPatch.EndingBackground);
     }
 
-    private LevelsList GenerateLevelsList(Burrow burrow)
+    private ModLevelsList GenerateLevelsList(Burrow burrow)
     {
-      var levelsList = ScriptableObject.CreateInstance<LevelsList>();
+      var levelsList = ScriptableObject.CreateInstance<ModLevelsList>();
 
       levelsList.name = burrow.Name;
-
-      var traverse = Traverse.Create(levelsList);
-
-      var internalList = new LevelObject[burrow.Depth].ToList(); //emtpy level list - fill on load as we need them
-      traverse.Field<List<LevelObject>>("list").Value = internalList;
-      traverse.Field<int>("numberOfRegularBunnies").Value = burrow.UpperBunnyCount;
-      traverse.Field<int>("numberOfTempleBunnies").Value = burrow.TempleBunnyCount;
-      traverse.Field<int>("numberOfHellBunnies").Value = burrow.HellBunnyCount;
-      traverse.Field<DirectionsListOf<LevelsList>>("adjacentBunburrows").Value = new DirectionsListOf<LevelsList>(null, null, null, null);
+      levelsList.MaximumDepth = burrow.Depth;
+      levelsList.NumberOfRegularBunnies = burrow.UpperBunnyCount;
+      levelsList.NumberOfTempleBunnies = burrow.TempleBunnyCount;
+      levelsList.NumberOfHellBunnies = burrow.HellBunnyCount;
       return levelsList;
     }
 
@@ -369,6 +363,7 @@ namespace Bunject.NewYardSystem
 
       return levelConfig;
     }
+
     private void GenerateCustomLevelObject(LevelMetadata levelConfig, string content, string defaultStyle, string burrowName, int depth)
     {
       if (levelConfig is null)
@@ -386,38 +381,38 @@ namespace Bunject.NewYardSystem
         };
       }
 
-      var resultLevel = ScriptableObject.CreateInstance<CustomLevelObject>();
+      var resultLevel = ScriptableObject.CreateInstance<ModLevelObject>();
       resultLevel.name = $"Level {burrowName} - {levelConfig.Name}";
-      var level = Traverse.Create(resultLevel);
-      level.Field("dialogues").SetValue(new List<DialogueObject>());
-      level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
-      level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
 
-        // Prepend name with space -- hack
-      level.Field("customNameKey").SetValue(" " + levelConfig.Name);
-      level.Field("bunburrowStyle").SetValue(ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style));
+      // Prepend name with space -- hack
+      resultLevel.CustomNameKey = " " + levelConfig.Name;
+      resultLevel.BunburrowStyle = ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
+
       if (levelConfig.Tools is LevelTools tools)
       {
-        level.Field("numberOfTraps").SetValue(tools.Traps);
-        level.Field("numberOfPickaxes").SetValue(tools.Pickaxes);
-        level.Field("numberOfCarrots").SetValue(tools.Carrots);
-        level.Field("numberOfShovels").SetValue(tools.Shovels);
+        resultLevel.NumberOfTraps = tools.Traps;
+        resultLevel.NumberOfPickaxes = tools.Pickaxes;
+        resultLevel.NumberOfCarrots = tools.Carrots;
+        resultLevel.NumberOfShovels = tools.Shovels;
       }
-      level.Field("isTemple").SetValue(levelConfig.IsTemple);
-      level.Field("isHell").SetValue(levelConfig.IsHell);
+      resultLevel.IsTemple = levelConfig.IsTemple;
+      resultLevel.IsHell = levelConfig.IsHell;
 
       if (string.IsNullOrWhiteSpace(content))
       {
         Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
-        level.Field("content").SetValue(DefaultLevel.Content);
+        resultLevel.Content = DefaultLevel.Content;
       }
       else
       {
-        level.Field("content").SetValue(content);
-        if (!ContentValidator.ValidateLevelObject(level, content))
+        if (ContentValidator.ValidateLevelContent(content))
+        {
+          resultLevel.Content = content;
+        }
+        else
         {
           Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
-          level.Field("content").SetValue(DefaultLevel.Content);
+          resultLevel.Content = DefaultLevel.Content;
         }
       }
 
@@ -452,44 +447,32 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private LevelsList defaultLevelsList = null;
-    private LevelsList GetDefaultLevelsList()
+    private ModLevelsList defaultLevelsList = null;
+    private ModLevelsList GetDefaultLevelsList()
     {
       Logger.LogWarning("Getting default levels list");
       if (defaultLevelsList == null)
       {
-        var levelsList = ScriptableObject.CreateInstance<LevelsList>();
-
+        var levelsList = ScriptableObject.CreateInstance<ModLevelsList>();
         levelsList.name = Guid.NewGuid().ToString();
-
-        var traverse = Traverse.Create(levelsList);
-
-        traverse.Field<List<LevelObject>>("list").Value = new List<LevelObject>();
-        traverse.Field<DirectionsListOf<LevelsList>>("adjacentBunburrows").Value = new DirectionsListOf<LevelsList>(null, null, null, null);
 
         defaultLevelsList = levelsList;
       }
       return defaultLevelsList;
     }
 
-    private LevelObject defaultLevel = null;
-    private LevelObject GetDefaultLevel()
+    private ModLevelObject defaultLevel = null;
+    private ModLevelObject GetDefaultLevel()
     {
       if (defaultLevel == null)
       {
-        var resultLevel = ScriptableObject.CreateInstance<LevelObject>();
-        var level = Traverse.Create(resultLevel);
+        var resultLevel = ScriptableObject.CreateInstance<ModLevelObject>();
 
-        // Prepend name with space -- hack
-        level.Field("customNameKey").SetValue("Default Level");
-
-        level.Field("dialogues").SetValue(new List<DialogueObject>());
-        level.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
+        resultLevel.CustomNameKey = "Default Level";
 
         var targetStyle =  AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
-        level.Field("bunburrowStyle").SetValue(targetStyle);
-        level.Field("content").SetValue(DefaultLevel.Content);
-        level.Field("sideLevels").SetValue(new DirectionsListOf<LevelObject>(null, null, null, null));
+        resultLevel.BunburrowStyle = targetStyle;
+        resultLevel.Content = DefaultLevel.Content;
 
         defaultLevel = resultLevel;
       }

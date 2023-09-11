@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Bunject.Tiling;
+using HarmonyLib;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,8 @@ namespace Bunject.Patches.LevelLoaderPatches
   [HarmonyPatch(typeof(LevelLoader), "LoadLevel")]
   internal class LoadLevelPatch
   {
-    // "^(S(?:{K})?|B(?:{[KB]*})?|E|F|D[0-9]|P[0-9]|N[0-9]+|\\!|Oph|X|C|T(?:{[URLDCTKB]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER|PU|A|Y(?:{K})?)$";
 
-    private static readonly string[] Separators = new string[4]
-    {
-      ",",
-      "\r\n",
-      "\r",
-      "\n"
-    };
-
+    /*
     private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
     {
       var regex_IsMatch = AccessTools.Method(typeof(Regex), nameof(Regex.IsMatch), new Type[] { typeof(string) });
@@ -46,11 +39,21 @@ namespace Bunject.Patches.LevelLoaderPatches
         }
       }
       return codes;
-    }
+    }*/
 
-    private static bool CheckIfModSupportsTile(string tile)
+    private static bool Prefix(LevelObject levelObject, out List<string> __result)
     {
-      return BunjectAPI.Forward.SupportsTile(tile);
+      var tiles = TileValidator.GetTilesFromContent(levelObject.Content);
+
+      foreach (var tile in tiles)
+      {
+        if (!TileValidator.ValidateTile(tile))
+          UnityEngine.Debug.LogWarning("Invalid tile string: " + tile);
+      }
+
+      __result = tiles;
+
+      return false;
     }
   }
 }

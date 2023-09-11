@@ -77,7 +77,7 @@ namespace Bunject.Patches.GameManagerPatches
       // get previous bunburrow
       Bunburrows.Bunburrow previous = Traverse.Create<GameManager>().Field<Bunburrows.Bunburrow>("previousBunburrow").Value;
 
-      var targetSurfaceLevel = BunjectAPI.Forward.RappelFromBurrow(AssetsManager.LevelsLists[previous.ToBunburrowName()].name, surfaceLevel);
+      var targetSurfaceLevel = BunjectAPI.Forward.LoadBurrowSurfaceLevel(AssetsManager.LevelsLists[previous.ToBunburrowName()].name, surfaceLevel);
 
       // slow but not like its called every frame
       StartLevelTransition.Invoke(null, new object[] { targetSurfaceLevel, levelTransitionType, levelIdentity, elevatorTargetLevelIdentity });
@@ -89,7 +89,8 @@ namespace Bunject.Patches.GameManagerPatches
   {
     private static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
     {
-      levelObject = BunjectAPI.Forward.StartLevelTransition(levelObject, levelIdentity);
+      //TODO
+      //levelObject = BunjectAPI.Forward.StartLevelTransition(levelObject, levelIdentity);
     }
   }
 

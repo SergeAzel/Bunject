@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunject.Levels;
+using Levels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Bunject.NewYardSystem.Model
     public bool IsHell { get; set; }
 
     [JsonIgnore]
-    public LevelObject Level { get; set; }
+    public ModLevelObject Level { get; set; }
   }
 
   public class LevelTools

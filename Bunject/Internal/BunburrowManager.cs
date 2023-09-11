@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Bunject.Internal
 
     public static int CustomBunburrowThreshold => 50;
 
-    internal static int RegisterBurrow(string name, string indicator, bool isVoid = false)
+    internal static int RegisterBurrow(ILevelSource levelSource, string name, string indicator, bool isVoid = false)
     {
       if (Bunburrows.Any(bb => bb.Name == name))
         throw new ArgumentException($"Bunburrow name {name} is already in use!  Please use a unique name.");
@@ -37,6 +38,7 @@ namespace Bunject.Internal
 
       var bunburrow = new ModBunburrow()
       {
+        LevelSource = levelSource,
         ID = id,
         Name = name, 
         ComparisonIndex = id,

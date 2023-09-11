@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using Bunject.Internal;
+using Bunject.Levels;
 using Bunject.Tiling;
 using HarmonyLib;
 using System;
@@ -26,23 +27,20 @@ namespace Bunject
 
     internal static ForwardingBunjector Forward { get; private set; } = new ForwardingBunjector();
 
-    internal static IReadOnlyList<IBunjector> Bunjectors { get => Instance.bunjectors; }
+    internal static IReadOnlyList<IBunjectorPlugin> Bunjectors { get => Instance.bunjectors; }
 
-    internal static IReadOnlyList<ITileSource> TileSources { get => Instance.tileSources; }
+    internal static IEnumerable<ILevelSource> LevelSources { get => Instance.bunjectors.OfType<ILevelSource>(); }
 
-    public static void Register(IBunjector bunjector)
+    internal static IEnumerable<ITileSource> TileSources { get => Instance.bunjectors.OfType<ITileSource>(); }
+
+    public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {
       Instance.bunjectors.Add(bunjector);
     }
 
-    public static void RegisterTileSource(ITileSource tileSource)
+    public static int RegisterBurrow(ILevelSource levelSource, string name, string indicator, bool isVoid = false)
     {
-      Instance.tileSources.Add(tileSource);
-    }
-
-    public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
-    {
-      return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
+      return BunburrowManager.RegisterBurrow(levelSource, name, indicator, isVoid);
     }
 
 		public static void RegisterElevator(string indicator, int depth)
@@ -50,12 +48,12 @@ namespace Bunject
       ModElevatorController.Instance.RegisterElevator(indicator, depth);
     }
 
-    private List<IBunjector> bunjectors;
-    private List<ITileSource> tileSources;
+
+    private List<IBunjectorPlugin> bunjectors;
+
     private BunjectAPI()
     {
-      bunjectors = new List<IBunjector>();
-      tileSources = new List<ITileSource>();
+      bunjectors = new List<IBunjectorPlugin>();
     }
   }
 }
