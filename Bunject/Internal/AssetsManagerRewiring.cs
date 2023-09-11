@@ -15,7 +15,7 @@ namespace Bunject.Internal
       var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == name);
       if (modBurrow != null && modBurrow.LevelSource != null)
       {
-        modBurrow.LevelSource.LoadLevelsList(name, original as ModLevelsList);
+        return modBurrow.LevelSource.LoadLevelsList(name, original as ModLevelsList);
       }
 
       return original;
