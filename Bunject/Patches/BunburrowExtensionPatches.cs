@@ -22,7 +22,7 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     {
       if (BunburrowManager.IsInitialized)
       {
-        __result = (Bunburrows.Bunburrow)(BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.Name == bunburrowName)?.ID ?? (int)Bunburrows.Bunburrow.Pink);
+        __result = (Bunburrows.Bunburrow)(BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ModBunburrow.Name == bunburrowName)?.ID ?? (int)Bunburrows.Bunburrow.Pink);
         return false;
       }
       return true;
@@ -59,7 +59,7 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     {
       if (BunburrowManager.IsInitialized)
       {
-        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.Name;
+        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow.Name;
         return (__result == null);
       }
       return true;
@@ -91,7 +91,7 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     {
       if (BunburrowManager.IsInitialized)
       {
-        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.Indicator;
+        __result = BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.Indicator;
         return (__result == null);
       }
       return true;
@@ -117,7 +117,7 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     {
       // redirect to the other function, which needs no extending
       if (bunburrow.IsCustomBunburrow() && BunburrowManager.IsInitialized)
-        return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.IsVoid ?? __result;
+        return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.IsVoid ?? __result;
       return __result;
     }
   }

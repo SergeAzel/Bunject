@@ -37,10 +37,10 @@ namespace Bunject.Internal
     #region ILevelSource Implementation
     public ModLevelObject LoadLevel(ModLevelsList list, int depth, ModLevelObject original)
     {
-      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == list.name);
-      if (modBurrow != null) 
-      {
-        return modBurrow.LevelSource.LoadLevel(list, depth, original as ModLevelObject);
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == list.name);
+      if (modBurrow != null && modBurrow.IsCustom)
+      { 
+        return (ModLevelObject) modBurrow.ModBunburrow.GetLevel(depth);
       }
 
       return original;
@@ -48,10 +48,10 @@ namespace Bunject.Internal
 
     public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
-      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.Name == name);
-      if (modBurrow != null && modBurrow.LevelSource != null)
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == name);
+      if (modBurrow != null && modBurrow.IsCustom)
       {
-        return modBurrow.LevelSource.LoadLevelsList(name, original as ModLevelsList);
+        return (ModLevelsList)modBurrow.ModBunburrow.GetLevels();
       }
 
       return original; 
@@ -59,12 +59,8 @@ namespace Bunject.Internal
 
     public LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
     {
-      var result = otherwise;
-      foreach (var levelSource in BunjectAPI.LevelSources)
-      {
-        result = levelSource.LoadBurrowSurfaceLevel(listName, result);
-      }
-      return result;
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == listName);
+      return modBurrow?.ModBunburrow?.GetSurfaceLevel() ?? otherwise;
     }
 
     public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)

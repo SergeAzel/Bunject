@@ -17,7 +17,7 @@ namespace Bunject.Internal
 
     internal static LevelObject LoadLevel(LevelObject original, LevelsList sourceList, int depth)
     {
-      if (sourceList is ModLevelsList modList)
+      if (sourceList is ModLevelsList modList && (original is ModLevelObject || original == null))
         return BunjectAPI.Forward.LoadLevel(modList, depth, original as ModLevelObject);
       return original;
     }

@@ -26,7 +26,7 @@ using static UnityEngine.UI.Image;
 namespace Bunject.NewYardSystem 
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseLevelSourcePlugin
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -35,8 +35,12 @@ namespace Bunject.NewYardSystem
     public static string rootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BNYS");
 
     private List<CustomWorld> CustomWorlds;
+    private List<IModBunburrow> AllModBurrows;
+    private List<BNYSModBunburrow> BNYSModBurrows;
 
-    public override void Awake()
+    public new ManualLogSource Logger => base.Logger;
+
+    public void Awake()
     {
       Logger.LogInfo($"Bunject New Yard System [BNYS] Plugin Awakened. v{pluginVersion}");
 
@@ -59,41 +63,53 @@ namespace Bunject.NewYardSystem
         return;
       }
 
+      var modBunburrows = new List<IModBunburrow>();
+
       if (CustomWorlds.Count > 0)
       {
-        Logger.LogInfo("Initial Load - Registering Cached Burrows!");
+        Logger.LogInfo("Initial Load - Building Cached Burrows!");
 
         foreach (var cachedBurrow in cache.CustomBurrows)
         {
           var burrowModel = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == cachedBurrow.Name);
+          var customWorld = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrowModel));
           if (burrowModel != null)
           {
             Logger.LogInfo($"Cached Burrow : {burrowModel.Name} found!");
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
-            burrowModel.ID = BunjectAPI.RegisterBurrow(this, burrowModel.Name, burrowModel.Indicator, burrowModel.IsVoid);
+            modBunburrows.Add(new BNYSModBunburrow(this, customWorld, burrowModel));
           }
           else
           {
             Logger.LogInfo($"Cached Burrow : {cachedBurrow.Name} NOT found!");
             // assume levelpack was removed... register it for save file's sake
-            BunjectAPI.RegisterBurrow(this, cachedBurrow.Name, cachedBurrow.Indicator, false);
+            modBunburrows.Add(new BNYSLostBunburrow(cachedBurrow.Name, cachedBurrow.Indicator));
           }
         }
 
-        Logger.LogInfo("Initial Load - Registering Uncached Burrows!");
+        Logger.LogInfo("Initial Load - Building Uncached Burrows!");
 
         foreach (var burrow in CustomWorlds.SelectMany(cw => cw.Burrows))
         {
+          var customWorld = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrow));
           var cachedBurrow = cache.CustomBurrows.FirstOrDefault(cb => cb.Name == burrow.Name);
           if (cachedBurrow == null)
           {
-            Logger.LogInfo($"Uncached Burrow : {burrow.Name} registered!");
-            burrow.ID = BunjectAPI.RegisterBurrow(this, burrow.Name, burrow.Indicator, burrow.IsVoid);
+            Logger.LogInfo($"Uncached Burrow : {burrow.Name} built!");
+            modBunburrows.Add(new BNYSModBunburrow(this, customWorld, burrow));
             cache.CacheBunburrow(burrow.Name, burrow.Indicator);
           }
         }
 
         cache.SaveCache();
+
+        AllModBurrows = modBunburrows.ToList();
+        BNYSModBurrows = modBunburrows.OfType<BNYSModBunburrow>().ToList();
+
+        LinkLevelLists(BNYSModBurrows);
+
+        foreach (var bunburrow in modBunburrows)
+          BunjectAPI.RegisterBunburrow(bunburrow);
 
         BunjectAPI.RegisterPlugin(this);
 
@@ -107,7 +123,7 @@ namespace Bunject.NewYardSystem
 
     //IBunjector Members
     // IMPORTANT NOTE: DEPTH is 1-indexed.
-    public override void OnAssetsLoaded()
+    public void OnAssetsLoaded()
     {
       SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceRightLevel, null);
 
@@ -115,64 +131,14 @@ namespace Bunject.NewYardSystem
       GenerateSurfaceLevels(AssetsManager.SurfaceRightLevel);
     }
 
-    public override void OnProgressionLoaded(GeneralProgression progression)
+    public void OnProgressionLoaded(GeneralProgression progression)
     {
       progression.HandleBackToSurfaceUnlock();
       progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();
     }
 
-    public override ModLevelObject LoadLevel(ModLevelsList sourceList, int depth, ModLevelObject original)
-    {
-      if (original == null)
-      {
-        //Logger.LogInfo($"LoadLevel Endpoint Called: {sourceList.name}, {depth}");
-        //Maybe dictionary these by name... but honestly given dataset size, doesnt matter right now.
-        var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Any(b => b.Levels == sourceList));
-
-        if (world == null)
-        {
-          Logger.LogWarning($"Burrow {sourceList.name} not found.");
-          return GetDefaultLevel();
-        }
-
-        var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Levels == sourceList);
-        if (burrow.Levels.Length >= depth && depth > 0)
-        {
-          var resultLevel = burrow.Levels[depth];
-          if (resultLevel == null)
-          {
-            var levelConfig = LoadLevelFromFile(burrow.Directory, burrow.Name, depth, burrow.Style);
-            resultLevel = levelConfig.Level;
-
-            if (!world.LiveReloading && !levelConfig.LiveReloading)
-              burrow.Levels[depth] = resultLevel;
-          }
-
-          if (resultLevel == null)
-            Logger.LogError($"Level {sourceList.name}-{depth} failed to generate");
-
-          return resultLevel ?? GetDefaultLevel();
-        }
-
-        Logger.LogError($"Level {sourceList.name}-{depth} failed to generate - Depth Check Failure!");
-        return GetDefaultLevel();
-      }
-      return original;
-    }
-
-    public override ModLevelsList LoadLevelsList(string name, ModLevelsList original)
-    {
-      if (original == null)
-      {
-        //Logger.LogInfo($"LoadLevelsList Endpoint Called: {name}");
-        var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == name);
-        return burrow?.Levels ?? GetDefaultLevelsList();
-      }
-      return original;
-    }
-
-    public override LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
+    public void LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
     {
       //Logger.LogInfo($"Rappelling from {listName}");
       var burrow = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == listName);
@@ -182,13 +148,14 @@ namespace Bunject.NewYardSystem
         //Logger.LogInfo($"Burrow found!");
         var world = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrow));
         var surfaceIndex = world.Burrows.Where(b => b.Depth > 0 && b.HasSurfaceEntry).ToList().IndexOf(burrow);
+        /*
         if (surfaceIndex >= 0 && (surfaceIndex / 3) < world.GeneratedSurfaceLevels.Count)
-          return world.GeneratedSurfaceLevels[surfaceIndex / 3];
+          return world.GeneratedSurfaceLevels[surfaceIndex / 3];*/
 
         Logger.LogWarning($"Burrow was not surfaceable / not in the list of generated surface levels!");
       }
 
-      return base.LoadBurrowSurfaceLevel(listName, otherwise);
+      //return base.LoadBurrowSurfaceLevel(listName, otherwise);
     }
 		//IBunjector Members End
 
@@ -219,7 +186,6 @@ namespace Bunject.NewYardSystem
               PatchBurrowDetails(directory, burrow);
             }
 
-            LinkLevelLists(world.Burrows);
             yield return world;
           }
         }
@@ -252,9 +218,6 @@ namespace Bunject.NewYardSystem
       {
         burrow.Directory = Path.Combine(directory, burrow.Directory);
       }
-
-      burrow.Levels = GenerateLevelsList(burrow);
-
     }
 
     private bool surfaceLevelsGenerated = false;
@@ -267,7 +230,7 @@ namespace Bunject.NewYardSystem
       var previous = original;
       foreach (var world in CustomWorlds)
       {
-        ExtendedBurrowLevelGenerator.CreateSurfaceLevels(world, previous);
+        ExtendedBurrowLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
         previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
       }
 
@@ -281,147 +244,33 @@ namespace Bunject.NewYardSystem
       Traverse.Create(endcapLevel).Field("specificBackground").SetValue(SurfaceBurrowsPatch.EndingBackground);
     }
 
-    private ModLevelsList GenerateLevelsList(Burrow burrow)
-    {
-      var levelsList = ScriptableObject.CreateInstance<ModLevelsList>();
-
-      levelsList.name = burrow.Name;
-      levelsList.MaximumDepth = burrow.Depth;
-      levelsList.NumberOfRegularBunnies = burrow.UpperBunnyCount;
-      levelsList.NumberOfTempleBunnies = burrow.TempleBunnyCount;
-      levelsList.NumberOfHellBunnies = burrow.HellBunnyCount;
-      return levelsList;
-    }
-
-    private void LinkLevelLists(List<Burrow> burrows)
+    private void LinkLevelLists(List<BNYSModBunburrow> burrows)
     {
       foreach (var burrow in burrows)
       {
-        if (burrow.Links == null)
-          continue;
-
-        if (!string.IsNullOrEmpty(burrow.Links.Left))
+        if (!string.IsNullOrEmpty(burrow.Model.Links.Left))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Links.Left)?.Levels;
-          burrow.Levels.AdjacentBunburrows.SetPart(Direction.Left, target);
+          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Left);
+          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Left, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Links.Up))
+        if (!string.IsNullOrEmpty(burrow.Model.Links.Up))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Links.Up)?.Levels;
-          burrow.Levels.AdjacentBunburrows.SetPart(Direction.Up, target);
+          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Up);
+          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Up, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Links.Right))
+        if (!string.IsNullOrEmpty(burrow.Model.Links.Right))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Links.Right)?.Levels;
-          burrow.Levels.AdjacentBunburrows.SetPart(Direction.Right, target);
+          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Right);
+          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Right, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Links.Down))
+        if (!string.IsNullOrEmpty(burrow.Model.Links.Down))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Links.Down)?.Levels;
-          burrow.Levels.AdjacentBunburrows.SetPart(Direction.Down, target);
+          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Down);
+          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Down, target.GetLevels());
         }
       }
     }
 
-    private LevelMetadata LoadLevelFromFile(string directory, string burrowName, int depth, string defaultStyle)
-    {
-      var levelContentPath = Path.Combine(directory, $"{depth}.level");
-      var levelConfigPath = Path.Combine(directory, $"{depth}.json");
-
-      string content = null;
-      LevelMetadata levelConfig = null;
-
-      //Logger.LogInfo("Creating Level from: " + levelContentPath);
-      try
-      {
-        content = File.ReadAllText(levelContentPath);
-      }
-      catch (Exception e)
-      {
-        Logger.LogError("Error loading files related to level:");
-        Logger.LogError(Path.Combine(directory, depth.ToString()));
-        Logger.LogError(e.Message);
-        Logger.LogError(e);
-      }
-
-      try
-      { 
-        using (var reader = new StreamReader(levelConfigPath))
-        {
-          levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.LogError("Error loading files related to level:");
-        Logger.LogError(Path.Combine(directory, depth.ToString()));
-        Logger.LogError(e.Message);
-        Logger.LogError(e);
-      }
-
-      GenerateCustomLevelObject(levelConfig, content, defaultStyle, burrowName, depth);
-
-      return levelConfig;
-    }
-
-    private void GenerateCustomLevelObject(LevelMetadata levelConfig, string content, string defaultStyle, string burrowName, int depth)
-    {
-      if (levelConfig is null)
-      {
-        Logger.LogError($"{burrowName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
-
-        levelConfig = new LevelMetadata()
-        {
-          Name = "Level Metadata Failed Load",
-          LiveReloading = true,
-          Style = defaultStyle,
-          IsHell = false,
-          IsTemple = false,
-          Tools = new LevelTools()
-        };
-      }
-
-      var resultLevel = ScriptableObject.CreateInstance<ModLevelObject>();
-      resultLevel.name = $"Level {burrowName} - {levelConfig.Name}";
-
-      // Store off the ever-important burrow names and such
-      resultLevel.BunburrowName = burrowName;
-      resultLevel.Depth = depth;
-
-      // Prepend name with space -- hack
-      resultLevel.CustomNameKey = " " + levelConfig.Name;
-      resultLevel.BunburrowStyle = ResolveStyle(string.IsNullOrEmpty(levelConfig.Style) ? defaultStyle : levelConfig.Style);
-
-      if (levelConfig.Tools is LevelTools tools)
-      {
-        resultLevel.NumberOfTraps = tools.Traps;
-        resultLevel.NumberOfPickaxes = tools.Pickaxes;
-        resultLevel.NumberOfCarrots = tools.Carrots;
-        resultLevel.NumberOfShovels = tools.Shovels;
-      }
-      resultLevel.IsTemple = levelConfig.IsTemple;
-      resultLevel.IsHell = levelConfig.IsHell;
-
-      if (string.IsNullOrWhiteSpace(content))
-      {
-        Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
-        resultLevel.Content = DefaultLevel.Content;
-      }
-      else
-      {
-        if (ContentValidator.ValidateLevelContent(content))
-        {
-          resultLevel.Content = content;
-        }
-        else
-        {
-          Logger.LogError($"{burrowName} - {depth}: Level content failed to load.  Invalid tiles detected.");
-          resultLevel.Content = DefaultLevel.Content;
-        }
-      }
-
-      levelConfig.Level = resultLevel;
-    }
     public static BunburrowStyle ResolveStyle(string style)
     {
       switch (style)
@@ -449,38 +298,6 @@ namespace Bunject.NewYardSystem
         default:
           return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
       }
-    }
-
-    private ModLevelsList defaultLevelsList = null;
-    private ModLevelsList GetDefaultLevelsList()
-    {
-      Logger.LogWarning("Getting default levels list");
-      if (defaultLevelsList == null)
-      {
-        var levelsList = ScriptableObject.CreateInstance<ModLevelsList>();
-        levelsList.name = Guid.NewGuid().ToString();
-
-        defaultLevelsList = levelsList;
-      }
-      return defaultLevelsList;
-    }
-
-    private ModLevelObject defaultLevel = null;
-    private ModLevelObject GetDefaultLevel()
-    {
-      if (defaultLevel == null)
-      {
-        var resultLevel = ScriptableObject.CreateInstance<ModLevelObject>();
-
-        resultLevel.CustomNameKey = "Default Level";
-
-        var targetStyle =  AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
-        resultLevel.BunburrowStyle = targetStyle;
-        resultLevel.Content = DefaultLevel.Content;
-
-        defaultLevel = resultLevel;
-      }
-      return defaultLevel;
     }
   }
 }

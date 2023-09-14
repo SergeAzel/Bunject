@@ -21,7 +21,7 @@ namespace Bunject.Patches.LevelsListPatches
     // If the depths is outside the bounds of the internal list, there will be an exception.  Catch and ignore/redirect it.
     static Exception Finalizer(Exception __exception, ref LevelObject __result, LevelsList __instance, int depth)
     {
-      __result = OnLoadLevel.LoadLevel(null, __instance, depth);
+      __result = OnLoadLevel.LoadLevel(__result, __instance, depth);
       return null;
     }
   }

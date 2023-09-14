@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Bunject.Levels
 {
-  public class ModLevelsList : LevelsList
+  public class ModLevelsList : LevelsList 
   {
     public ModLevelsList() 
     { 
-      List.Value = new List<LevelObject>();
+      TraverseList.Value = new List<LevelObject>();
       AdjacentBunburrows = new DirectionsListOf<LevelsList>(null, null, null, null);
     }
 
     private Traverse traverse;
-    private Traverse Traverse
+    protected Traverse Traverse
     {
       get
       {
@@ -67,7 +67,7 @@ namespace Bunject.Levels
     }
 
     private Traverse<List<LevelObject>> traverseList = null;
-    private Traverse<List<LevelObject>> List
+    private Traverse<List<LevelObject>> TraverseList
     {
       get
       {
@@ -79,14 +79,22 @@ namespace Bunject.Levels
       }
     }
 
+    protected List<LevelObject> List
+    {
+      get
+      {
+        return traverseList.Value;
+      }
+    }
+
     // Abuse of list and list sizing, but this makes the derived class feel more... reasonable to work with
     // Not that I recommend changing depths at runtime, but...
     public int MaximumDepth
     {
-      get { return List.Value.Count; }
+      get { return TraverseList.Value.Count; }
       set 
       {
-        var internalList = List.Value;
+        var internalList = TraverseList.Value;
         if (value < internalList.Count)
         {
           internalList.RemoveRange(value, internalList.Count - value);
@@ -99,10 +107,10 @@ namespace Bunject.Levels
     }
 
     // The indexer is currently patched into for injection - avoid that by making our own
-    public new ModLevelObject this[int depth] 
-    { 
-      get { return List.Value[depth - 1] as ModLevelObject; }
-      set { List.Value[depth - 1] = value; }
+    public new ModLevelObject this[int depth]
+    {
+      get { return TraverseList.Value[depth - 1] as ModLevelObject; }
+      set { TraverseList.Value[depth - 1] = value; }
     }
   }
 }

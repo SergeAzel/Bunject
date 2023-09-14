@@ -20,8 +20,7 @@ namespace Bunject.NewYardSystem.Model
     public bool IsTemple { get; set; }
     public bool IsHell { get; set; }
 
-    [JsonIgnore]
-    public ModLevelObject Level { get; set; }
+    public string Content { get; set; }
   }
 
   public class LevelTools

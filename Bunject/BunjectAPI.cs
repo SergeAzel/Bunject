@@ -29,8 +29,6 @@ namespace Bunject
 
     internal static IReadOnlyList<IBunjectorPlugin> Bunjectors { get => Instance.bunjectors; }
 
-    internal static IEnumerable<ILevelSource> LevelSources { get => Instance.bunjectors.OfType<ILevelSource>(); }
-
     internal static IEnumerable<ITileSource> TileSources { get => Instance.bunjectors.OfType<ITileSource>(); }
 
     internal static IEnumerable<IMonitor> Monitors { get => Instance.bunjectors.OfType<IMonitor>(); }
@@ -40,9 +38,9 @@ namespace Bunject
       Instance.bunjectors.Add(bunjector);
     }
 
-    public static int RegisterBurrow(ILevelSource levelSource, string name, string indicator, bool isVoid = false)
+    public static void RegisterBunburrow(IModBunburrow modBunburrow)
     {
-      return BunburrowManager.RegisterBurrow(levelSource, name, indicator, isVoid);
+      BunburrowManager.RegisterBurrow(modBunburrow);
     }
 
 		public static void RegisterElevator(string indicator, int depth)

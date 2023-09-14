@@ -14,6 +14,7 @@ using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
+  // TODO - refactor this whole thing.  Currently just getting it functional with the new structure paradigm
   internal class ExtendedBurrowLevelGenerator
   {
     public const string WallRow = "W,W,W,W,W,W,W,W,W,W,W,W,W,W,W";
@@ -23,17 +24,17 @@ namespace Bunject.NewYardSystem.Levels
     public const string OpenRow = "T,T,T,T,T,T,T,T,T,T,T,T,T,T,T";
 
     //Should only be run after burrows are registered.  Burrow ID is required for generation.
-    public static void CreateSurfaceLevels(CustomWorld world, LevelObject precedingLevel)
+    public static void CreateSurfaceLevels(CustomWorld world, List<BNYSModBunburrow> modBunburrows, LevelObject precedingLevel)
     {
       if (world.GeneratedSurfaceLevels == null)
       {
-        var accessibleBurrows = world.Burrows.Where(b => b.HasSurfaceEntry && b.Depth > 0).ToList();
+        var accessibleBurrows = modBunburrows.Where(b => b.Model.HasSurfaceEntry && b.Model.Depth > 0).ToList();
 
         world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
     }
 
-    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, IEnumerable<Burrow> entries)
+    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, IEnumerable<BNYSModBunburrow> entries)
     {
       while (entries.Any())
       {
@@ -42,11 +43,21 @@ namespace Bunject.NewYardSystem.Levels
         var third = GetNext(ref entries);
 
         precedingLevel = GenerateLevel(world, FormatLevelString(first, second, third), precedingLevel);
+
+        if (first != null)
+          first.SurfaceLevel = precedingLevel;
+
+        if (second != null)
+          second.SurfaceLevel = precedingLevel;
+
+        if (third != null)
+          third.SurfaceLevel = precedingLevel;
+
         yield return precedingLevel;
       }
     }
 
-    private static Burrow GetNext(ref IEnumerable<Burrow> entries)
+    private static BNYSModBunburrow GetNext(ref IEnumerable<BNYSModBunburrow> entries)
     {
       var result = entries.FirstOrDefault();
       if (result != null)
@@ -56,7 +67,7 @@ namespace Bunject.NewYardSystem.Levels
       return result;
     }
 
-    private static string GetLevelEntryCode(Burrow burrow)
+    private static string GetLevelEntryCode(BNYSModBunburrow burrow)
     {
       if (burrow != null)
       {
@@ -86,7 +97,7 @@ namespace Bunject.NewYardSystem.Levels
       return level;
     }
 
-    private static string FormatLevelString(Burrow first, Burrow second, Burrow third)
+    private static string FormatLevelString(BNYSModBunburrow first, BNYSModBunburrow second, BNYSModBunburrow third)
     {
       string[] rows =
       {

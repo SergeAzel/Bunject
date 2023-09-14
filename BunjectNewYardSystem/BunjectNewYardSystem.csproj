@@ -92,9 +92,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
+    <Compile Include="Levels\BNYSLevelObject.cs" />
+    <Compile Include="Levels\BNYSLevelsList.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
     <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
+    <Compile Include="Levels\BNYSModBunburrow.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
     <Compile Include="Model\CustomBunburrowModel.cs" />
@@ -154,6 +157,7 @@
     <None Include="Assets\BNYS\Pursuit\BurrowB\9.json" />
     <None Include="Assets\BNYS\Pursuit\BurrowB\9.level" />
     <None Include="Assets\BNYS\Pursuit\config.json" />
+    <Compile Include="Levels\BNYSLostBunburrow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\BNYS\ExtendedRegion.png" />
