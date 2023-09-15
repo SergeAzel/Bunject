@@ -15,6 +15,8 @@ namespace Bunject.NewYardSystem.Model
     public string Title { get; set; } = "Title";
     public List<Burrow> Burrows { get; set; }
 
+    public List<SurfaceEntry> SurfaceEntries { get; set; }
+
     [JsonIgnore]
     public List<LevelObject> GeneratedSurfaceLevels { get; set; }
   }

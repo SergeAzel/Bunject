@@ -222,12 +222,12 @@ namespace Bunject.NewYardSystem
 
     private bool surfaceLevelsGenerated = false;
 
-    private void GenerateSurfaceLevels(LevelObject original)
+    private void GenerateSurfaceLevels(LevelObject coreSurfaceRight)
     {
       if (surfaceLevelsGenerated)
         return;
 
-      var previous = original;
+      var previous = coreSurfaceRight;
       foreach (var world in CustomWorlds)
       {
         ExtendedBurrowLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);

@@ -28,52 +28,47 @@ namespace Bunject.NewYardSystem.Levels
     {
       if (world.GeneratedSurfaceLevels == null)
       {
-        var accessibleBurrows = modBunburrows.Where(b => b.Model.HasSurfaceEntry && b.Model.Depth > 0).ToList();
+        var accessibleBurrows = modBunburrows.Where(b => b.Model.HasSurfaceEntry && b.Model.Depth > 0).ToDictionary(b => b.Name);
 
         world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
     }
 
-    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, IEnumerable<BNYSModBunburrow> entries)
+    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSModBunburrow> enterableBurrows)
     {
-      while (entries.Any())
+      foreach (var surfaceEntry in world.SurfaceEntries ?? Enumerable.Empty<SurfaceEntry>())
       {
-        var first = GetNext(ref entries);
-        var second = GetNext(ref entries);
-        var third = GetNext(ref entries);
+        string content = null;
+        List<BNYSModBunburrow> consumedBurrows = null;
 
-        precedingLevel = GenerateLevel(world, FormatLevelString(first, second, third), precedingLevel);
+        switch (GetSurfaceType(surfaceEntry))
+        {
+          case "COORDINATES":
+            (content, consumedBurrows) = GenerateCoordinatesSurfaceContent(surfaceEntry.Coordinates, enterableBurrows);
+            break;
+        }
 
-        if (first != null)
-          first.SurfaceLevel = precedingLevel;
+        if (consumedBurrows != null && !string.IsNullOrEmpty(content) && consumedBurrows.Count > 0)
+        {
+          precedingLevel = GenerateLevel(world, content, precedingLevel);
 
-        if (second != null)
-          second.SurfaceLevel = precedingLevel;
+          foreach (var consumedBurrow in consumedBurrows)
+            consumedBurrow.SurfaceLevel = precedingLevel;
 
-        if (third != null)
-          third.SurfaceLevel = precedingLevel;
+          yield return precedingLevel;
+        }
+      }
+
+      while (enterableBurrows.Any())
+      {
+        var (content, consumedBurrows) = GenerateDefaultSurfaceLevel(enterableBurrows);
+        precedingLevel = GenerateLevel(world, content, precedingLevel);
+
+        foreach (var consumedBurrow in consumedBurrows)
+          consumedBurrow.SurfaceLevel = precedingLevel;
 
         yield return precedingLevel;
       }
-    }
-
-    private static BNYSModBunburrow GetNext(ref IEnumerable<BNYSModBunburrow> entries)
-    {
-      var result = entries.FirstOrDefault();
-      if (result != null)
-      {
-        entries = entries.Skip(1);
-      }
-      return result;
-    }
-
-    private static string GetLevelEntryCode(BNYSModBunburrow burrow)
-    {
-      if (burrow != null)
-      {
-        return "N" + burrow.ID;
-      }
-      return "T";
     }
 
     private static LevelObject GenerateLevel(CustomWorld world, string levelContent, LevelObject previousLevel)
@@ -97,7 +92,81 @@ namespace Bunject.NewYardSystem.Levels
       return level;
     }
 
-    private static string FormatLevelString(BNYSModBunburrow first, BNYSModBunburrow second, BNYSModBunburrow third)
+    private static (string, List<BNYSModBunburrow>) GenerateCoordinatesSurfaceContent(Dictionary<string, int[]> coordinates, Dictionary<string, BNYSModBunburrow> bunburrows)
+    {
+      string[][] content = GetEmptyLevelContent();
+      var consumedBurrows = new List<BNYSModBunburrow>();
+
+      foreach (var coordinate in coordinates)
+      {
+        if (bunburrows.TryGetValue(coordinate.Key, out BNYSModBunburrow bunburrow))
+        {
+          if (coordinate.Value != null && coordinate.Value.Length > 0)
+          {
+            int x = coordinate.Value[0];
+            int y = 3;
+            if (coordinate.Value.Length > 1)
+              y = coordinate.Value[1];
+
+            //its split by rows first - y is first
+            content[y][x] = "N" + bunburrow.ID;
+
+            // Rip burrow out of the available list
+            consumedBurrows.Add(bunburrow);
+            bunburrows.Remove(coordinate.Key);
+          }
+        }
+      }
+
+      return (string.Join(",", content.Select(row => string.Join(",", row)).ToArray()), consumedBurrows);
+    }
+
+    private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(Dictionary<string, BNYSModBunburrow> bunburrows)
+    {
+      var consumedBurrows = new List<BNYSModBunburrow>();
+
+      var first = bunburrows.FirstOrDefault().Value;
+      if (first != null)
+      {
+        bunburrows.Remove(first.Name);
+        consumedBurrows.Add(first);
+      }
+
+      var second = bunburrows.FirstOrDefault().Value;
+      if (second != null)
+      {
+        bunburrows.Remove(second.Name);
+        consumedBurrows.Add(second);
+      }
+
+      var third = bunburrows.FirstOrDefault().Value;
+      if (third != null)
+      {
+        bunburrows.Remove(third.Name);
+        consumedBurrows.Add(third);
+      }
+
+      return (GetBasicLevelContent(first, second, third), consumedBurrows);
+    }
+
+    private static string[][] GetEmptyLevelContent()
+    {
+      string[] rows =
+      {
+        WallRow,
+        TopRow,
+        SpaceRow,
+        string.Format(EntryRow, "T", "T", "T"),
+        OpenRow,
+        OpenRow,
+        OpenRow,
+        WallRow,
+        WallRow
+      };
+      return rows.Select(r => r.Split(',')).ToArray();
+    }
+
+    private static string GetBasicLevelContent(BNYSModBunburrow first, BNYSModBunburrow second, BNYSModBunburrow third)
     {
       string[] rows =
       {
@@ -112,6 +181,25 @@ namespace Bunject.NewYardSystem.Levels
         WallRow
       };
       return string.Join(System.Environment.NewLine, rows);
+    }
+
+    private static string GetLevelEntryCode(BNYSModBunburrow burrow)
+    {
+      if (burrow != null)
+      {
+        return "N" + burrow.ID;
+      }
+      return "T";
+    }
+
+    private static string GetSurfaceType(SurfaceEntry surfaceEntry)
+    {
+      // For more surface types?
+      if (surfaceEntry.Coordinates != null)
+      {
+        return "COORDINATES";
+      }
+      return null;
     }
   }
 }
