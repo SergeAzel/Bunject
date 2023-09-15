@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunburrows;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace Bunject.Levels
     public string Indicator { get; }
     public bool IsVoid { get; }
     public int ID { get; set; }
+
+    // Never actually called
+    public BunburrowStyle Style { get; }
 
     private LevelsList levels;
 
