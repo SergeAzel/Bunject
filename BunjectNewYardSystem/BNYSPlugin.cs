@@ -230,10 +230,18 @@ namespace Bunject.NewYardSystem
       var previous = coreSurfaceRight;
       foreach (var world in CustomWorlds)
       {
-        ExtendedBurrowLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
-        previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+        try
+        {
+          ExtendedSurfaceLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
+          previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+        }
+        catch (Exception e)
+        {
+          Logger.LogError($"Error occurred while generating surface levels for world: {world.Title}");
+          Logger.LogError(e.Message);
+          Logger.LogError(e);
+        }
       }
-
       PatchLevelAsEndcap(previous);
 
       surfaceLevelsGenerated = true;

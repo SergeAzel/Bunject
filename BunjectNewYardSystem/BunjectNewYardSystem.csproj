@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -96,7 +97,7 @@
     <Compile Include="Levels\BNYSLevelsList.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
-    <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
+    <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
     <Compile Include="Levels\BNYSModBunburrow.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />

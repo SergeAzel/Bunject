@@ -14,8 +14,8 @@ using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
-  // TODO - refactor this whole thing.  Currently just getting it functional with the new structure paradigm
-  internal class ExtendedBurrowLevelGenerator
+  // TODO - Refactor how we built out our content strings?  The main structure of this is fine now, but these five constants still feel gross.
+  internal class ExtendedSurfaceLevelGenerator
   {
     public const string WallRow = "W,W,W,W,W,W,W,W,W,W,W,W,W,W,W";
     public const string TopRow = "W,T,T,T,T,T,T,T,T,T,T,T,W{0},W,W";
@@ -43,8 +43,12 @@ namespace Bunject.NewYardSystem.Levels
 
         switch (GetSurfaceType(surfaceEntry))
         {
-          case "COORDINATES":
+          case SurfaceType.Coordinates:
             (content, consumedBurrows) = GenerateCoordinatesSurfaceContent(surfaceEntry.Coordinates, enterableBurrows);
+            break;
+
+          case SurfaceType.Grid:
+            (content, consumedBurrows) = GenerateGridSurfaceContent(surfaceEntry.Grid, enterableBurrows);
             break;
         }
 
@@ -121,6 +125,36 @@ namespace Bunject.NewYardSystem.Levels
       return (string.Join(",", content.Select(row => string.Join(",", row)).ToArray()), consumedBurrows);
     }
 
+    private static (string, List<BNYSModBunburrow>) GenerateGridSurfaceContent(SurfaceEntryGrid grid, Dictionary<string, BNYSModBunburrow> bunburrows)
+    {
+      // Cheating.. just convert grid to coordinates.
+      var coordinates = new Dictionary<string, int[]>();
+
+      Action<string, int[]> AddCoordinate = (string burrowName, int[] coordinate) =>
+      {
+        if (!string.IsNullOrEmpty(burrowName))
+          coordinates.Add(burrowName, coordinate);
+      };
+
+      AddCoordinate(grid.NW, ToCoordinate(4, 2));
+      AddCoordinate(grid.N, ToCoordinate(7, 2));
+      AddCoordinate(grid.NE, ToCoordinate(10, 2));
+      AddCoordinate(grid.W, ToCoordinate(4, 4));
+      AddCoordinate(grid.C, ToCoordinate(7, 4));
+      AddCoordinate(grid.E, ToCoordinate(10, 4));
+      AddCoordinate(grid.SW, ToCoordinate(4, 6));
+      AddCoordinate(grid.S, ToCoordinate(7, 6));
+      AddCoordinate(grid.SE, ToCoordinate(10, 6));
+
+      return GenerateCoordinatesSurfaceContent(coordinates, bunburrows);
+    }
+
+    // I know its only one line... just trying to keep the above method clear
+    private static int[] ToCoordinate(int x, int y)
+    {
+      return new int[] { x, y };
+    }
+
     private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(Dictionary<string, BNYSModBunburrow> bunburrows)
     {
       var consumedBurrows = new List<BNYSModBunburrow>();
@@ -192,14 +226,58 @@ namespace Bunject.NewYardSystem.Levels
       return "T";
     }
 
-    private static string GetSurfaceType(SurfaceEntry surfaceEntry)
+    private static SurfaceType GetSurfaceType(SurfaceEntry surfaceEntry)
     {
-      // For more surface types?
+      var result = SurfaceType.None;
+      var counter = 0;
+
       if (surfaceEntry.Coordinates != null)
       {
-        return "COORDINATES";
+        result |= SurfaceType.Coordinates;
+        counter++;
       }
-      return null;
+
+      if (surfaceEntry.Grid != null)
+      {
+        result |= SurfaceType.Grid;
+        counter++;
+      }
+
+      if (counter > 1)
+      {
+        var surfaceTypes = new List<string>();
+        foreach (var match in Enum.GetValues(typeof(SurfaceType)).Cast<SurfaceType>())
+        {
+          if (result.HasFlag(match) && match != SurfaceType.None)
+            surfaceTypes.Add(Enum.GetName(typeof(SurfaceType), match));
+        }
+
+        throw new Exception("SurfaceEntry cannot have both a Coordinates and Grid - please select only one.");
+      }
+
+      return result;
+    }
+
+    private static int CountFlags<T>(T instance) where T : System.Enum
+    {
+      var result = 0;
+
+      foreach (var flag in Enum.GetValues(typeof(T)).Cast<T>())
+      {
+        if (instance.HasFlag(flag))
+          result++;
+      }
+
+      return result;
+    }
+
+    [Flags]
+    private enum SurfaceType
+    {
+      None = 0,
+      Coordinates = 1,
+      Grid = 2
+      //NextItem = 4, flag based enum
     }
   }
 }
