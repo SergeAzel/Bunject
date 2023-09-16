@@ -136,15 +136,15 @@ namespace Bunject.NewYardSystem.Levels
           coordinates.Add(burrowName, coordinate);
       };
 
-      AddCoordinate(grid.NW, ToCoordinate(4, 2));
-      AddCoordinate(grid.N, ToCoordinate(7, 2));
-      AddCoordinate(grid.NE, ToCoordinate(10, 2));
-      AddCoordinate(grid.W, ToCoordinate(4, 4));
-      AddCoordinate(grid.C, ToCoordinate(7, 4));
-      AddCoordinate(grid.E, ToCoordinate(10, 4));
-      AddCoordinate(grid.SW, ToCoordinate(4, 6));
-      AddCoordinate(grid.S, ToCoordinate(7, 6));
-      AddCoordinate(grid.SE, ToCoordinate(10, 6));
+      AddCoordinate(grid.NW, ToCoordinate(4, 1));
+      AddCoordinate(grid.N, ToCoordinate(7, 1));
+      AddCoordinate(grid.NE, ToCoordinate(10, 1));
+      AddCoordinate(grid.W, ToCoordinate(4, 3));
+      AddCoordinate(grid.C, ToCoordinate(7, 3));
+      AddCoordinate(grid.E, ToCoordinate(10, 3));
+      AddCoordinate(grid.SW, ToCoordinate(4, 5));
+      AddCoordinate(grid.S, ToCoordinate(7, 5));
+      AddCoordinate(grid.SE, ToCoordinate(10, 5));
 
       return GenerateCoordinatesSurfaceContent(coordinates, bunburrows);
     }
