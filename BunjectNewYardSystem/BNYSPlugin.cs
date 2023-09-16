@@ -8,6 +8,7 @@ using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
 using Bunject.NewYardSystem.Resources;
+using Bunject.NewYardSystem.Utility;
 using Bunject.Tiling;
 using Dialogue;
 using HarmonyLib;
@@ -18,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
@@ -209,6 +211,65 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e.Message);
         Logger.LogError(e);
       }
+
+      if (!string.IsNullOrEmpty(world.ProxyURL))
+      {
+        try
+        {
+          world.ProxyUri = new Uri(world.ProxyURL);
+
+          var configUri = new Uri(world.ProxyUri, "config.json");
+
+          CustomWorld proxyWorld = configUri.Load<CustomWorld>();
+
+          if (proxyWorld != null)
+          {
+            world.Enabled = world.Enabled || proxyWorld.Enabled;
+            world.LiveReloading = false; // force global reload off.
+
+            if (string.IsNullOrEmpty(world.Title))
+              world.Title = proxyWorld.Title;
+
+            if (proxyWorld.Burrows != null)
+            {
+              foreach (var proxyBurrow in proxyWorld.Burrows)
+              {
+                proxyBurrow.ProxyUri = new Uri(world.ProxyUri, $"{proxyBurrow.Directory}/");
+              }
+
+              if (world.Burrows == null)
+              {
+                world.Burrows = proxyWorld.Burrows;
+              }
+              else
+              {
+                foreach (var proxyBurrow in proxyWorld.Burrows)
+                {
+                  if (!world.Burrows.Any(b => b.Name == proxyBurrow.Name))
+                  {
+                    world.Burrows.Add(proxyBurrow);
+                  }
+                  else
+                  {
+                    world.ProxyUri = proxyBurrow.ProxyUri;
+                  }
+                }
+              }
+            }
+          }
+        }
+        catch (Exception e)
+        {
+          Logger.LogError("Error loading Proxy World config.json");
+          Logger.LogError(filename);
+          Logger.LogError(e.Message);
+          Logger.LogError(e);
+        }
+      }
+
+      if (string.IsNullOrEmpty(world.Title))
+        world.Title = "Untitled";
+
       return world;
     }
 

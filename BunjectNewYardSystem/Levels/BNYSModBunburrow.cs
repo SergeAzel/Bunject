@@ -3,6 +3,7 @@ using Bunject.Levels;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
 using Bunject.NewYardSystem.Resources;
+using Bunject.NewYardSystem.Utility;
 using Levels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -125,12 +126,14 @@ namespace Bunject.NewYardSystem.Levels
     // Repopulates the levelObject from file contents
     private void ReloadLevel(int depth, BNYSLevelObject levelObject)
     {
-      var metadata = LoadLevelFromFile(depth);
+      var metadata = LoadLevelMetadata(depth);
+
+      levelObject.ShouldReload = worldModel.LiveReloading || metadata.LiveReloading;
 
       PopulateLevel(levelObject, metadata, depth);
     }
 
-    private LevelMetadata LoadLevelFromFile(int depth)
+    private LevelMetadata LoadLevelMetadata(int depth)
     {
       var levelContentPath = Path.Combine(burrowModel.Directory, $"{depth}.level");
       var levelConfigPath = Path.Combine(burrowModel.Directory, $"{depth}.json");
@@ -139,45 +142,93 @@ namespace Bunject.NewYardSystem.Levels
       LevelMetadata levelConfig = null;
 
       //Logger.LogInfo("Creating Level from: " + levelContentPath);
-
-      try
+      if (File.Exists(levelConfigPath))
       {
-        using (var reader = new StreamReader(levelConfigPath))
+        try
         {
-          levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
+          using (var reader = new StreamReader(levelConfigPath))
+          {
+            levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
+          }
+        }
+        catch (Exception e)
+        {
+          bnys.Logger.LogError($"{LocalName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
+
+          bnys.Logger.LogError("Error loading files related to level:");
+          bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
+          bnys.Logger.LogError(e.Message);
+          bnys.Logger.LogError(e);
+
+          levelConfig = CreateDefaultLevelMetadata();
         }
       }
-      catch (Exception e)
+      else if (burrowModel.ProxyUri != null)
+      {
+        // Load level via web proxy
+        var contentProxyUri = new Uri(burrowModel.ProxyUri, $"{depth}.json");
+        try
+        {
+          levelConfig = contentProxyUri.Load<LevelMetadata>();
+        }
+        catch (Exception e)
+        {
+          bnys.Logger.LogError($"{LocalName} - {depth}: File doesn't exist, Level json failed to load from web.  Ensure {depth}.json exists and conforms to JSON standards.");
+
+          bnys.Logger.LogError("Error loading files related to level:");
+          bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
+          bnys.Logger.LogError("Expected web endpoint:");
+          bnys.Logger.LogError(contentProxyUri.ToString());
+          bnys.Logger.LogError(e.Message);
+          bnys.Logger.LogError(e);
+
+          levelConfig = CreateDefaultLevelMetadata();
+        }
+      }
+      else
       {
         bnys.Logger.LogError($"{LocalName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
 
         bnys.Logger.LogError("Error loading files related to level:");
         bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-        bnys.Logger.LogError(e.Message);
-        bnys.Logger.LogError(e);
 
-        levelConfig = new LevelMetadata()
-        {
-          Name = "Failed Level Load",
-          LiveReloading = true,
-          IsHell = false,
-          IsTemple = false,
-          Tools = new LevelTools()
-        };
+        levelConfig = CreateDefaultLevelMetadata();
       }
 
+      //Load content into metadata
       if (string.IsNullOrEmpty(levelConfig.Content))
       {
-        try
+        if (File.Exists(levelContentPath))
         {
-          content = File.ReadAllText(levelContentPath);
+          try
+          {
+            content = File.ReadAllText(levelContentPath);
+          }
+          catch (Exception e)
+          {
+            bnys.Logger.LogError("Error loading files related to level:");
+            bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
+            bnys.Logger.LogError(e.Message);
+            bnys.Logger.LogError(e);
+          }
         }
-        catch (Exception e)
+        else if (burrowModel.ProxyUri != null)
         {
-          bnys.Logger.LogError("Error loading files related to level:");
-          bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-          bnys.Logger.LogError(e.Message);
-          bnys.Logger.LogError(e);
+          var contentUri = new Uri(burrowModel.ProxyUri, $"{depth}.level");
+
+          try
+          {
+            content = contentUri.Load();
+          }
+          catch (Exception e)
+          {
+            bnys.Logger.LogError("Error loading files related to level:");
+            bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
+            bnys.Logger.LogError("Expected web path:");
+            bnys.Logger.LogError(contentUri);
+            bnys.Logger.LogError(e.Message);
+            bnys.Logger.LogError(e);
+          }
         }
       }
 
@@ -196,6 +247,18 @@ namespace Bunject.NewYardSystem.Levels
       levelConfig.Content = content;
 
       return levelConfig;
+    }
+
+    private LevelMetadata CreateDefaultLevelMetadata()
+    {
+      return new LevelMetadata()
+      {
+        Name = "Failed Level Load",
+        LiveReloading = true,
+        IsHell = false,
+        IsTemple = false,
+        Tools = new LevelTools()
+      };
     }
 
     private void PopulateLevel(BNYSLevelObject levelObject, LevelMetadata levelConfig, int depth)
