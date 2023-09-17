@@ -43,7 +43,7 @@
     {
       "Coordinates": {
         "Burrow A": [ 5, 3 ],
-        "Burrow B": [ 9, 3 ]
+        "Burrow B": { "Hole": [ 9, 3 ] }
       }
     }
   ]

@@ -96,7 +96,7 @@ namespace Bunject.NewYardSystem.Levels
       return level;
     }
 
-    private static (string, List<BNYSModBunburrow>) GenerateCoordinatesSurfaceContent(Dictionary<string, int[]> coordinates, Dictionary<string, BNYSModBunburrow> bunburrows)
+    private static (string, List<BNYSModBunburrow>) GenerateCoordinatesSurfaceContent(Dictionary<string, SurfaceCoordinate> coordinates, Dictionary<string, BNYSModBunburrow> bunburrows)
     {
       string[][] content = GetEmptyLevelContent();
       var consumedBurrows = new List<BNYSModBunburrow>();
@@ -105,12 +105,12 @@ namespace Bunject.NewYardSystem.Levels
       {
         if (bunburrows.TryGetValue(coordinate.Key, out BNYSModBunburrow bunburrow))
         {
-          if (coordinate.Value != null && coordinate.Value.Length > 0)
+          if (coordinate.Value?.Hole != null && coordinate.Value.Hole.Length > 0)
           {
-            int x = coordinate.Value[0];
+            int x = coordinate.Value.Hole[0];
             int y = 3;
-            if (coordinate.Value.Length > 1)
-              y = coordinate.Value[1];
+            if (coordinate.Value.Hole.Length > 1)
+              y = coordinate.Value.Hole[1];
 
             //its split by rows first - y is first
             content[y][x] = "N" + bunburrow.ID;
@@ -128,31 +128,25 @@ namespace Bunject.NewYardSystem.Levels
     private static (string, List<BNYSModBunburrow>) GenerateGridSurfaceContent(SurfaceEntryGrid grid, Dictionary<string, BNYSModBunburrow> bunburrows)
     {
       // Cheating.. just convert grid to coordinates.
-      var coordinates = new Dictionary<string, int[]>();
+      var coordinates = new Dictionary<string, SurfaceCoordinate>();
 
-      Action<string, int[]> AddCoordinate = (string burrowName, int[] coordinate) =>
+      Action<string, SurfaceCoordinate> AddCoordinate = (string burrowName, SurfaceCoordinate coordinate) =>
       {
         if (!string.IsNullOrEmpty(burrowName))
           coordinates.Add(burrowName, coordinate);
       };
 
-      AddCoordinate(grid.NW, ToCoordinate(4, 1));
-      AddCoordinate(grid.N, ToCoordinate(7, 1));
-      AddCoordinate(grid.NE, ToCoordinate(10, 1));
-      AddCoordinate(grid.W, ToCoordinate(4, 3));
-      AddCoordinate(grid.C, ToCoordinate(7, 3));
-      AddCoordinate(grid.E, ToCoordinate(10, 3));
-      AddCoordinate(grid.SW, ToCoordinate(4, 5));
-      AddCoordinate(grid.S, ToCoordinate(7, 5));
-      AddCoordinate(grid.SE, ToCoordinate(10, 5));
+      AddCoordinate(grid.NW, new SurfaceCoordinate(4, 1));
+      AddCoordinate(grid.N, new SurfaceCoordinate(7, 1));
+      AddCoordinate(grid.NE, new SurfaceCoordinate(10, 1));
+      AddCoordinate(grid.W, new SurfaceCoordinate(4, 3));
+      AddCoordinate(grid.C, new SurfaceCoordinate(7, 3));
+      AddCoordinate(grid.E, new SurfaceCoordinate(10, 3));
+      AddCoordinate(grid.SW, new SurfaceCoordinate(4, 5));
+      AddCoordinate(grid.S, new SurfaceCoordinate(7, 5));
+      AddCoordinate(grid.SE, new SurfaceCoordinate(10, 5));
 
       return GenerateCoordinatesSurfaceContent(coordinates, bunburrows);
-    }
-
-    // I know its only one line... just trying to keep the above method clear
-    private static int[] ToCoordinate(int x, int y)
-    {
-      return new int[] { x, y };
     }
 
     private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(Dictionary<string, BNYSModBunburrow> bunburrows)

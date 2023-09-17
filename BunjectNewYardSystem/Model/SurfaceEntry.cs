@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Bunject.NewYardSystem.Utility;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +10,22 @@ namespace Bunject.NewYardSystem.Model
 {
   public class SurfaceEntry
   {
-    public Dictionary<string, int[]> Coordinates { get; set; }
+    public Dictionary<string, SurfaceCoordinate> Coordinates { get; set; }
     public SurfaceEntryGrid Grid { get; set; }
+  }
+
+  [JsonConverter(typeof(CoordinateJsonConverter))]
+  public class SurfaceCoordinate
+  {
+    public SurfaceCoordinate() { }
+    public SurfaceCoordinate(params int[] holeCoordinates)
+    {
+      Hole = holeCoordinates;
+    }
+
+    public int[] Hole { get; set; }
+    public int[] Sign { get; set; }
+    public bool NoSign { get; set; }
   }
 
   public class SurfaceEntryGrid

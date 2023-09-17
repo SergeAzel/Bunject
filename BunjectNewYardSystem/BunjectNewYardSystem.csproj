@@ -110,6 +110,7 @@
     <Compile Include="Resources\DefaultLevel.cs" />
     <Compile Include="Resources\ImportImage.cs" />
     <Compile Include="Levels\SurfaceBurrowsPatch.cs" />
+    <Compile Include="Utility\CoordinateJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bunject\Bunject.csproj">
