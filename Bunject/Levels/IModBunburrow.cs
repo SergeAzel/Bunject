@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.Levels
 {
@@ -14,12 +15,15 @@ namespace Bunject.Levels
     string Name { get; }
     string Indicator { get; }
     bool IsVoid { get; }
-
     BunburrowStyle Style { get; }
 
-    LevelsList GetLevels();
+    bool HasEntrance { get; }
 
-    LevelObject GetLevel(int depth);
+    bool HasSign { get; }
+
+    Vector2Int? OverrideSignCoordinate();
+
+    LevelsList GetLevels();
 
     LevelObject GetSurfaceLevel();
   }

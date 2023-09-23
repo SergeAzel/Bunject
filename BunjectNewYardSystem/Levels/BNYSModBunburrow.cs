@@ -35,6 +35,8 @@ namespace Bunject.NewYardSystem.Levels
       LocalIndicator = burrowModel.Indicator;
 
       IsVoid = burrowModel.IsVoid;
+
+      InitializeCustomSignCoordinate();
     }
 
     public int ID { get; set; }
@@ -67,33 +69,34 @@ namespace Bunject.NewYardSystem.Levels
       }
     }
 
-    public BNYSLevelObject GetLevel(int depth)
+    public bool HasEntrance => Model.HasSurfaceEntry;
+    public bool HasSign { get; private set; } = true;
+
+    private Vector2Int? customSignCoordinate;
+    public Vector2Int? OverrideSignCoordinate()
     {
-      var levels = GetLevels();
-      if (depth > 0 && depth <= levels.MaximumDepth)
+      return customSignCoordinate;
+    }
+
+    private void InitializeCustomSignCoordinate()
+    {
+      var surfaceCoordinate = World.SurfaceEntries?.Where(se => se.Coordinates != null)
+                               ?.SelectMany(se => se.Coordinates)?.Where(kvp => kvp.Key == LocalName)
+                               ?.Select(kvp => kvp.Value)?.FirstOrDefault();
+
+      if (surfaceCoordinate != null)
       {
-        var level = levels[depth];
-        if (level == null)
+        if (!surfaceCoordinate.NoSign)
         {
-          level = ScriptableObject.CreateInstance<BNYSLevelObject>();
-          // Store off the ever-important burrow names and such
-          level.BunburrowName = burrowModel.Name;
-          level.Depth = depth;
+          if (surfaceCoordinate.Sign != null && surfaceCoordinate.Sign.Length > 1)
+          {
+            customSignCoordinate = new Vector2Int(surfaceCoordinate.Sign[0], surfaceCoordinate.Sign[1]);
+          }
         }
-
-        if (level.ShouldReload)
+        else
         {
-          ReloadLevel(depth, level);
-
-          levels[depth] = level;
+          HasSign = false;
         }
-
-        return level;
-      }
-      else
-      {
-        bnys.Logger.LogWarning($"{Name}: Depth requested, {depth}, exceeds burrow depth of {levels.MaximumDepth}");
-        return null;
       }
     }
 
@@ -105,11 +108,6 @@ namespace Bunject.NewYardSystem.Levels
         levels = GenerateLevelsList();
       }
       return levels;
-    }
-
-    LevelObject IModBunburrow.GetLevel(int depth)
-    {
-      return GetLevel(depth);
     }
 
     LevelsList IModBunburrow.GetLevels()
@@ -127,171 +125,15 @@ namespace Bunject.NewYardSystem.Levels
     {
       var levelsList = ScriptableObject.CreateInstance<BNYSLevelsList>();
 
+      levelsList.ModBunburrow = this;
+      levelsList.Bnys = bnys;
+
       levelsList.name = burrowModel.Name;
       levelsList.MaximumDepth = burrowModel.Depth;
       levelsList.NumberOfRegularBunnies = burrowModel.UpperBunnyCount;
       levelsList.NumberOfTempleBunnies = burrowModel.TempleBunnyCount;
       levelsList.NumberOfHellBunnies = burrowModel.HellBunnyCount;
       return levelsList;
-    }
-
-    // Repopulates the levelObject from file contents
-    private void ReloadLevel(int depth, BNYSLevelObject levelObject)
-    {
-      var metadata = LoadLevelMetadata(depth);
-
-      levelObject.ShouldReload = worldModel.LiveReloading || metadata.LiveReloading;
-
-      PopulateLevel(levelObject, metadata, depth);
-    }
-
-    private LevelMetadata LoadLevelMetadata(int depth)
-    {
-      var levelContentPath = Path.Combine(burrowModel.Directory, $"{depth}.level");
-      var levelConfigPath = Path.Combine(burrowModel.Directory, $"{depth}.json");
-
-      string content = null;
-      LevelMetadata levelConfig = null;
-
-      //Logger.LogInfo("Creating Level from: " + levelContentPath);
-      if (File.Exists(levelConfigPath))
-      {
-        try
-        {
-          using (var reader = new StreamReader(levelConfigPath))
-          {
-            levelConfig = (LevelMetadata)new JsonSerializer().Deserialize(reader, typeof(LevelMetadata));
-          }
-        }
-        catch (Exception e)
-        {
-          bnys.Logger.LogError($"{LocalName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
-
-          bnys.Logger.LogError("Error loading files related to level:");
-          bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-          bnys.Logger.LogError(e.Message);
-          bnys.Logger.LogError(e);
-
-          levelConfig = CreateDefaultLevelMetadata();
-        }
-      }
-      else if (burrowModel.ProxyUri != null)
-      {
-        // Load level via web proxy
-        var contentProxyUri = new Uri(burrowModel.ProxyUri, $"{depth}.json");
-        try
-        {
-          levelConfig = contentProxyUri.Load<LevelMetadata>();
-        }
-        catch (Exception e)
-        {
-          bnys.Logger.LogError($"{LocalName} - {depth}: File doesn't exist, Level json failed to load from web.  Ensure {depth}.json exists and conforms to JSON standards.");
-
-          bnys.Logger.LogError("Error loading files related to level:");
-          bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-          bnys.Logger.LogError("Expected web endpoint:");
-          bnys.Logger.LogError(contentProxyUri.ToString());
-          bnys.Logger.LogError(e.Message);
-          bnys.Logger.LogError(e);
-
-          levelConfig = CreateDefaultLevelMetadata();
-        }
-      }
-      else
-      {
-        bnys.Logger.LogError($"{LocalName} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
-
-        bnys.Logger.LogError("Error loading files related to level:");
-        bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-
-        levelConfig = CreateDefaultLevelMetadata();
-      }
-
-      //Load content into metadata
-      if (string.IsNullOrEmpty(levelConfig.Content))
-      {
-        if (File.Exists(levelContentPath))
-        {
-          try
-          {
-            content = File.ReadAllText(levelContentPath);
-          }
-          catch (Exception e)
-          {
-            bnys.Logger.LogError("Error loading files related to level:");
-            bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-            bnys.Logger.LogError(e.Message);
-            bnys.Logger.LogError(e);
-          }
-        }
-        else if (burrowModel.ProxyUri != null)
-        {
-          var contentUri = new Uri(burrowModel.ProxyUri, $"{depth}.level");
-
-          try
-          {
-            content = contentUri.Load();
-          }
-          catch (Exception e)
-          {
-            bnys.Logger.LogError("Error loading files related to level:");
-            bnys.Logger.LogError(Path.Combine(burrowModel.Directory, depth.ToString()));
-            bnys.Logger.LogError("Expected web path:");
-            bnys.Logger.LogError(contentUri);
-            bnys.Logger.LogError(e.Message);
-            bnys.Logger.LogError(e);
-          }
-        }
-      }
-
-      if (string.IsNullOrEmpty(content))
-      {
-        bnys.Logger.LogError($"{LocalName} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
-        content = DefaultLevel.Content;
-      }
-      else if (!ContentValidator.ValidateLevelContent(content))
-      {
-        bnys.Logger.LogError($"{LocalName} - {depth}: Invalid tiles detected.");
-        content = DefaultLevel.Content;
-      } 
-
-      levelConfig.Style = levelConfig.Style ?? burrowModel.Style;
-      levelConfig.Content = content;
-
-      return levelConfig;
-    }
-
-    private LevelMetadata CreateDefaultLevelMetadata()
-    {
-      return new LevelMetadata()
-      {
-        Name = "Failed Level Load",
-        LiveReloading = true,
-        IsHell = false,
-        IsTemple = false,
-        Tools = new LevelTools()
-      };
-    }
-
-    private void PopulateLevel(BNYSLevelObject levelObject, LevelMetadata levelConfig, int depth)
-    {
-      levelObject.name = $"Level {burrowModel.Name} - {levelConfig.Name}";
-
-      // Prepend name with space -- hack
-      levelObject.CustomNameKey = " " + levelConfig.Name;
-      levelObject.BunburrowStyle = BNYSPlugin.ResolveStyle(levelConfig.Style);
-
-      if (levelConfig.Tools is LevelTools tools)
-      {
-        levelObject.NumberOfTraps = tools.Traps;
-        levelObject.NumberOfPickaxes = tools.Pickaxes;
-        levelObject.NumberOfCarrots = tools.Carrots;
-        levelObject.NumberOfShovels = tools.Shovels;
-      }
-      levelObject.IsTemple = levelConfig.IsTemple;
-      levelObject.IsHell = levelConfig.IsHell;
-
-      levelObject.Content = levelConfig.Content;
     }
   }
 }

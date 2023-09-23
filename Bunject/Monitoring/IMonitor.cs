@@ -12,5 +12,7 @@ namespace Bunject.Monitoring
   public interface IMonitor : IBunjectorPlugin
   {
     LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity);
+
+    LevelsList LoadEmergencyLevelsList(LevelsList original);
   }
 }

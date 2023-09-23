@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
 using Bunject.Levels;
+using Bunject.Monitoring;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
@@ -28,7 +29,7 @@ using static UnityEngine.UI.Image;
 namespace Bunject.NewYardSystem 
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -135,9 +136,26 @@ namespace Bunject.NewYardSystem
 
     public void OnProgressionLoaded(GeneralProgression progression)
     {
+      progression.HandleBunburrowSignsDiscovery();
       progression.HandleBackToSurfaceUnlock();
       progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();
+    }
+
+    public LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity)
+    {
+      return level;
+    }
+
+    private EmergencyLevelsList emergencyList;
+    public LevelsList LoadEmergencyLevelsList(LevelsList original)
+    {
+      if (emergencyList == null)
+      {
+        emergencyList = ScriptableObject.CreateInstance<EmergencyLevelsList>();
+        emergencyList.Bnys = this;
+      }
+      return emergencyList;
     }
 
     public void LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
@@ -283,18 +301,26 @@ namespace Bunject.NewYardSystem
 
     private bool surfaceLevelsGenerated = false;
 
-    private void GenerateSurfaceLevels(LevelObject original)
+    private void GenerateSurfaceLevels(LevelObject coreSurfaceRight)
     {
       if (surfaceLevelsGenerated)
         return;
 
-      var previous = original;
+      var previous = coreSurfaceRight;
       foreach (var world in CustomWorlds)
       {
-        ExtendedBurrowLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
-        previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+        try
+        {
+          ExtendedSurfaceLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
+          previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+        }
+        catch (Exception e)
+        {
+          Logger.LogError($"Error occurred while generating surface levels for world: {world.Title}");
+          Logger.LogError(e.Message);
+          Logger.LogError(e);
+        }
       }
-
       PatchLevelAsEndcap(previous);
 
       surfaceLevelsGenerated = true;

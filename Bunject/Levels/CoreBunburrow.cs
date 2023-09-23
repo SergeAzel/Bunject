@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.Levels
 {
@@ -26,6 +27,14 @@ namespace Bunject.Levels
     public BunburrowStyle Style { get; }
 
     private LevelsList levels;
+
+    public bool HasEntrance => true;
+    public bool HasSign => true;
+
+    public Vector2Int? OverrideSignCoordinate()
+    {
+      return null;
+    }
 
     public LevelsList GetLevels()
     {

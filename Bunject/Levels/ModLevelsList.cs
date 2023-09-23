@@ -112,5 +112,11 @@ namespace Bunject.Levels
       get { return TraverseList.Value[depth - 1] as ModLevelObject; }
       set { TraverseList.Value[depth - 1] = value; }
     }
+
+    // To permit us doing strange things with level lists...
+    public virtual LevelObject GetLevel(int depth)
+    {
+      return this[depth];
+    }
   }
 }

@@ -21,14 +21,4 @@ namespace Bunject.Patches.AssetsManagerPatches
       value = new ReadOnlyDictionary<string, LevelsList>(new InjectionDictionary<string, LevelsList>(AssetsManagerRewiring.LoadLevelsList, value));
     }
   }
-
-  
-  [HarmonyPatch(typeof(AssetsManager), "SurfaceRightLevel", MethodType.Getter)]
-  class SurfaceRightLevelPatch
-  {
-    static LevelObject Postfix(LevelObject __result)
-    {
-      return OnLoadLevel.LoadLevel(__result) ?? __result;
-    }
-  }
 }

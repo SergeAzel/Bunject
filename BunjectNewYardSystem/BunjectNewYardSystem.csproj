@@ -30,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -96,18 +97,22 @@
     <Compile Include="Levels\BNYSLevelsList.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
-    <Compile Include="Levels\ExtendedBurrowLevelGenerator.cs" />
+    <Compile Include="Levels\EmergencyLevelsList.cs" />
+    <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
     <Compile Include="Levels\BNYSModBunburrow.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
     <Compile Include="Model\CustomBunburrowModel.cs" />
     <Compile Include="Model\CustomWorld.cs" />
+    <Compile Include="Model\GlobalConfig.cs" />
     <Compile Include="Model\LevelMetadata.cs" />
+    <Compile Include="Model\SurfaceEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\DefaultLevel.cs" />
     <Compile Include="Resources\ImportImage.cs" />
     <Compile Include="Levels\SurfaceBurrowsPatch.cs" />
     <Compile Include="Utility\UriExtensions.cs" />
+    <Compile Include="Utility\CoordinateJsonConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bunject\Bunject.csproj">
