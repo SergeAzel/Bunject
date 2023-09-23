@@ -43,9 +43,9 @@ namespace Bunject
       BunburrowManager.RegisterBurrow(modBunburrow);
     }
 
-		public static void RegisterElevator(string indicator, int depth)
+    public static void RegisterElevator(int bunburrowID, int depth)
     {
-      ModElevatorController.Instance.RegisterElevator(indicator, depth);
+      BunburrowManager.RegisterElevator(bunburrowID, depth);
     }
 
 

@@ -68,6 +68,9 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IBunjectorPlugin.cs" />
@@ -78,7 +81,7 @@
     <Compile Include="Internal\CustomBunburrowExtension.cs" />
     <Compile Include="Internal\ForwardingBunjector.cs" />
     <Compile Include="Internal\LevelBuilderExtensions.cs" />
-    <Compile Include="Internal\ModElevatorController.cs" />
+    <Compile Include="Internal\ElevatorManager.cs" />
     <Compile Include="Internal\SaveFileModUtility.cs" />
     <Compile Include="Levels\CoreBunburrow.cs" />
     <Compile Include="Levels\IModBunburrow.cs" />

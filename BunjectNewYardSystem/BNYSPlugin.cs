@@ -112,7 +112,17 @@ namespace Bunject.NewYardSystem
         LinkLevelLists(BNYSModBurrows);
 
         foreach (var bunburrow in modBunburrows)
+        {
           BunjectAPI.RegisterBunburrow(bunburrow);
+
+          if (bunburrow is BNYSModBunburrow bnysBurrow)
+          {
+            foreach (var elevatorDepth in bnysBurrow.Model.ElevatorDepths)
+            {
+              BunjectAPI.RegisterElevator(bunburrow.ID, elevatorDepth);
+            }
+          }
+        }
 
         BunjectAPI.RegisterPlugin(this);
 
@@ -190,14 +200,6 @@ namespace Bunject.NewYardSystem
           CustomWorld world = LoadWorldConfig(configFile);
           if (world != null)
           {
-            if (world.Burrows.Any(x => x.ElevatorDepths.Any()))
-            {
-              foreach (var burrow in world.Burrows)
-              {
-                foreach (var depth in burrow.ElevatorDepths)
-                  BunjectAPI.RegisterElevator(burrow.Indicator, depth);
-              }
-            }
             if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
               continue;
 

@@ -3,6 +3,8 @@ using Bunject.Internal;
 using Bunject.Levels;
 using HarmonyLib;
 using Levels;
+using Newtonsoft.Json;
+using Saving.Architecture;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,11 +118,26 @@ namespace Bunject.Patches.GameManagerPatches
 			return codes;
 		}
 
-		private static bool Infix(string elevatorName, out LevelIdentity levelIdentity)
+		private static bool Infix(string elevatorName, out LevelIdentity level)
 		{
-			return ModElevatorController.Instance.TryGetLevel(elevatorName, out levelIdentity);
+      return ElevatorManager.IsElevatorUnlock(elevatorName, out level);
 		}
 	}
+	
+  [HarmonyPatch(typeof(GameManager), "Init")]
+  internal class Init
+  {
+    public static System.Collections.IEnumerator Postfix(System.Collections.IEnumerator __result)
+    {
+
+      while (__result.MoveNext())
+      {
+        var item = __result.Current;
+        yield return item;
+      }
+      yield return ElevatorManager.ExtractElevatorProgression();
+    }
+  }
 
   [HarmonyPatch(typeof(GameManager), "InstantiateBunburrowEntrySigns")]
   internal class InstantiateBunburrowEntrySignsPatch

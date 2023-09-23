@@ -3,8 +3,11 @@ using Bunject.Internal;
 using Dialogue;
 using HarmonyLib;
 using Levels;
+using Newtonsoft.Json;
+using Saving.Architecture;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -42,9 +45,9 @@ namespace Bunject.Patches.ChoiceSelectorPatches
 			var levels = new List<LevelIdentity>();
 			foreach (var elevator in GameManager.GeneralProgression.UnlockedElevators)
 			{
-				if (ModElevatorController.Instance.TryGetLevel(elevator, out var level))
+				if (ElevatorManager.IsElevatorUnlock(elevator, out var l))
 				{
-					levels.Add(level);
+					levels.Add(l);
 					elevators.Add(new ChoiceObject(elevator, elevator, false));
 				}
 			}

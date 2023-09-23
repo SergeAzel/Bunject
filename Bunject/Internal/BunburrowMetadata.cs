@@ -14,5 +14,8 @@ namespace Bunject.Internal
     public bool IsCustom { get; set; }
 
     public IModBunburrow ModBunburrow { get; set; }
+
+    // make this an HashSet considering only 1 elevator per floor?
+    public List<int> Elevators { get; set; } = new List<int>();
   }
 }

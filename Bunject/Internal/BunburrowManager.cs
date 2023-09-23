@@ -47,6 +47,15 @@ namespace Bunject.Internal
       instance.bunburrows.Add(bunburrow);
     }
 
+    internal static void RegisterElevator(int bunburrowID, int depth)
+    {
+      var burrow = Bunburrows.FirstOrDefault(x => x.ID == bunburrowID);
+      if (burrow is null)
+        throw new ArgumentException($"Bunburrow id {bunburrowID} does not exist!  Please use an existing id.");
+      if (burrow.Elevators.Contains(depth))
+        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
+      burrow.Elevators.Add(depth);
+    }
     private BunburrowManager()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>
