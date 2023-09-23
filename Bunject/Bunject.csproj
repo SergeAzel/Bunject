@@ -85,6 +85,7 @@
     <Compile Include="Levels\ModLevelObject.cs" />
     <Compile Include="Levels\ModLevelsList.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
+    <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
     <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
     <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />

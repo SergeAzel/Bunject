@@ -21,7 +21,7 @@ namespace Bunject.Internal
 
     public static bool IsCustomBunburrow(this Bunburrows.Bunburrow bunburrow)
     {
-      return ((int)bunburrow > BunburrowManager.CustomBunburrowThreshold);
+      return ((int)bunburrow > BunburrowManager.CustomBunburrowThreshold) && BunburrowManager.Bunburrows.Any(x => x.ID == (int)bunburrow);
     }
 
     public static IEnumerable<Bunburrows.Bunburrow> GetRegularAndCustomBunbrrowEnumerator()

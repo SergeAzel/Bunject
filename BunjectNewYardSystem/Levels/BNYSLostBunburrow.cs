@@ -1,3 +1,4 @@
+using Bunburrows;
 using Bunject.Levels;
 using Levels;
 using System;
@@ -24,6 +25,8 @@ namespace Bunject.NewYardSystem.Levels
     public string Indicator { get; set; }
 
     public bool IsVoid { get; set; } = false;
+
+    public BunburrowStyle Style { get; set; }
 
     public LevelObject GetLevel(int depth)
     {

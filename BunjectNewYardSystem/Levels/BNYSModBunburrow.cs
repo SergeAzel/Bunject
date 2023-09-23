@@ -47,12 +47,24 @@ namespace Bunject.NewYardSystem.Levels
     // To be uncommented when world caching is refined
     public string Name => /*WorldName + "::" +*/ LocalName;
 
-
     public string WorldPrefix { get; set; }
     public string LocalIndicator { get; set; }
     public string Indicator => /*WorldPrefix + "-" +*/ LocalIndicator;
 
-    public bool IsVoid { get; set; } 
+    public bool IsVoid { get; set; }
+
+    private BunburrowStyle style = null;
+    public BunburrowStyle Style
+    {
+      get
+      {
+        if (style == null)
+        {
+          style = BNYSPlugin.ResolveStyle(Model.Style);
+        }
+        return style;
+      }
+    }
 
     public BNYSLevelObject GetLevel(int depth)
     {
