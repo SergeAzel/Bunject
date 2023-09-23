@@ -10,10 +10,14 @@ namespace Bunject.NewYardSystem.Model
 {
   public class CustomWorld
   {
+    public string ProxyURL { get; set; }
     public bool Enabled { get; set; } = true;
     public bool LiveReloading { get; set; } = false;
-    public string Title { get; set; } = "Title";
+    public string Title { get; set; }
     public List<Burrow> Burrows { get; set; }
+
+    [JsonIgnore]
+    public Uri ProxyUri { get; set; }
 
     [JsonIgnore]
     public List<LevelObject> GeneratedSurfaceLevels { get; set; }
