@@ -150,6 +150,8 @@ namespace Bunject.NewYardSystem
       progression.HandleBackToSurfaceUnlock();
       progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();
+      progression.HandleMapUnlock();
+      progression.HandleOphelineRobotUnlock();
     }
 
     public LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity)
