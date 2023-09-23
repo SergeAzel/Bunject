@@ -133,6 +133,7 @@ namespace Bunject.NewYardSystem
 
     public void OnProgressionLoaded(GeneralProgression progression)
     {
+      progression.HandleBunburrowSignsDiscovery();
       progression.HandleBackToSurfaceUnlock();
       progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();

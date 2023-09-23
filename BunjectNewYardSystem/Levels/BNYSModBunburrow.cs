@@ -79,9 +79,9 @@ namespace Bunject.NewYardSystem.Levels
 
     private void InitializeCustomSignCoordinate()
     {
-      var surfaceCoordinate = World.SurfaceEntries.Where(se => se.Coordinates != null)
-                               .SelectMany(se => se.Coordinates).Where(kvp => kvp.Key == LocalName)
-                               .Select(kvp => kvp.Value).FirstOrDefault();
+      var surfaceCoordinate = World.SurfaceEntries?.Where(se => se.Coordinates != null)
+                               ?.SelectMany(se => se.Coordinates)?.Where(kvp => kvp.Key == LocalName)
+                               ?.Select(kvp => kvp.Value)?.FirstOrDefault();
 
       if (surfaceCoordinate != null)
       {
