@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Internal;
+using Bunject.Levels;
 using HarmonyLib;
 using Levels;
 using System;
@@ -9,6 +10,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject.Patches.GameManagerPatches
 {
@@ -131,4 +134,61 @@ namespace Bunject.Patches.GameManagerPatches
 			return ModElevatorController.Instance.TryGetLevel(elevatorName, out levelIdentity);
 		}
 	}
+
+  [HarmonyPatch(typeof(GameManager), "InstantiateBunburrowEntrySigns")]
+  internal class InstantiateBunburrowEntrySignsPatch
+  {
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+    {
+      var tileLevelData_LeftTile = AccessTools.PropertyGetter(typeof(TileLevelData), nameof(TileLevelData.LeftTile));
+      int state = 0;
+      foreach (var code in instructions)
+      {
+        yield return code;
+        switch (state)
+        {
+          case 0:
+            if (code.Calls(tileLevelData_LeftTile))
+            {
+              state = 1;
+            }
+            break;
+          case 1:
+            if (code.IsStloc())
+            {
+              yield return new CodeInstruction(OpCodes.Ldloc_2);
+              yield return new CodeInstruction(OpCodes.Ldloc_3);
+              yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(InstantiateBunburrowEntrySignsPatch), nameof(GetSignTile)));
+              yield return new CodeInstruction(OpCodes.Stloc_3);
+              state = 2;
+            }
+            break;
+        }
+      }
+    }
+
+    private static FloorTile GetSignTile(BunburrowEntryTile currentHole, FloorTile otherwise)
+    {
+      FloorTile res = otherwise;
+      if (currentHole.Bunburrow is Bunburrow b && b.IsCustomBunburrow() && b.GetModBunburrow() is IModBunburrow modBurrow)
+      {
+        if (!modBurrow.HasSign)
+        {
+          // Override... prevent sign?
+          res = null;
+        }
+        else if (!modBurrow.HasEntrance)
+        {
+          // If sign with no entrance.. replace entry hole with sign?
+          res = currentHole;
+        }
+        else if (modBurrow.OverrideSignCoordinate() is Vector2Int coordinate)
+        {
+          // If it doesn't cast as FloorTile, implicit failure.
+          res = LevelBuilderExtensions.GetTileInListByCoordinates(GameManager.CurrentLevel.Tiles.ToList(), coordinate.y, coordinate.x) as FloorTile ?? res;
+        }
+      }
+      return res;
+    }
+  }
 }

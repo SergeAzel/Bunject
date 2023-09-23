@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
@@ -27,6 +28,14 @@ namespace Bunject.NewYardSystem.Levels
     public bool IsVoid { get; set; } = false;
 
     public BunburrowStyle Style { get; set; }
+
+    public bool HasEntrance => false;
+    public bool HasSign => false;
+
+    public Vector2Int? OverrideSignCoordinate()
+    {
+      return null;
+    }
 
     public LevelObject GetLevel(int depth)
     {

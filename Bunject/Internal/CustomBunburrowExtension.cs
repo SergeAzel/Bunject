@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace Bunject.Internal
     public static bool IsCustomBunburrow(this Bunburrows.Bunburrow bunburrow)
     {
       return ((int)bunburrow > BunburrowManager.CustomBunburrowThreshold) && BunburrowManager.Bunburrows.Any(x => x.ID == (int)bunburrow);
+    }
+
+    public static IModBunburrow GetModBunburrow(this Bunburrows.Bunburrow bunburrow)
+    {
+      return BunburrowManager.Bunburrows.FirstOrDefault(x => x.ID == (int)bunburrow)?.ModBunburrow;
     }
 
     public static IEnumerable<Bunburrows.Bunburrow> GetRegularAndCustomBunbrrowEnumerator()

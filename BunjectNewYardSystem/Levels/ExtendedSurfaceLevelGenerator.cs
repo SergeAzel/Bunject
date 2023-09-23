@@ -28,13 +28,13 @@ namespace Bunject.NewYardSystem.Levels
     {
       if (world.GeneratedSurfaceLevels == null)
       {
-        var accessibleBurrows = modBunburrows.Where(b => b.Model.HasSurfaceEntry && b.Model.Depth > 0).ToDictionary(b => b.Name);
+        var accessibleBurrows = modBunburrows.Where(b => b.Model.Depth > 0).ToDictionary(b => b.Name);
 
         world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
     }
 
-    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSModBunburrow> enterableBurrows)
+    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSModBunburrow> burrows)
     {
       foreach (var surfaceEntry in world.SurfaceEntries ?? Enumerable.Empty<SurfaceEntry>())
       {
@@ -44,11 +44,11 @@ namespace Bunject.NewYardSystem.Levels
         switch (GetSurfaceType(surfaceEntry))
         {
           case SurfaceType.Coordinates:
-            (content, consumedBurrows) = GenerateCoordinatesSurfaceContent(surfaceEntry.Coordinates, enterableBurrows);
+            (content, consumedBurrows) = GenerateCoordinatesSurfaceContent(surfaceEntry.Coordinates, burrows);
             break;
 
           case SurfaceType.Grid:
-            (content, consumedBurrows) = GenerateGridSurfaceContent(surfaceEntry.Grid, enterableBurrows);
+            (content, consumedBurrows) = GenerateGridSurfaceContent(surfaceEntry.Grid, burrows);
             break;
         }
 
@@ -63,6 +63,7 @@ namespace Bunject.NewYardSystem.Levels
         }
       }
 
+      var enterableBurrows = burrows.Values.Where(b => b.Model.HasSurfaceEntry).ToList();
       while (enterableBurrows.Any())
       {
         var (content, consumedBurrows) = GenerateDefaultSurfaceLevel(enterableBurrows);
@@ -149,28 +150,28 @@ namespace Bunject.NewYardSystem.Levels
       return GenerateCoordinatesSurfaceContent(coordinates, bunburrows);
     }
 
-    private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(Dictionary<string, BNYSModBunburrow> bunburrows)
+    private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(List<BNYSModBunburrow> bunburrows)
     {
       var consumedBurrows = new List<BNYSModBunburrow>();
 
-      var first = bunburrows.FirstOrDefault().Value;
+      var first = bunburrows.FirstOrDefault();
       if (first != null)
       {
-        bunburrows.Remove(first.Name);
+        bunburrows.Remove(first);
         consumedBurrows.Add(first);
       }
 
-      var second = bunburrows.FirstOrDefault().Value;
+      var second = bunburrows.FirstOrDefault();
       if (second != null)
       {
-        bunburrows.Remove(second.Name);
+        bunburrows.Remove(second);
         consumedBurrows.Add(second);
       }
 
-      var third = bunburrows.FirstOrDefault().Value;
+      var third = bunburrows.FirstOrDefault();
       if (third != null)
       {
-        bunburrows.Remove(third.Name);
+        bunburrows.Remove(third);
         consumedBurrows.Add(third);
       }
 

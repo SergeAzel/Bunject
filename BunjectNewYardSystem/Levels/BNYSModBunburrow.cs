@@ -34,6 +34,8 @@ namespace Bunject.NewYardSystem.Levels
       LocalIndicator = burrowModel.Indicator;
 
       IsVoid = burrowModel.IsVoid;
+
+      InitializeCustomSignCoordinate();
     }
 
     public int ID { get; set; }
@@ -65,6 +67,38 @@ namespace Bunject.NewYardSystem.Levels
         return style;
       }
     }
+
+    public bool HasEntrance => Model.HasSurfaceEntry;
+    public bool HasSign { get; private set; } = true;
+
+    private Vector2Int? customSignCoordinate;
+    public Vector2Int? OverrideSignCoordinate()
+    {
+      return customSignCoordinate;
+    }
+
+    private void InitializeCustomSignCoordinate()
+    {
+      var surfaceCoordinate = World.SurfaceEntries.Where(se => se.Coordinates != null)
+                               .SelectMany(se => se.Coordinates).Where(kvp => kvp.Key == LocalName)
+                               .Select(kvp => kvp.Value).FirstOrDefault();
+
+      if (surfaceCoordinate != null)
+      {
+        if (!surfaceCoordinate.NoSign)
+        {
+          if (surfaceCoordinate.Sign != null && surfaceCoordinate.Sign.Length > 1)
+          {
+            customSignCoordinate = new Vector2Int(surfaceCoordinate.Sign[0], surfaceCoordinate.Sign[1]);
+          }
+        }
+        else
+        {
+          HasSign = false;
+        }
+      }
+    }
+
 
     public BNYSLevelObject GetLevel(int depth)
     {
