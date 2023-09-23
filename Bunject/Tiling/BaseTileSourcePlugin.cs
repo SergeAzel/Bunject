@@ -21,6 +21,11 @@ namespace Bunject.Tiling
     {
     }
 
+    public virtual LevelsList LoadEmergencyLevelsList(LevelsList original)
+    {
+      return original;
+    }
+
     public abstract bool SupportsTile(string tile);
 
     public abstract Tile LoadTile(LevelObject levelObject, string tile, Vector2Int position);

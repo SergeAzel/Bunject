@@ -15,19 +15,6 @@ using UnityEngine;
 
 namespace Bunject.Patches.GameManagerPatches
 {
-  [HarmonyPatch(typeof(GameManager), "CheckForPotentialOutOfBoundsLevel")]
-  class CheckForPotentialOutOfBoundsLevelPatch
-  {
-    private static bool Postfix(bool __result, Misc.Direction direction, ref LevelObject levelObject)
-    {
-      if (__result && levelObject != null)
-      {
-        levelObject = OnLoadLevel.LoadLevel(levelObject) ?? levelObject;
-      }
-      return __result;
-    }
-  }
-
   // Correct the burrow provided by dialogues to the HandleDialogueEvent proc
   [HarmonyPatch(typeof(GameManager), nameof(GameManager.HandleDialogueEvent))]
   class HandleDialogueEventPatches

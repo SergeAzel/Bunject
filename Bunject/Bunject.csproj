@@ -79,7 +79,6 @@
     <Compile Include="Internal\ForwardingBunjector.cs" />
     <Compile Include="Internal\LevelBuilderExtensions.cs" />
     <Compile Include="Internal\ModElevatorController.cs" />
-    <Compile Include="Internal\OnLoadLevel.cs" />
     <Compile Include="Internal\SaveFileModUtility.cs" />
     <Compile Include="Levels\CoreBunburrow.cs" />
     <Compile Include="Levels\IModBunburrow.cs" />

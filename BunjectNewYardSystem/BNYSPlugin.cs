@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
 using Bunject.Levels;
+using Bunject.Monitoring;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
@@ -26,7 +27,7 @@ using static UnityEngine.UI.Image;
 namespace Bunject.NewYardSystem 
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -137,6 +138,22 @@ namespace Bunject.NewYardSystem
       progression.HandleBackToSurfaceUnlock();
       progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();
+    }
+
+    public LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity)
+    {
+      return level;
+    }
+
+    private EmergencyLevelsList emergencyList;
+    public LevelsList LoadEmergencyLevelsList(LevelsList original)
+    {
+      if (emergencyList == null)
+      {
+        emergencyList = ScriptableObject.CreateInstance<EmergencyLevelsList>();
+        emergencyList.Bnys = this;
+      }
+      return emergencyList;
     }
 
     public void LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)

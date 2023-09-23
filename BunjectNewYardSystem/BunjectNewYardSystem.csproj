@@ -97,6 +97,7 @@
     <Compile Include="Levels\BNYSLevelsList.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
+    <Compile Include="Levels\EmergencyLevelsList.cs" />
     <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
     <Compile Include="Levels\BNYSModBunburrow.cs" />
     <Compile Include="Model\Burrow.cs" />

@@ -25,8 +25,6 @@ namespace Bunject.Levels
 
     LevelsList GetLevels();
 
-    LevelObject GetLevel(int depth);
-
     LevelObject GetSurfaceLevel();
   }
 }

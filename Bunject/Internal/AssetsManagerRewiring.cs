@@ -12,9 +12,14 @@ namespace Bunject.Internal
   {
     internal static LevelsList LoadLevelsList(string name, LevelsList original)
     {
+      var result = original;
       if (original == null || original is ModLevelsList)
-        return BunjectAPI.Forward.LoadLevelsList(name, original as ModLevelsList);
-      return original;
+        result = BunjectAPI.Forward.LoadLevelsList(name, original as ModLevelsList);
+
+      if (result == null)
+        return BunjectAPI.Forward.LoadEmergencyLevelsList(null);
+
+      return result;
     }
   }
 }

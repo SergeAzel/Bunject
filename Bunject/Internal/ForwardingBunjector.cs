@@ -32,15 +32,18 @@ namespace Bunject.Internal
         bunjector.OnProgressionLoaded(progression);
       }
     }
+
+
     #endregion
 
-    #region ILevelSource Implementation
+    #region ILevelSource (not actually a thing anymore but still used) Implementation
     public ModLevelObject LoadLevel(ModLevelsList list, int depth, ModLevelObject original)
     {
       var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == list.name);
       if (modBurrow != null && modBurrow.IsCustom)
-      { 
-        return (ModLevelObject) modBurrow.ModBunburrow.GetLevel(depth);
+      {
+        if (modBurrow.ModBunburrow.GetLevels() is ModLevelsList levelsList)
+          return levelsList[depth];
       }
 
       return original;
@@ -62,6 +65,9 @@ namespace Bunject.Internal
       var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == listName);
       return modBurrow?.ModBunburrow?.GetSurfaceLevel() ?? otherwise;
     }
+    #endregion
+
+    #region IMonitor implementation
 
     public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
     {
@@ -69,6 +75,16 @@ namespace Bunject.Internal
       foreach (var monitors in BunjectAPI.Monitors)
       {
         result = monitors.StartLevelTransition(result, identity);
+      }
+      return result;
+    }
+
+    public LevelsList LoadEmergencyLevelsList(LevelsList original)
+    {
+      var result = original;
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        result = bunjector.LoadEmergencyLevelsList(result);
       }
       return result;
     }
