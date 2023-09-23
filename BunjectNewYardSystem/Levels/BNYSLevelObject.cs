@@ -9,7 +9,7 @@ namespace Bunject.NewYardSystem.Levels
 {
   public class BNYSLevelObject : ModLevelObject
   {
-    // overwritten on initial load
+    // overwritten on initial load - keep default to true please
     public bool ShouldReload { get; set; } = true;
   }
 }

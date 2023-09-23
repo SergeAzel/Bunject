@@ -12,8 +12,6 @@ namespace Bunject.NewYardSystem.Model
 {
   public class Burrow
   {
-    [JsonIgnore]
-    public int ID { get; set; }
     public string Directory { get; set; }
     public string Name { get; set; }
     public string Indicator { get; set; }
@@ -28,6 +26,9 @@ namespace Bunject.NewYardSystem.Model
 
     public BurrowLinks Links { get; set; } = new BurrowLinks();
     public List<int> ElevatorDepths { get; set; } = new List<int>();
+
+    [JsonIgnore]
+    public Uri ProxyUri { get; set; }
 
     [JsonIgnore]
     public ModLevelsList Levels { get; set; }
