@@ -10,6 +10,15 @@ namespace Bunject.NewYardSystem.Levels
   public class BNYSLevelObject : ModLevelObject
   {
     // overwritten on initial load - keep default to true please
-    public bool ShouldReload { get; set; } = true;
+    private bool shouldReload = true;
+    public bool ShouldReload
+    {
+      get { return IsWebLoad ? (shouldReload && LastReloadTime.Minute != DateTime.Now.Minute) : shouldReload; }
+      set { shouldReload = value; }
+    }
+
+    public DateTime LastReloadTime { get; set; }
+
+    public bool IsWebLoad { get; set; } = false;
   }
 }

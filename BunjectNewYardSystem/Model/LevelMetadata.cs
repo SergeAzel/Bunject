@@ -21,6 +21,8 @@ namespace Bunject.NewYardSystem.Model
     public bool IsHell { get; set; }
 
     public string Content { get; set; }
+
+    public bool IsWebLevel { get; set; }
   }
 
   public class LevelTools

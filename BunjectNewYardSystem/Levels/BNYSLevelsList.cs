@@ -62,6 +62,8 @@ namespace Bunject.NewYardSystem.Levels
       var metadata = LoadLevelFromFile(depth);
 
       levelObject.ShouldReload = ModBunburrow.World.LiveReloading || metadata.LiveReloading;
+      levelObject.LastReloadTime = DateTime.Now;
+      levelObject.IsWebLoad = metadata.IsWebLevel;
 
       PopulateLevel(levelObject, metadata, depth);
     }
@@ -103,6 +105,7 @@ namespace Bunject.NewYardSystem.Levels
         try
         {
           levelConfig = contentProxyUri.Load<LevelMetadata>();
+          levelConfig.IsWebLevel = true;
         }
         catch (Exception e)
         {
@@ -151,6 +154,7 @@ namespace Bunject.NewYardSystem.Levels
           try
           {
             content = contentUri.Load();
+            levelConfig.IsWebLevel = true;
           }
           catch (Exception e)
           {
