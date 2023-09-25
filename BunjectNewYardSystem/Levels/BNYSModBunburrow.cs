@@ -128,7 +128,7 @@ namespace Bunject.NewYardSystem.Levels
       levelsList.ModBunburrow = this;
       levelsList.Bnys = bnys;
 
-      levelsList.name = burrowModel.Name;
+      levelsList.name = Name;
       levelsList.MaximumDepth = burrowModel.Depth;
       levelsList.NumberOfRegularBunnies = burrowModel.UpperBunnyCount;
       levelsList.NumberOfTempleBunnies = burrowModel.TempleBunnyCount;

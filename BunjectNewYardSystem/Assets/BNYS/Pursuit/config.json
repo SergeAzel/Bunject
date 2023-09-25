@@ -1,11 +1,12 @@
 {
-    "Enabled": true,
-    "Title": "Pursuit of a God",
+  "Enabled": true,
+  "Title": "Pursuit of a God",
+  "Prefix": "PG",
   "Burrows": [
     {
       "Directory": "BurrowA",
       "Name": "Burrow A",
-      "Indicator": "PGK",
+      "Indicator": "K",
       "Style": "Hay",
       "HasSurfaceEntry": true,
       "UpperBunnyCount": 3,
@@ -23,7 +24,7 @@
     {
       "Directory": "BurrowB",
       "Name": "Burrow B",
-      "Indicator": "PGH",
+      "Indicator": "H",
       "Style": "Sunken",
       "HasSurfaceEntry": true,
       "UpperBunnyCount": 3,

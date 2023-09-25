@@ -28,7 +28,7 @@ namespace Bunject.NewYardSystem.Levels
     {
       if (world.GeneratedSurfaceLevels == null)
       {
-        var accessibleBurrows = modBunburrows.Where(b => b.Model.Depth > 0).ToDictionary(b => b.Name);
+        var accessibleBurrows = modBunburrows.Where(b => b.Model.Depth > 0).ToDictionary(b => b.LocalName);
 
         world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
@@ -44,16 +44,19 @@ namespace Bunject.NewYardSystem.Levels
         switch (GetSurfaceType(surfaceEntry))
         {
           case SurfaceType.Coordinates:
+            Console.WriteLine($"{world.Title}: Creating Coordinate Surface World!");
             (content, consumedBurrows) = GenerateCoordinatesSurfaceContent(surfaceEntry.Coordinates, burrows);
             break;
 
           case SurfaceType.Grid:
+            Console.WriteLine($"{world.Title}: Creating Grid Surface World!");
             (content, consumedBurrows) = GenerateGridSurfaceContent(surfaceEntry.Grid, burrows);
             break;
         }
 
         if (consumedBurrows != null && !string.IsNullOrEmpty(content) && consumedBurrows.Count > 0)
         {
+          Console.WriteLine($"{consumedBurrows.Count} burrows placed in surface world");
           precedingLevel = GenerateLevel(world, content, precedingLevel);
 
           foreach (var consumedBurrow in consumedBurrows)
@@ -66,6 +69,7 @@ namespace Bunject.NewYardSystem.Levels
       var enterableBurrows = burrows.Values.Where(b => b.Model.HasSurfaceEntry).ToList();
       while (enterableBurrows.Any())
       {
+        Console.WriteLine($"{world.Title}: Creating DEFAULT Surface World");
         var (content, consumedBurrows) = GenerateDefaultSurfaceLevel(enterableBurrows);
         precedingLevel = GenerateLevel(world, content, precedingLevel);
 

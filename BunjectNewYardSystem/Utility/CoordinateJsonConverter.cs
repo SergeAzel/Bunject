@@ -13,11 +13,9 @@ namespace Bunject.NewYardSystem.Utility
   {
     public override SurfaceCoordinate ReadJson(JsonReader reader, Type objectType, SurfaceCoordinate existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-      Console.WriteLine("Starting deserialize");
       switch (reader.TokenType)
       {
         case JsonToken.StartObject:
-          Console.WriteLine("Deserializing Object");
           var token = JToken.Load(reader);
           return new SurfaceCoordinate()
           {
@@ -26,7 +24,6 @@ namespace Bunject.NewYardSystem.Utility
             NoSign = token.Value<bool?>("NoSign") ?? false
           };
         case JsonToken.StartArray:
-          Console.WriteLine("Deserializing Array");
           var array = JArray.Load(reader);
           return new SurfaceCoordinate(array.Values<int>().ToArray());
         default:
