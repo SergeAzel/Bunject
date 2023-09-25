@@ -1,5 +1,6 @@
 using Bunburrows;
 using Bunject.Levels;
+using Bunject.NewYardSystem.Model;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,10 @@ namespace Bunject.NewYardSystem.Levels
 {
   public class BNYSLostBunburrow : IModBunburrow
   {
-    public BNYSLostBunburrow(string name, string indicator) 
+    public BNYSLostBunburrow(CustomBunburrowModel cachedBurrow) 
     {
-      Name = name;
-      Indicator = indicator;
+      Name = (string.IsNullOrEmpty(cachedBurrow.World) ? string.Empty : cachedBurrow.World + "::") + cachedBurrow.Name;
+      Indicator = (string.IsNullOrEmpty(cachedBurrow.Prefix) ? string.Empty : cachedBurrow.Prefix + "-") + cachedBurrow.Indicator;
     }
 
     public int ID { get; set; }

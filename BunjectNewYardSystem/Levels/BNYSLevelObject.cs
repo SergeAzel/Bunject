@@ -13,7 +13,7 @@ namespace Bunject.NewYardSystem.Levels
     private bool shouldReload = true;
     public bool ShouldReload
     {
-      get { return IsWebLoad ? (shouldReload && LastReloadTime.Minute != DateTime.Now.Minute) : shouldReload; }
+      get { return IsWebLoad ? (shouldReload && (LastReloadTime.Minute + 5 < DateTime.Now.Minute || LastReloadTime.Hour != DateTime.Now.Hour)) : shouldReload; }
       set { shouldReload = value; }
     }
 

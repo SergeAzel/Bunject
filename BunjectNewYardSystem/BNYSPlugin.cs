@@ -5,6 +5,7 @@ using Bunburrows;
 using Bunject;
 using Bunject.Levels;
 using Bunject.Monitoring;
+using Bunject.NewYardSystem.Exceptions;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
@@ -74,19 +75,25 @@ namespace Bunject.NewYardSystem
 
         foreach (var cachedBurrow in cache.CustomBurrows)
         {
-          var burrowModel = CustomWorlds.SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == cachedBurrow.Name);
+          var burrowModel = CustomWorlds.Where(cw => cachedBurrow.World == cw.Title || string.IsNullOrEmpty(cachedBurrow.World))
+            .SelectMany(cw => cw.Burrows).FirstOrDefault(b => b.Name == cachedBurrow.Name);
+
           var customWorld = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrowModel));
           if (burrowModel != null)
           {
             Logger.LogInfo($"Cached Burrow : {burrowModel.Name} found!");
+
+            cachedBurrow.World = customWorld.Title;
+            cachedBurrow.Prefix = customWorld.Prefix;
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
+
             modBunburrows.Add(new BNYSModBunburrow(this, customWorld, burrowModel));
           }
           else
           {
             Logger.LogInfo($"Cached Burrow : {cachedBurrow.Name} NOT found!");
             // assume levelpack was removed... register it for save file's sake
-            modBunburrows.Add(new BNYSLostBunburrow(cachedBurrow.Name, cachedBurrow.Indicator));
+            modBunburrows.Add(new BNYSLostBunburrow(cachedBurrow));
           }
         }
 
@@ -99,8 +106,9 @@ namespace Bunject.NewYardSystem
           if (cachedBurrow == null)
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} built!");
-            modBunburrows.Add(new BNYSModBunburrow(this, customWorld, burrow));
-            cache.CacheBunburrow(burrow.Name, burrow.Indicator);
+            var newBurrow = new BNYSModBunburrow(this, customWorld, burrow);
+            modBunburrows.Add(newBurrow);
+            cache.CacheBunburrow(newBurrow);
           }
         }
 
@@ -339,22 +347,30 @@ namespace Bunject.NewYardSystem
       {
         if (!string.IsNullOrEmpty(burrow.Model.Links.Left))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Left);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Left);
+          if (target == null)
+            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Left", burrow.Model.Links.Left);
           burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Left, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Up))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Up);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Up);
+          if (target == null)
+            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Up", burrow.Model.Links.Up);
           burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Up, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Right))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Right);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Right);
+          if (target == null)
+            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Right", burrow.Model.Links.Right);
           burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Right, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Down))
         {
-          var target = burrows.FirstOrDefault(bb => bb.Name == burrow.Model.Links.Down);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Down);
+          if (target == null)
+            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Down", burrow.Model.Links.Down);
           burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Down, target.GetLevels());
         }
       }

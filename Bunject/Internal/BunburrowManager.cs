@@ -31,9 +31,6 @@ namespace Bunject.Internal
       if (Bunburrows.Any(bb => bb.ModBunburrow.Name == modBunburrow.Name))
         throw new ArgumentException($"Bunburrow name {modBunburrow.Name} is already in use!  Please use a unique name.");
 
-      if (Bunburrows.Any(bb => bb.ModBunburrow.Indicator == modBunburrow.Indicator))
-        throw new ArgumentException($"Bunburrow indicator {modBunburrow.Indicator} is already in use!  Please use a unique indicator.");
-
       var id = ++instance.maxID;
 
       modBunburrow.ID = id;

@@ -14,6 +14,8 @@ namespace Bunject.NewYardSystem.Model
     public bool Enabled { get; set; } = true;
     public bool LiveReloading { get; set; } = false;
     public string Title { get; set; }
+    public string Prefix { get; set; }
+
     public List<Burrow> Burrows { get; set; }
 
     public List<SurfaceEntry> SurfaceEntries { get; set; }

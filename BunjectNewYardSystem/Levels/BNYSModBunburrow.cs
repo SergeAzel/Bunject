@@ -31,7 +31,7 @@ namespace Bunject.NewYardSystem.Levels
       WorldName = worldModel.Title;
       LocalName = burrowModel.Name;
 
-      WorldPrefix = null;
+      WorldPrefix = worldModel.Prefix;
       LocalIndicator = burrowModel.Indicator;
 
       IsVoid = burrowModel.IsVoid;
@@ -48,11 +48,11 @@ namespace Bunject.NewYardSystem.Levels
     public string LocalName { get; set; }
 
     // To be uncommented when world caching is refined
-    public string Name => /*WorldName + "::" +*/ LocalName;
+    public string Name => WorldName + "::" + LocalName;
 
     public string WorldPrefix { get; set; }
     public string LocalIndicator { get; set; }
-    public string Indicator => /*WorldPrefix + "-" +*/ LocalIndicator;
+    public string Indicator => (string.IsNullOrEmpty(WorldPrefix) ? string.Empty : WorldPrefix + "-") + LocalIndicator;
 
     public bool IsVoid { get; set; }
 

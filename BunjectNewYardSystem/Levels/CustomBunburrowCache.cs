@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using Bunject.Internal;
+using Bunject.NewYardSystem.Levels;
 using Bunject.NewYardSystem.Model;
 using Newtonsoft.Json;
 using System;
@@ -40,9 +41,9 @@ namespace Bunject.NewYardSystem.Internal
       }
     }
 
-    public CustomBunburrowModel CacheBunburrow(string name, string indicator)
+    public CustomBunburrowModel CacheBunburrow(BNYSModBunburrow bunburrow)
     {
-      var burrow = new CustomBunburrowModel { Name = name, Indicator = indicator };
+      var burrow = new CustomBunburrowModel { World = bunburrow.WorldName,  Name = bunburrow.LocalName, Prefix = bunburrow.WorldPrefix, Indicator = bunburrow.LocalIndicator };
       CustomBurrows.Add(burrow);
       return burrow;
     }

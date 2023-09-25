@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
+    <Compile Include="Exceptions\InvalidBurrowLinkException.cs" />
     <Compile Include="Levels\BNYSLevelObject.cs" />
     <Compile Include="Levels\BNYSLevelsList.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
