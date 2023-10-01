@@ -1,6 +1,7 @@
 ﻿using Bunburrows;
 using HarmonyLib;
 using Levels;
+using Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +9,13 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject.Patches.LevelBuilderPatches
 {
   [HarmonyPatch]
-  internal class BuildNewLevelPatch
+  internal class BuildNewLevelPatch_SupportMoreSurfaceEntries
   {
     static MethodInfo TargetMethod()
     {
@@ -25,7 +28,7 @@ namespace Bunject.Patches.LevelBuilderPatches
       // Not just the first character
       MethodInfo startsWith = typeof(String).GetMethod("StartsWith", new Type[] { typeof(string) });
       MethodInfo get_Chars = typeof(String).GetProperty("Chars").GetGetMethod();
-      MethodInfo char_ToString = typeof(Char).GetMethod("ToString", new Type[] { } );
+      MethodInfo char_ToString = typeof(Char).GetMethod("ToString", new Type[] { });
 
       int detectionStage = 0;
       foreach (var instructionIterate in instructions)
@@ -74,6 +77,99 @@ namespace Bunject.Patches.LevelBuilderPatches
 
         yield return instruction;
       }
+    }
+  }
+
+  [HarmonyPatch(typeof(LevelBuilder), "BuildNewLevel", argumentTypes: new Type[] { typeof(LevelObject), typeof(BunburrowStyle), typeof(bool) })]
+  internal class BuildNewLevelPatch_CustomTiles
+  {
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+    {
+      List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+
+      // this entire process is kind of convoluted
+
+      // find first if condition
+      var string_StartsWith = AccessTools.Method(typeof(string), nameof(string.StartsWith), new Type[] { typeof(string) });
+      int firstIf = codes.FindIndex(x => x.Is(OpCodes.Ldstr, "D")) - 1;
+      if (firstIf < 0) return codes;
+
+      // find second if condition
+      int secondIf = -1;
+      for (int i = firstIf; i < codes.Count; i++)
+      {
+        if (codes[i].Branches(out var l) && l is Label l1)
+        {
+          secondIf = codes.FindIndex(x => x.labels.Contains(l1));
+          break;
+        }
+      }
+
+      // backtrack to find operation that jumps at the end of the if-else chain
+      for (int i = secondIf; i > firstIf; i--)
+      {
+        if (codes[i].opcode == OpCodes.Br && codes[i].operand is Label endOfIfElses)
+        {
+          Label firstIfLabel = il.DefineLabel();
+          codes.InsertRange(firstIf, new List<CodeInstruction>
+          {
+            new CodeInstruction(OpCodes.Ldarg_0),     // levelObject
+            new CodeInstruction(OpCodes.Ldloc, 16),   // tile
+            new CodeInstruction(OpCodes.Ldloc, 17),   // position
+            new CodeInstruction(OpCodes.Ldloca, 18),  // tileData
+            new CodeInstruction(OpCodes.Ldloc_2),     // bunnyTiles
+            new CodeInstruction(OpCodes.Ldloc_3),     // startTiles
+            new CodeInstruction(OpCodes.Ldloc, 4),    // holeTiles
+            new CodeInstruction(OpCodes.Ldloca, 11),  // hasStartTrap
+            new CodeInstruction(OpCodes.Ldloca, 12),  // hasStartCarrot
+            CodeInstruction.Call(typeof(BuildNewLevelPatch_CustomTiles), nameof(BuildNewLevelPatch_CustomTiles.TryGetTile)),
+            new CodeInstruction(OpCodes.Brfalse, firstIfLabel),
+            new CodeInstruction(OpCodes.Br, endOfIfElses),
+            new CodeInstruction(OpCodes.Nop).WithLabels(firstIfLabel)
+          });
+          break;
+        }
+      }
+      return codes;
+    }
+
+    private static bool TryGetTile(LevelObject levelObject, string tile, Vector3Int position, out TileLevelData tileData,
+      List<KeyValuePair<TileLevelData, bool>> bunnyTiles, List<TileLevelData> startTiles, List<TileLevelData> holeTiles, ref bool hasStartTrap, ref bool hasStartCarrot)
+    {
+      bool isBunnyTile;
+      bool isStartTile;
+      bool isHoleTile;
+      var tileMetadata = BunjectAPI.Forward.LoadTile(levelObject, tile, position.ToVector2Int());
+
+      tileData = tileMetadata?.Instance;
+      if (tileData == null)
+      {
+        return false;
+      }
+
+      isBunnyTile = tileMetadata.IsBunnyTile;
+      isStartTile = tileMetadata.IsStartTile;
+      isHoleTile = tileMetadata.IsHoleTile;
+      var carrot = tileMetadata.HasStartCarrot;
+      var trap = tileMetadata.HasStartTrap;
+
+      if (isBunnyTile)
+      {
+        bunnyTiles.Add(new KeyValuePair<TileLevelData, bool>(tileData, false));
+      }
+      if (isStartTile)
+      {
+        startTiles.Add(tileData);
+      }
+      if (isHoleTile)
+      {
+        holeTiles.Add(tileData);
+      }
+
+      hasStartTrap |= trap;
+      hasStartCarrot |= carrot;
+
+      return tileData != null;
     }
   }
 }

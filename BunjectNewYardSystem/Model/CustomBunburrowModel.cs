@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Bunject.NewYardSystem.Model
 {
-  internal class CustomBunburrowModel
+  public class CustomBunburrowModel
   {
+    public string World { get; set; }
     public string Name { get; set; }
 
+    public string Prefix { get; set; }
     public string Indicator { get; set; }
 
     [JsonIgnore]

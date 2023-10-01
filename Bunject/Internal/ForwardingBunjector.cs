@@ -1,15 +1,22 @@
-﻿using HarmonyLib;
+﻿using Bunburrows;
+using Bunject.Levels;
+using Bunject.Monitoring;
+using Bunject.Tiling;
+using HarmonyLib;
 using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjector
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor
   {
+    #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
     {
       foreach (var bunjector in BunjectAPI.Bunjectors)
@@ -26,54 +33,73 @@ namespace Bunject.Internal
       }
     }
 
-    public LevelObject LoadLevel(string listName, int index, LevelObject original)
+
+    #endregion
+
+    #region ILevelSource (not actually a thing anymore but still used) Implementation
+    public ModLevelObject LoadLevel(ModLevelsList list, int depth, ModLevelObject original)
     {
-      var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == list.name);
+      if (modBurrow != null && modBurrow.IsCustom)
       {
-        result = bunjector.LoadLevel(listName, index, result);
+        if (modBurrow.ModBunburrow.GetLevels() is ModLevelsList levelsList)
+          return levelsList[depth];
       }
-      return result;
+
+      return original;
     }
 
-    public LevelsList LoadLevelsList(string name, LevelsList original)
+    public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
-      var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == name);
+      if (modBurrow != null && modBurrow.IsCustom)
       {
-        result = bunjector.LoadLevelsList(name, result);
+        return (ModLevelsList)modBurrow.ModBunburrow.GetLevels();
       }
-      return result;
+
+      return original; 
     }
 
-    public LevelObject LoadSpecialLevel(SpecialLevel levelEnum, LevelObject original)
+    public LevelObject LoadBurrowSurfaceLevel(string listName, LevelObject otherwise)
     {
-      var result = original;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        result = bunjector.LoadSpecialLevel(levelEnum, result);
-      }
-      return result;
+      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == listName);
+      return modBurrow?.ModBunburrow?.GetSurfaceLevel() ?? otherwise;
     }
+    #endregion
 
-    public LevelObject RappelFromBurrow(string listName, LevelObject otherwise)
-    {
-      var result = otherwise;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
-      {
-        result = bunjector.RappelFromBurrow(listName, result);
-      }
-      return result;
-    }
+    #region IMonitor implementation
 
     public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
     {
       var result = target;
-      foreach (var bunjector in BunjectAPI.Bunjectors)
+      foreach (var monitors in BunjectAPI.Monitors)
       {
-        result = bunjector.StartLevelTransition(result, identity);
+        result = monitors.StartLevelTransition(result, identity);
       }
       return result;
     }
+
+    public LevelsList LoadEmergencyLevelsList(LevelsList original)
+    {
+      var result = original;
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        result = bunjector.LoadEmergencyLevelsList(result);
+      }
+      return result;
+    }
+    #endregion
+
+    #region ITileSource Implementation
+    public bool SupportsTile(string tile)
+    {
+      return BunjectAPI.TileSources.Any(ts => ts.SupportsTile(tile));
+    }
+
+    public Tile LoadTile(LevelObject levelObject, string tile, Vector2Int position)
+    {
+      return BunjectAPI.TileSources.FirstOrDefault(ts => ts.SupportsTile(tile))?.LoadTile(levelObject, tile, position);
+    }
+    #endregion
   }
 }

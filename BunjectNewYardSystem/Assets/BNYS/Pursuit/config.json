@@ -1,42 +1,51 @@
 {
-    "Enabled": true,
-    "Title": "Pursuit of a God",
-    "Burrows": [
-        {
-            "Directory": "BurrowA",
-            "Name": "Burrow A",
-            "Indicator": "PGK",
-            "Style": "Hay",
-            "HasSurfaceEntry": true,
-            "UpperBunnyCount": 3,
-            "TempleBunnyCount": 1,
-            "HellBunnyCount": 4,
-            "Depth": 10,
-            "Links": {
-                "Left": "Burrow B",
-                "Up": "Burrow A",
-                "Right": "Burrow B",
-                "Down": "Burrow A"
-            },
-            "ElevatorDepths": [5]
-        },
-        {
-            "Directory": "BurrowB",
-            "Name": "Burrow B",
-            "Indicator": "PGH",
-            "Style": "Sunken",
-            "HasSurfaceEntry": true,
-            "UpperBunnyCount": 3,
-            "TempleBunnyCount": 1,
-            "HellBunnyCount": 3,
-            "Depth": 10,
-            "Links": {
-                "Left": "Burrow A",
-                "Up": "Burrow B",
-                "Right": "Burrow A",
-                "Down": "Burrow B"
-            },
-            "ElevatorDepths": [9]
-        }
-    ]
+  "Enabled": true,
+  "Title": "Pursuit of a God",
+  "Prefix": "PG",
+  "Burrows": [
+    {
+      "Directory": "BurrowA",
+      "Name": "Burrow A",
+      "Indicator": "K",
+      "Style": "Hay",
+      "HasSurfaceEntry": true,
+      "UpperBunnyCount": 3,
+      "TempleBunnyCount": 1,
+      "HellBunnyCount": 4,
+      "Depth": 10,
+      "Links": {
+        "Left": "Burrow B",
+        "Up": "Burrow A",
+        "Right": "Burrow B",
+        "Down": "Burrow A"
+      },
+      "ElevatorDepths": [ 5 ]
+    },
+    {
+      "Directory": "BurrowB",
+      "Name": "Burrow B",
+      "Indicator": "H",
+      "Style": "Sunken",
+      "HasSurfaceEntry": true,
+      "UpperBunnyCount": 3,
+      "TempleBunnyCount": 1,
+      "HellBunnyCount": 3,
+      "Depth": 10,
+      "Links": {
+        "Left": "Burrow A",
+        "Up": "Burrow B",
+        "Right": "Burrow A",
+        "Down": "Burrow B"
+      },
+      "ElevatorDepths": [ 9 ]
+    }
+  ],
+  "SurfaceEntries": [
+    {
+      "Coordinates": {
+        "Burrow A": [ 5, 3 ],
+        "Burrow B": { "Hole": [ 9, 3 ] }
+      }
+    }
+  ]
 }

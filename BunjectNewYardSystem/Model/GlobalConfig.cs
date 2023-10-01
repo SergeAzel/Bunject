@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bunject
+namespace Bunject.NewYardSystem.Model
 {
-  public enum SpecialLevel
+  public class GlobalConfig
   {
-    SurfaceShop,
-    SurfaceBurrows
+    public List<string> WebBurrows { get; set; }
   }
 }

@@ -1,8 +1,10 @@
-﻿using HarmonyLib;
+﻿using Bunject.Tiling;
+using HarmonyLib;
 using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,30 +14,44 @@ namespace Bunject.Patches.LevelLoaderPatches
   [HarmonyPatch(typeof(LevelLoader), "LoadLevel")]
   internal class LoadLevelPatch
   {
-    //Same as core valid tiles string, but permits entrances (N#) with longer numbers
-    private const string VALID_TILES = "^(S(?:{K})?|B(?:{[KB]*})?|E|F|D[0-9]|P[0-9]|N[0-9]+|\\!|Oph|X|C|T(?:{[URLDCTKB]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER|PU|A|Y(?:{K})?)$";
 
-    private static readonly Regex overrideRegex = new Regex(VALID_TILES);
-
-    private static readonly string[] Separators = new string[4]
+    /*
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
     {
-      ",",
-      "\r\n",
-      "\r",
-      "\n"
-    };
+      var regex_IsMatch = AccessTools.Method(typeof(Regex), nameof(Regex.IsMatch), new Type[] { typeof(string) });
+      var codes = new List<CodeInstruction>(instructions);
+      for (int i = 0; i < codes.Count; i++)
+      {
+        if (codes[i].Calls(regex_IsMatch))
+        {
+          if (codes[++i].Branches(out var l) && l is Label elseBlock)
+          {
+            Label ifBlock = il.DefineLabel();
+            codes.Insert(i + 1, new CodeInstruction(OpCodes.Nop).WithLabels(ifBlock));
+            codes.InsertRange(i, new List<CodeInstruction> {
+              new CodeInstruction(OpCodes.Brtrue, ifBlock),
+              new CodeInstruction(OpCodes.Ldarg_0),
+              new CodeInstruction(OpCodes.Ldloc, 4),
+              new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(LoadLevelPatch), nameof(LoadLevelPatch.CheckIfModSupportsTile))),
+            });
+            break;
+          }
+        }
+      }
+      return codes;
+    }*/
 
     private static bool Prefix(LevelObject levelObject, out List<string> __result)
     {
-      var contents = levelObject.Content.Split(Separators, StringSplitOptions.RemoveEmptyEntries).ToList();
+      var tiles = TileValidator.GetTilesFromContent(levelObject.Content);
 
-      foreach (var input in contents)
+      foreach (var tile in tiles)
       {
-        if (!overrideRegex.IsMatch(input))
-          UnityEngine.Debug.LogWarning("Invalid tile string: " + input);
+        if (!TileValidator.ValidateTile(tile))
+          UnityEngine.Debug.LogWarning("Invalid tile string: " + tile);
       }
 
-      __result = contents;
+      __result = tiles;
 
       return false;
     }

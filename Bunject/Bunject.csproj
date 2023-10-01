@@ -62,9 +62,11 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.Physics2DModule">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TilemapModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.UI">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -73,17 +75,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseBunjector.cs" />
-    <Compile Include="IBunjector.cs" />
+    <Compile Include="IBunjectorPlugin.cs" />
     <Compile Include="Internal\AssetsManagerRewiring.cs" />
     <Compile Include="Internal\BunnyReleaser.cs" />
-    <Compile Include="Internal\ElevatorManager.cs" />
-    <Compile Include="Internal\ModBunburrow.cs" />
+    <Compile Include="Internal\BunburrowMetadata.cs" />
     <Compile Include="Internal\BunburrowManager.cs" />
     <Compile Include="Internal\CustomBunburrowExtension.cs" />
     <Compile Include="Internal\ForwardingBunjector.cs" />
-    <Compile Include="Internal\OnLoadLevel.cs" />
+    <Compile Include="Internal\LevelBuilderExtensions.cs" />
+    <Compile Include="Internal\ElevatorManager.cs" />
     <Compile Include="Internal\SaveFileModUtility.cs" />
+    <Compile Include="Levels\CoreBunburrow.cs" />
+    <Compile Include="Levels\IModBunburrow.cs" />
+    <Compile Include="Levels\LoadingContext.cs" />
+    <Compile Include="Levels\ModLevelObject.cs" />
+    <Compile Include="Levels\ModLevelsList.cs" />
+    <Compile Include="Monitoring\IMonitor.cs" />
+    <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
+    <Compile Include="Patches\VisualEffectsPatches.cs" />
+    <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
+    <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />
     <Compile Include="BunjectAPI.cs" />
     <Compile Include="Patches\BunburrowEntryTilePatches.cs" />
@@ -91,6 +102,7 @@
     <Compile Include="Patches\BunburrowSignControllerPatches.cs" />
     <Compile Include="Patches\BunniesReleaseAnimatorPatches.cs" />
     <Compile Include="Patches\ChoiceSelectorPatches.cs" />
+    <Compile Include="Patches\UpdateTileSpritePatch.cs" />
     <Compile Include="Patches\GameManagerPatches.cs" />
     <Compile Include="Patches\GeneralProgressionPatches.cs" />
     <Compile Include="Patches\LevelBuilderPatches.cs" />
@@ -103,7 +115,9 @@
     <Compile Include="Patches\SaveFileManipulationUtilityPatches.cs" />
     <Compile Include="Patches\SettingsManagerPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpecialLevel.cs" />
+    <Compile Include="Tiling\IUpdateTileSprite.cs" />
+    <Compile Include="Tiling\TileData.cs" />
+    <Compile Include="Tiling\TileValidator.cs" />
     <Compile Include="Utility\InjectionDictionary.cs" />
   </ItemGroup>
   <ItemGroup />

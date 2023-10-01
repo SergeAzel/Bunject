@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunject.Levels;
+using Levels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,6 @@ namespace Bunject.NewYardSystem.Model
 {
   public class Burrow
   {
-    [JsonIgnore]
-    public int ID { get; set; }
     public string Directory { get; set; }
     public string Name { get; set; }
     public string Indicator { get; set; }
@@ -29,6 +28,9 @@ namespace Bunject.NewYardSystem.Model
     public List<int> ElevatorDepths { get; set; } = new List<int>();
 
     [JsonIgnore]
-    public LevelsList Levels { get; set; }
+    public Uri ProxyUri { get; set; }
+
+    [JsonIgnore]
+    public ModLevelsList Levels { get; set; }
   }
 }

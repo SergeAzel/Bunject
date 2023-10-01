@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Internal;
+using Bunject.Levels;
 using HarmonyLib;
 using Levels;
 using Newtonsoft.Json;
@@ -11,22 +12,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine;
 
 namespace Bunject.Patches.GameManagerPatches
 {
-  [HarmonyPatch(typeof(GameManager), "CheckForPotentialOutOfBoundsLevel")]
-  class CheckForPotentialOutOfBoundsLevelPatch
-  {
-    private static bool Postfix(bool __result, Misc.Direction direction, ref LevelObject levelObject)
-    {
-      if (__result && levelObject != null)
-      {
-        levelObject = OnLoadLevel.LoadLevel(levelObject) ?? levelObject;
-      }
-      return __result;
-    }
-  }
-
   // Correct the burrow provided by dialogues to the HandleDialogueEvent proc
   [HarmonyPatch(typeof(GameManager), nameof(GameManager.HandleDialogueEvent))]
   class HandleDialogueEventPatches
@@ -79,7 +69,7 @@ namespace Bunject.Patches.GameManagerPatches
       // get previous bunburrow
       Bunburrows.Bunburrow previous = Traverse.Create<GameManager>().Field<Bunburrows.Bunburrow>("previousBunburrow").Value;
 
-      var targetSurfaceLevel = BunjectAPI.Forward.RappelFromBurrow(AssetsManager.LevelsLists[previous.ToBunburrowName()].name, surfaceLevel);
+      var targetSurfaceLevel = BunjectAPI.Forward.LoadBurrowSurfaceLevel(AssetsManager.LevelsLists[previous.ToBunburrowName()].name, surfaceLevel);
 
       // slow but not like its called every frame
       StartLevelTransition.Invoke(null, new object[] { targetSurfaceLevel, levelTransitionType, levelIdentity, elevatorTargetLevelIdentity });
@@ -132,7 +122,8 @@ namespace Bunject.Patches.GameManagerPatches
 		{
       return ElevatorManager.IsElevatorUnlock(elevatorName, out level);
 		}
-  }
+	}
+	
   [HarmonyPatch(typeof(GameManager), "Init")]
   internal class Init
   {
@@ -145,6 +136,90 @@ namespace Bunject.Patches.GameManagerPatches
         yield return item;
       }
       yield return ElevatorManager.ExtractElevatorProgression();
+    }
+  }
+
+  [HarmonyPatch(typeof(GameManager), "InstantiateBunburrowEntrySigns")]
+  internal class InstantiateBunburrowEntrySignsPatch
+  {
+    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+    {
+      var tileLevelData_LeftTile = AccessTools.PropertyGetter(typeof(TileLevelData), nameof(TileLevelData.LeftTile));
+      int state = 0;
+      foreach (var code in instructions)
+      {
+        yield return code;
+        switch (state)
+        {
+          case 0:
+            if (code.Calls(tileLevelData_LeftTile))
+            {
+              state = 1;
+            }
+            break;
+          case 1:
+            if (code.IsStloc())
+            {
+              yield return new CodeInstruction(OpCodes.Ldloc_2);
+              yield return new CodeInstruction(OpCodes.Ldloc_3);
+              yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(InstantiateBunburrowEntrySignsPatch), nameof(GetSignTile)));
+              yield return new CodeInstruction(OpCodes.Stloc_3);
+              state = 2;
+            }
+            break;
+        }
+      }
+    }
+
+    private static FloorTile GetSignTile(BunburrowEntryTile currentHole, FloorTile otherwise)
+    {
+      FloorTile res = otherwise;
+      if (currentHole.Bunburrow is Bunburrow b && b.IsCustomBunburrow() && b.GetModBunburrow() is IModBunburrow modBurrow)
+      {
+        if (!modBurrow.HasSign)
+        {
+          // Override... prevent sign?
+          res = null;
+        }
+        else if (!modBurrow.HasEntrance)
+        {
+          // If sign with no entrance.. replace entry hole with sign?
+          res = currentHole;
+        }
+        else if (modBurrow.OverrideSignCoordinate() is Vector2Int coordinate)
+        {
+          // If it doesn't cast as FloorTile, implicit failure.
+          res = LevelBuilderExtensions.GetTileInListByCoordinates(GameManager.CurrentLevel.Tiles.ToList(), coordinate.y, coordinate.x) as FloorTile ?? res;
+        }
+      }
+      return res;
+    }
+  }
+
+  [HarmonyPatch(typeof(GameManager), "LoadLevel")]
+  internal class LoadLevelPatches
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      //Attempt to find this level's mod list
+      if (levelIdentity.Bunburrow.IsCustomBunburrow())
+      {
+        var modBunburrow = levelIdentity.Bunburrow.GetModBunburrow();
+        if (modBunburrow != null && modBunburrow.GetLevels() is LevelsList levelsList)
+        {
+          var previousState = CurrentLoadingContext.Value;
+          try
+          {
+            CurrentLoadingContext.Value = LoadingContext.LevelTransition;
+            // Forcefully reload the level with the "LevelTransition" context - signifying that paquerette is entering this level
+            levelObject = levelsList[levelIdentity.Depth];
+          }
+          finally
+          {
+            CurrentLoadingContext.Value = previousState;
+          }
+        }
+      }
     }
   }
 }

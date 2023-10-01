@@ -1,5 +1,8 @@
 ﻿using BepInEx;
 using Bunject.Internal;
+using Bunject.Levels;
+using Bunject.Monitoring;
+using Bunject.Tiling;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -8,7 +11,6 @@ using System.Text;
 
 namespace Bunject
 {
-  // This class is a mess - todo cleanup
   public class BunjectAPI
   {
     static BunjectAPI()
@@ -23,18 +25,22 @@ namespace Bunject
 
     internal static BunjectAPI Instance { get; private set; }
 
-    internal static IBunjector Forward { get; private set; } = new ForwardingBunjector();
+    internal static ForwardingBunjector Forward { get; private set; } = new ForwardingBunjector();
 
-    internal static IReadOnlyList<IBunjector> Bunjectors { get => Instance.bunjectors; }
+    internal static IReadOnlyList<IBunjectorPlugin> Bunjectors { get => Instance.bunjectors; }
 
-    public static void Register(IBunjector bunjector)
+    internal static IEnumerable<ITileSource> TileSources { get => Instance.bunjectors.OfType<ITileSource>(); }
+
+    internal static IEnumerable<IMonitor> Monitors { get => Instance.bunjectors.OfType<IMonitor>(); }
+
+    public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {
       Instance.bunjectors.Add(bunjector);
     }
 
-    public static int RegisterBurrow(string name, string indicator, bool isVoid = false)
+    public static void RegisterBunburrow(IModBunburrow modBunburrow)
     {
-      return BunburrowManager.RegisterBurrow(name, indicator, isVoid);
+      BunburrowManager.RegisterBurrow(modBunburrow);
     }
 
     public static void RegisterElevator(int bunburrowID, int depth)
@@ -42,10 +48,12 @@ namespace Bunject
       BunburrowManager.RegisterElevator(bunburrowID, depth);
     }
 
-    private List<IBunjector> bunjectors;
+
+    private List<IBunjectorPlugin> bunjectors;
+
     private BunjectAPI()
     {
-      bunjectors = new List<IBunjector>();
+      bunjectors = new List<IBunjectorPlugin>();
     }
   }
 }
