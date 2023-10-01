@@ -14,23 +14,24 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   [HarmonyPatch(typeof(LevelIndicatorGenerator), nameof(LevelIndicatorGenerator.GetLongLevelIndicator))]
   internal class GetLongLevelIndicatorPatches
   {
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    private static string Postfix(string __result, bool useWhite)
     {
-      foreach (var instruction in instructions)
+      var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
+      if (identity.Bunburrow.IsCustomBunburrow())
       {
-        if (instruction.opcode == OpCodes.Ldstr && (string)instruction.operand == "")
-        {
-          yield return CodeInstruction.Call(typeof(GameManager), "get_CurrentLevel");
-          yield return CodeInstruction.LoadField(typeof(Level), nameof(Level.BaseData));
-          yield return CodeInstruction.Call(typeof(LevelObject), "get_CustomNameKey");
-        }
-        else
-        {
-          yield return instruction;
-        }
+        var res = LevelIndicatorGenerator.GetShortLevelIndicator()
+          + Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>()
+          + " ";
+        var name = GameManager.CurrentLevel.BaseData.CustomNameKey;
+        return res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
+          ? LevelIndicatorGenerator.GenerateVoidLevelName()
+          : name);
       }
+      return __result;
     }
   }
+
+
   [HarmonyPatch(typeof(LevelIndicatorGenerator), nameof(LevelIndicatorGenerator.GetLevelBunburrowStyle))]
   internal class GetLevelBunburrowStylePatch
   {

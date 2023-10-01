@@ -5,5 +5,5 @@ R,W,W,W,W,W,W,W,W,W,W,T,T,T,T
 W,T,T,T,T,T,T,T,T,T,W,T,T,T,W
 T,T,T,R{RD},R{LR},R{LD},T,B,T,R{RD},R{LR},R{LD},T,T,W
 T,T,T,R{UD},S,T,T,T,T,T,!,R{UD},T,T,W
-W,W,W,R{UD},T,T,T,T,T,T,T,R{UD},T,T,W
-R,W{RD},W{LD},R{UR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LU},W,W,R
+W,T,T,R{UD},T,T,T,T,T,T,T,R{UD},T,T,W
+R,W,W,R{UR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LR},R{LU},W,W,R

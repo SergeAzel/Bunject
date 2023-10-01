@@ -1,42 +1,42 @@
-﻿using Levels;
+﻿using Bunject.Tiling;
+using HarmonyLib;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
   internal class ContentValidator
   {
-    private const string VALID_CUSTOM_LEVEL_TILES = "^(S(?:{K})?|B(?:{[KB]*})?|E|\\!|T(?:{[URLDCTKB]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER)$";
+    /* Tiles restricted from use in BNYS custom levels:
+     *   Oph - Opheline tile
+     *   D# - Dialogue prompting or interactable tile
+     *   A - Hole at the bottom of C-27
+     *   PU - Power Up in room C-13
+     *   N# - Burrow Entrance
+     *   P# - C-27 Pillar
+     *   C - Cage in shop?
+     *   X - Cage in shop?
+     *   F - Fake bunny at start of game
+     *   Y - SPOILERS
+     */
+    private const string RESTRICTED_TILES = "^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)$";
+    private static readonly Regex restrictedTileRegex = new Regex(RESTRICTED_TILES);
 
-    private static readonly Regex customLevelRegex = new Regex(VALID_CUSTOM_LEVEL_TILES);
-
-    private static readonly string[] Separators = new string[4]
+    public static bool ValidateLevelContent(string content)
     {
-    ",",
-    "\r\n",
-    "\r",
-    "\n"
-    };
-
-    public static bool ValidateContentTiles(string content)
-    {
-      bool valid = true;
-      var contents = content.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-
-      foreach (var input in contents)
+      var tiles = TileValidator.GetTilesFromContent(content);
+      bool result = true;
+      foreach (var tile in tiles)
       {
-        if (!customLevelRegex.IsMatch(input))
-        {
-          UnityEngine.Debug.LogWarning("Invalid tile string: " + input);
-          valid = false;
-        }
+        result &= (!restrictedTileRegex.IsMatch(tile) && TileValidator.ValidateTile(tile));
       }
-
-      return valid;
+      return result;
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Bunject.Levels;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,14 @@ namespace Bunject.Internal
   {
     internal static LevelsList LoadLevelsList(string name, LevelsList original)
     {
-      return BunjectAPI.Forward.LoadLevelsList(name, original);
+      var result = original;
+      if (original == null || original is ModLevelsList)
+        result = BunjectAPI.Forward.LoadLevelsList(name, original as ModLevelsList);
+
+      if (result == null)
+        return BunjectAPI.Forward.LoadEmergencyLevelsList(null);
+
+      return result;
     }
   }
 }
