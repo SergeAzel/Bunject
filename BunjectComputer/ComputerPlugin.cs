@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace Bunject.Computer
 {
 	[BepInPlugin("startup.bunject.computer", "Bunject Computer", "0.1.0")]
-	[BepInDependency("sergedev.bunject.newyardsystem", BepInDependency.DependencyFlags.SoftDependency)]
-	public class ComputerPlugin : BaseBunjector
+	[BepInDependency("sergedev.bunject.newyardsystem", BepInDependency.DependencyFlags.HardDependency)]
+	public class ComputerPlugin : BaseUnityPlugin
 	{
-		public override void Awake()
+		private void Awake()
 		{
 			new Harmony("bunject.computer").PatchAll(Assembly.GetExecutingAssembly());
 		}
