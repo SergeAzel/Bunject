@@ -30,6 +30,7 @@ namespace Bunject.Patches.LevelsListPatches
 
       if (__result == null)
       {
+        Console.WriteLine("Level Load Failure!  Deferring to Emergency Level");
         //Technically recursion but should be fine so long as we dont recurse on itself
         var emergency = BunjectAPI.Forward.LoadEmergencyLevelsList(null);
         if (emergency != __instance)

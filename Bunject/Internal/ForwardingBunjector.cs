@@ -37,18 +37,6 @@ namespace Bunject.Internal
     #endregion
 
     #region ILevelSource (not actually a thing anymore but still used) Implementation
-    public ModLevelObject LoadLevel(ModLevelsList list, int depth, ModLevelObject original)
-    {
-      var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == list.name);
-      if (modBurrow != null && modBurrow.IsCustom)
-      {
-        if (modBurrow.ModBunburrow.GetLevels() is ModLevelsList levelsList)
-          return levelsList[depth];
-      }
-
-      return original;
-    }
-
     public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
     {
       var modBurrow = BunburrowManager.Bunburrows.FirstOrDefault(mb => mb.ModBunburrow.Name == name);

@@ -199,8 +199,15 @@ namespace Bunject.Patches.GameManagerPatches
   [HarmonyPatch(typeof(GameManager), "LoadLevel")]
   internal class LoadLevelPatches
   {
-    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity, LevelTransitionType levelTransitionType)
     {
+      switch (levelTransitionType)
+      {
+        // may want other types to not attempt loading, for now just elevator
+        case LevelTransitionType.Elevator:
+          return;
+      }
+
       //Attempt to find this level's mod list
       if (levelIdentity.Bunburrow.IsCustomBunburrow())
       {
