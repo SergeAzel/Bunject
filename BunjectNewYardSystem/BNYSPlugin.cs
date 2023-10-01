@@ -156,7 +156,6 @@ namespace Bunject.NewYardSystem
     {
       progression.HandleBunburrowSignsDiscovery();
       progression.HandleBackToSurfaceUnlock();
-      progression.HandleOphelineComputerUnlock();
       progression.HandleOphelinePortableComputerUnlock();
     }
 
@@ -348,30 +347,26 @@ namespace Bunject.NewYardSystem
         if (!string.IsNullOrEmpty(burrow.Model.Links.Left))
         {
           var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Left);
-          if (target == null)
-            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Left", burrow.Model.Links.Left);
-          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Left, target.GetLevels());
+          if (target != null)
+            burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Left, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Up))
         {
           var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Up);
-          if (target == null)
-            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Up", burrow.Model.Links.Up);
-          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Up, target.GetLevels());
+          if (target != null)
+            burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Up, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Right))
         {
           var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Right);
-          if (target == null)
-            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Right", burrow.Model.Links.Right);
-          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Right, target.GetLevels());
+          if (target != null)
+            burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Right, target.GetLevels());
         }
         if (!string.IsNullOrEmpty(burrow.Model.Links.Down))
         {
           var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Down);
-          if (target == null)
-            throw new InvalidBurrowLinkException(burrow.WorldName, burrow.LocalName, "Down", burrow.Model.Links.Down);
-          burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Down, target.GetLevels());
+          if (target != null)
+            burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Down, target.GetLevels());
         }
       }
     }
