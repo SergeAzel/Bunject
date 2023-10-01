@@ -282,6 +282,11 @@ namespace Bunject.NewYardSystem
                   }
                 }
               }
+
+              if (world.SurfaceEntries == null || world.SurfaceEntries.Count == 0)
+              {
+                world.SurfaceEntries = proxyWorld.SurfaceEntries;
+              }
             }
           }
         }
