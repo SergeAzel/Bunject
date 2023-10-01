@@ -25,7 +25,7 @@ namespace Bunject.Patches.LevelsListPatches
       //__result = OnLoadLevel.LoadLevel(__result, __instance, depth);
       if (__instance is ModLevelsList modList)
       {
-        __result = modList.GetLevel(depth);
+        __result = modList.LoadLevel(depth, CurrentLoadingContext.Value);
       }
 
       if (__result == null)

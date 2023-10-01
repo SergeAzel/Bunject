@@ -114,7 +114,7 @@ namespace Bunject.Levels
     }
 
     // To permit us doing strange things with level lists...
-    public virtual LevelObject GetLevel(int depth)
+    public virtual LevelObject LoadLevel(int depth, LoadingContext loadingContext)
     {
       return this[depth];
     }

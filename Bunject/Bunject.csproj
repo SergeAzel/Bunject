@@ -87,10 +87,12 @@
     <Compile Include="Internal\SaveFileModUtility.cs" />
     <Compile Include="Levels\CoreBunburrow.cs" />
     <Compile Include="Levels\IModBunburrow.cs" />
+    <Compile Include="Levels\LoadingContext.cs" />
     <Compile Include="Levels\ModLevelObject.cs" />
     <Compile Include="Levels\ModLevelsList.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
+    <Compile Include="Patches\VisualEffectsPatches.cs" />
     <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
     <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />

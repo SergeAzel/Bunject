@@ -27,7 +27,7 @@ namespace Bunject.NewYardSystem.Levels
       set { base[depth] = value; }
     }
 
-    public override LevelObject GetLevel(int depth)
+    public override LevelObject LoadLevel(int depth, LoadingContext loadingContext)
     {
       if (depth > 0 && depth <= MaximumDepth)
       {
@@ -38,13 +38,14 @@ namespace Bunject.NewYardSystem.Levels
           // Store off the ever-important burrow names and such
           level.BunburrowName = ModBunburrow.Model.Name;
           level.Depth = depth;
-        }
 
-        if (level.ShouldReload)
-        {
           ReloadLevel(depth, level);
 
           this[depth] = level;
+        }
+        else if (level.ShouldReload && loadingContext == LoadingContext.LevelTransition)
+        {
+          ReloadLevel(depth, level);
         }
 
         return level;

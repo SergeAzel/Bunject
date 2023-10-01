@@ -18,7 +18,7 @@ namespace Bunject.NewYardSystem.Levels
     public BNYSPlugin Bnys { get; set; }
 
     // Return the default level.
-    public override LevelObject GetLevel(int depth)
+    public override LevelObject LoadLevel(int depth, LoadingContext loadingContext)
     {
       if (defaultLevel == null)
       {

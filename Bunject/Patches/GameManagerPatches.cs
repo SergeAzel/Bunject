@@ -195,4 +195,31 @@ namespace Bunject.Patches.GameManagerPatches
       return res;
     }
   }
+
+  [HarmonyPatch(typeof(GameManager), "LoadLevel")]
+  internal class LoadLevelPatches
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      //Attempt to find this level's mod list
+      if (levelIdentity.Bunburrow.IsCustomBunburrow())
+      {
+        var modBunburrow = levelIdentity.Bunburrow.GetModBunburrow();
+        if (modBunburrow != null && modBunburrow.GetLevels() is LevelsList levelsList)
+        {
+          var previousState = CurrentLoadingContext.Value;
+          try
+          {
+            CurrentLoadingContext.Value = LoadingContext.LevelTransition;
+            // Forcefully reload the level with the "LevelTransition" context - signifying that paquerette is entering this level
+            levelObject = levelsList[levelIdentity.Depth];
+          }
+          finally
+          {
+            CurrentLoadingContext.Value = previousState;
+          }
+        }
+      }
+    }
+  }
 }
