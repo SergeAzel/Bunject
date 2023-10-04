@@ -19,7 +19,19 @@ namespace Bunject.Computer.Internal
 	internal class ModComputerMapDrawer
 	{
 		private static ModComputerMapDrawer _instance;
-		public static ModComputerMapDrawer Instance => _instance ?? (_instance = new ModComputerMapDrawer());
+		public static ModComputerMapDrawer Instance
+		{
+			get
+			{
+				if (_instance?.This == null)
+				{
+					_instance = new ModComputerMapDrawer();
+					Debug.Log("Bunject.Computer: Init Map Drawer");
+				}
+				return _instance;
+			}
+		}
+			
 		private ModComputerMapDrawer()
 		{
 			var t = Traverse.Create(GameManager.UIController.OphelineComputerCanvasController).Field("computerMapDrawer");
