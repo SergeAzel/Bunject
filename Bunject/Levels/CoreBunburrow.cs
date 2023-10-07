@@ -52,5 +52,10 @@ namespace Bunject.Levels
     {
       return AssetsManager.SurfaceRightLevel;
     }
-  }
+
+		public int CompareTo(IModBunburrow other)
+		{
+			return other is CoreBunburrow ? (ID - other.ID) : 0;
+		}
+	}
 }

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Bunject.Levels
 {
-  public interface IModBunburrow
+  public interface IModBunburrow : IComparable<IModBunburrow>
   {
     int ID { get; set; }
     string Name { get; }

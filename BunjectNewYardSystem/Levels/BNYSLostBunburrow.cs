@@ -53,5 +53,9 @@ namespace Bunject.NewYardSystem.Levels
       return null;
     }
 
-  }
+		public int CompareTo(IModBunburrow other)
+    {
+      return other is BNYSLostBunburrow ? (ID - other.ID) : 0;
+    }
+	}
 }

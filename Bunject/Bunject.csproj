@@ -92,6 +92,8 @@
     <Compile Include="Levels\ModLevelsList.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
+    <Compile Include="Patches\BunnyIdentityPatches.cs" />
+    <Compile Include="Patches\LevelIdentityPatches.cs" />
     <Compile Include="Patches\VisualEffectsPatches.cs" />
     <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
     <Compile Include="Tiling\ITileSource.cs" />

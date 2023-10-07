@@ -135,5 +135,13 @@ namespace Bunject.NewYardSystem.Levels
       levelsList.NumberOfHellBunnies = burrowModel.HellBunnyCount;
       return levelsList;
     }
+    public int CompareTo(IModBunburrow other)
+    {
+      return other is BNYSModBunburrow o
+        ? (worldModel == o.worldModel
+          ? (worldModel.Burrows.IndexOf(burrowModel) - worldModel.Burrows.IndexOf(o.burrowModel))
+          : (ID - other.ID))
+        : 0;
+    }
   }
 }
