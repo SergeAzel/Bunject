@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Bunject.Patches.VisualEffectsPatches
 {
-  [HarmonyPatch(typeof(VisualEffects.VisualEffectsController), 
+  [HarmonyPatch(typeof(VisualEffects.VisualEffectsController),
     nameof(VisualEffects.VisualEffectsController.UpdateVisualEffects),
-    new Type[] {typeof(VisualEffects.VisualEffectsInfo) })]
+    new Type[] { typeof(VisualEffects.VisualEffectsInfo) })]
   // TODO: make a more sustainable implementation when custom Styles become a thing
   internal class UpdateVisualEffectsPatch
   {
@@ -21,7 +21,12 @@ namespace Bunject.Patches.VisualEffectsPatches
       if (visualEffectsInfo.Bunburrow is Bunburrow b && b.IsCustomBunburrow())
       {
         var level = AssetsManager.LevelsLists[b.ToBunburrowName()][visualEffectsInfo.Depth];
-        visualEffectsInfo = new VisualEffects.VisualEffectsInfo(level.BunburrowStyle.Bunburrow, visualEffectsInfo.Depth, level.IsHell, level.IsTemple, false);
+        if (level.BunburrowStyle == AssetsManager.BunburrowsListOfStyles.Hell)
+          visualEffectsInfo = new VisualEffects.VisualEffectsInfo(level.BunburrowStyle.Bunburrow, visualEffectsInfo.Depth, true, level.IsTemple, false);
+        else if (level.BunburrowStyle == AssetsManager.BunburrowsListOfStyles.Temple)
+          visualEffectsInfo = new VisualEffects.VisualEffectsInfo(level.BunburrowStyle.Bunburrow, visualEffectsInfo.Depth, level.IsHell, true, false);
+        else
+          visualEffectsInfo = new VisualEffects.VisualEffectsInfo(level.BunburrowStyle.Bunburrow, visualEffectsInfo.Depth, level.IsHell, level.IsTemple, false);
       }
     }
   }
