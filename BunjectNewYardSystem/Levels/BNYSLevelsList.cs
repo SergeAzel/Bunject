@@ -181,6 +181,16 @@ namespace Bunject.NewYardSystem.Levels
       }
 
       levelConfig.Style = levelConfig.Style ?? ModBunburrow.Model.Style;
+
+      var effects = levelConfig.VisualEffects ?? ModBunburrow.Model.VisualEffects;
+      if (effects == null)
+			{
+        effects = new List<string> { levelConfig.Style };
+        if (ModBunburrow.Model.IsVoid)
+          effects.Add("Void");
+			}
+      levelConfig.VisualEffects = effects;
+
       levelConfig.Content = content;
 
       return levelConfig;
@@ -204,6 +214,8 @@ namespace Bunject.NewYardSystem.Levels
 
       levelObject.CustomNameKey = levelConfig.Name;
       levelObject.BunburrowStyle = BNYSPlugin.ResolveStyle(levelConfig.Style);
+
+      levelObject.VisualEffects = levelConfig.VisualEffects.Select(BNYSPlugin.ResolveStyle).ToList();
 
       if (levelConfig.Tools is LevelTools tools)
       {

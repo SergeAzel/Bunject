@@ -36,6 +36,12 @@ namespace Bunject.Levels
       set;
     }
 
+    public List<BunburrowStyle> VisualEffects
+		{
+      get;
+      set;
+		}
+
     private Traverse traverse;
     private Traverse Traverse
     {

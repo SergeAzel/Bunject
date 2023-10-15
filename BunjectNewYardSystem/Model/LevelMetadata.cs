@@ -19,6 +19,7 @@ namespace Bunject.NewYardSystem.Model
     public string Style { get; set; }
     public bool IsTemple { get; set; }
     public bool IsHell { get; set; }
+    public List<string> VisualEffects { get; set; }
 
     public string Content { get; set; }
 
