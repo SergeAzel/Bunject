@@ -380,6 +380,8 @@ namespace Bunject.NewYardSystem
     {
       switch (style)
       {
+        case "Surface":
+          return AssetsManager.SurfaceRightLevel.BunburrowStyle;
         case "Aquatic":
         case "Sunken":
           return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
