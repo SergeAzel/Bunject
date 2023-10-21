@@ -50,8 +50,9 @@ namespace Bunject.Patches.VisualEffectsPatches
 				var hay = effects.Contains(AssetsManager.BunburrowsListOfStyles[Bunburrow.Hay]);
         var aquatic = effects.Contains(AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic]);
         var ghostly = effects.Contains(AssetsManager.BunburrowsListOfStyles[Bunburrow.Ghostly]);
-        var hell = effects.Contains(AssetsManager.BunburrowsListOfStyles.Hell);
-        var @void = effects.Contains(AssetsManager.BunburrowsListOfStyles.VoidB);
+				var hell = effects.Contains(AssetsManager.BunburrowsListOfStyles.Hell)
+					|| effects.Contains(AssetsManager.BunburrowsListOfStyles.HellTemple);
+				var @void = effects.Contains(AssetsManager.BunburrowsListOfStyles.VoidB);
         var surfaceLeavesParticleSystem = t.Field<ParticleSystem>("surfaceLeavesParticleSystem").Value;
         var hayParticleSystem = t.Field<ParticleSystem>("hayParticleSystem").Value;
         var bubblesParticleSystem = t.Field<ParticleSystem>("bubblesParticleSystem").Value;
