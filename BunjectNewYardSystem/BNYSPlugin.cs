@@ -102,7 +102,7 @@ namespace Bunject.NewYardSystem
         foreach (var burrow in CustomWorlds.SelectMany(cw => cw.Burrows))
         {
           var customWorld = CustomWorlds.FirstOrDefault(cw => cw.Burrows.Contains(burrow));
-          var cachedBurrow = cache.CustomBurrows.FirstOrDefault(cb => cb.Name == burrow.Name);
+          var cachedBurrow = cache.CustomBurrows.FirstOrDefault(cb => cb.Name == burrow.Name && (cb.World == customWorld.Title || string.IsNullOrEmpty(cb.World)));
           if (cachedBurrow == null)
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} built!");
