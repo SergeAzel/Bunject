@@ -93,6 +93,7 @@
     <Compile Include="Internal\LevelBuilderExtensions.cs" />
     <Compile Include="Internal\ElevatorManager.cs" />
     <Compile Include="Internal\SaveFileModUtility.cs" />
+    <Compile Include="Levels\IModBunburrowStyleEffect.cs" />
     <Compile Include="Levels\CoreBunburrow.cs" />
     <Compile Include="Levels\IModBunburrow.cs" />
     <Compile Include="Levels\LoadingContext.cs" />

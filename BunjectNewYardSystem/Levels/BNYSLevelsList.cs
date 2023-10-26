@@ -215,7 +215,7 @@ namespace Bunject.NewYardSystem.Levels
       levelObject.CustomNameKey = levelConfig.Name;
       levelObject.BunburrowStyle = BNYSPlugin.ResolveStyle(levelConfig.Style);
 
-      levelObject.VisualEffects = levelConfig.VisualEffects.Select(BNYSPlugin.ResolveStyle).ToList();
+      levelObject.StyleEffects = levelConfig.VisualEffects.Select(BNYSPlugin.ResolveStyleEffect).ToList();
 
       if (levelConfig.Tools is LevelTools tools)
       {

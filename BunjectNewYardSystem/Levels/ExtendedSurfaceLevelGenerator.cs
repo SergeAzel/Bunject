@@ -91,7 +91,7 @@ namespace Bunject.NewYardSystem.Levels
 
       //Set empty / defaults
       level.BunburrowStyle = previousLevel.BunburrowStyle;
-      level.VisualEffects = new List<Bunburrows.BunburrowStyle> { level.BunburrowStyle };
+      level.StyleEffects = new List<IModBunburrowStyleEffect> { StyleEffectsManager.Surface };
       level.SideLevels.SetPart(Direction.Left, previousLevel);
 
       //link up with previous

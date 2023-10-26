@@ -380,8 +380,8 @@ namespace Bunject.NewYardSystem
     {
       switch (style)
       {
-        case "Surface":
-          return AssetsManager.SurfaceRightLevel.BunburrowStyle;
+        //case "Surface":
+        //  return AssetsManager.SurfaceRightLevel.BunburrowStyle;
         case "Aquatic":
         case "Sunken":
           return AssetsManager.BunburrowsListOfStyles[Bunburrow.Aquatic];
@@ -404,6 +404,29 @@ namespace Bunject.NewYardSystem
         case "Pink":
         default:
           return AssetsManager.BunburrowsListOfStyles[Bunburrow.Pink];
+      }
+    }
+    public static IModBunburrowStyleEffect ResolveStyleEffect(string style)
+    {
+      switch (style)
+      {
+        case "Surface":
+          return StyleEffectsManager.Surface;
+        case "Aquatic":
+        case "Sunken":
+          return StyleEffectsManager.Aquatic;
+        case "Hay":
+          return StyleEffectsManager.Hay;
+        case "Spooky":
+        case "Ghostly": 
+          return StyleEffectsManager.Ghostly;
+        case "Void":
+          return StyleEffectsManager.Void;
+        case "Hell":
+        case "HellTemple":
+          return StyleEffectsManager.Hell;
+        default:
+          return StyleEffectsManager.None;
       }
     }
   }
