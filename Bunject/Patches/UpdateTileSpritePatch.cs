@@ -9,17 +9,17 @@ using Tiling.Behaviour;
 
 namespace Bunject.Patches.TileLevelDataPatches
 {
-	[HarmonyPatch(typeof(TileLevelData), nameof(TileLevelData.UpdateTileSprite))]
-	internal class UpdateTileSpritePatch
-	{
-		private static bool Prefix(TileLevelData __instance)
-		{
-			if (__instance is IUpdateTileSprite modTile)
-			{
-				modTile.UpdateTileSprite();
-				return false;
-			}
-			return true;
-		}
-	}
+  [HarmonyPatch(typeof(TileLevelData), nameof(TileLevelData.UpdateTileSprite))]
+  internal class UpdateTileSpritePatch
+  {
+    private static bool Prefix(TileLevelData __instance)
+    {
+      if (__instance is IUpdateTileSprite modTile)
+      {
+        modTile.UpdateTileSprite();
+        return false;
+      }
+      return true;
+    }
+  }
 }

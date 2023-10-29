@@ -22,7 +22,7 @@ namespace Bunject.NewYardSystem.Resources
     {
       var bytes = File.ReadAllBytes(path);
       var newTexture = new Texture2D(2, 2);
-			newTexture.LoadImage(bytes);
+      newTexture.LoadImage(bytes);
       // do not remove this
       newTexture.filterMode = FilterMode.Point;
       newTexture.name = name;

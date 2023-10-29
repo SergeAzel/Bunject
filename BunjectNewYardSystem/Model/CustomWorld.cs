@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bunject.NewYardSystem.Model
 {
-	public class CustomWorld
+  public class CustomWorld
   {
     public string ProxyURL { get; set; }
     public bool Enabled { get; set; } = true;
