@@ -49,6 +49,9 @@
       <HintPath>$(PaquerettePath)\BepInEx\core\BepInEx.Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="FMODUnity">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\FMODUnity.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -86,6 +89,9 @@
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
@@ -94,8 +100,10 @@
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
     <Compile Include="Exceptions\InvalidBurrowLinkException.cs" />
+    <Compile Include="Levels\BNYSBunburrowTileSets.cs" />
     <Compile Include="Levels\BNYSLevelObject.cs" />
     <Compile Include="Levels\BNYSLevelsList.cs" />
+    <Compile Include="Levels\BNYSBunburrowStyle.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
     <Compile Include="Levels\EmergencyLevelsList.cs" />
@@ -103,6 +111,8 @@
     <Compile Include="Levels\BNYSModBunburrow.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
+    <Compile Include="Model\BurrowStyle.cs" />
+    <Compile Include="Model\BurrowStyleMetadata.cs" />
     <Compile Include="Model\CustomBunburrowModel.cs" />
     <Compile Include="Model\CustomWorld.cs" />
     <Compile Include="Model\GlobalConfig.cs" />

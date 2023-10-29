@@ -63,7 +63,7 @@ namespace Bunject.NewYardSystem.Levels
       {
         if (style == null)
         {
-          style = BNYSPlugin.ResolveStyle(Model.Style);
+          style = bnys.ResolveStyle(ID.ToBunburrow(), Model.Style);
         }
         return style;
       }

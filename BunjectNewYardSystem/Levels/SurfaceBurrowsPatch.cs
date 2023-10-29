@@ -28,6 +28,8 @@ namespace Bunject.NewYardSystem.Levels
 
         EndingBackground = original.SpecificBackground;
         ExtendedBackground = ImportImage.ImportSprite(PatchedTexture, Path.Combine(BNYSPlugin.rootDirectory, PatchedTexturePath), new Vector2(0.0f, 1.0f), 16);
+        if (ExtendedBackground.texture.isReadable)
+          ExtendedBackground.texture.Apply(true, true);
 
         PatchLevel(original, lastContentPatch, ExtendedBackground);
       }

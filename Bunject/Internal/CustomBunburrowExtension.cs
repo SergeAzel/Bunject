@@ -30,7 +30,7 @@ namespace Bunject.Internal
       return BunburrowManager.Bunburrows.FirstOrDefault(x => x.ID == (int)bunburrow)?.ModBunburrow;
     }
 
-    public static IEnumerable<Bunburrows.Bunburrow> GetRegularAndCustomBunbrrowEnumerator()
+    public static IEnumerable<Bunburrows.Bunburrow> GetRegularAndCustomBunburrowEnumerator()
     {
       foreach (var customBurrow in BunburrowManager.Bunburrows)
         yield return (Bunburrows.Bunburrow)customBurrow.ID;

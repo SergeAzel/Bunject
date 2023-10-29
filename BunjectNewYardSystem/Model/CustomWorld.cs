@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bunject.NewYardSystem.Model
 {
-  public class CustomWorld
+	public class CustomWorld
   {
     public string ProxyURL { get; set; }
     public bool Enabled { get; set; } = true;
@@ -19,6 +19,8 @@ namespace Bunject.NewYardSystem.Model
     public List<Burrow> Burrows { get; set; }
 
     public List<SurfaceEntry> SurfaceEntries { get; set; }
+
+    public List<BurrowStyle> Styles { get; set; }
 
     [JsonIgnore]
     public Uri ProxyUri { get; set; }

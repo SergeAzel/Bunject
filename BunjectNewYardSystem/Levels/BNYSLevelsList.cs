@@ -203,7 +203,7 @@ namespace Bunject.NewYardSystem.Levels
       levelObject.name = $"Level {ModBunburrow.Name} - {levelConfig.Name}";
 
       levelObject.CustomNameKey = levelConfig.Name;
-      levelObject.BunburrowStyle = BNYSPlugin.ResolveStyle(levelConfig.Style);
+      levelObject.BunburrowStyle = Bnys.ResolveStyle(ModBunburrow.ID.ToBunburrow(), levelConfig.Style);
 
       if (levelConfig.Tools is LevelTools tools)
       {
