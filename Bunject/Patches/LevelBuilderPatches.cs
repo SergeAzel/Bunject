@@ -80,6 +80,8 @@ namespace Bunject.Patches.LevelBuilderPatches
     }
   }
 
+  
+  /*
   [HarmonyPatch(typeof(LevelBuilder), "BuildNewLevel", argumentTypes: new Type[] { typeof(LevelObject), typeof(BunburrowStyle), typeof(bool) })]
   internal class BuildNewLevelPatch_CustomTiles
   {
@@ -171,5 +173,5 @@ namespace Bunject.Patches.LevelBuilderPatches
 
       return tileData != null;
     }
-  }
+  }*/
 }

@@ -93,6 +93,11 @@
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
     <Compile Include="Patches\VisualEffectsPatches.cs" />
+    <Compile Include="Saving\BunjectSaveState.cs" />
+    <Compile Include="Saving\BNYSCustomBunburrowCache.cs" />
+    <Compile Include="Saving\BNYSCustomBunburrowModel.cs" />
+    <Compile Include="Saving\SaveConverter.cs" />
+    <Compile Include="Saving\SaveHandler.cs" />
     <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
     <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />
@@ -119,6 +124,7 @@
     <Compile Include="Tiling\TileData.cs" />
     <Compile Include="Tiling\TileValidator.cs" />
     <Compile Include="Utility\InjectionDictionary.cs" />
+    <Compile Include="Utility\ObjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
