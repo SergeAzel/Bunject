@@ -79,7 +79,10 @@ namespace Bunject.Patches.LevelBuilderPatches
       }
     }
   }
-
+/* 
+ * Custom Tile behavior commented out until the Bunframe update
+ * At this point, reimplementing this behavior would be a waste of time without knowing what updates the game will need
+ * 
   [HarmonyPatch(typeof(LevelBuilder), "BuildNewLevel", argumentTypes: new Type[] { typeof(LevelObject), typeof(BunburrowStyle), typeof(bool) })]
   internal class BuildNewLevelPatch_CustomTiles
   {
@@ -171,5 +174,5 @@ namespace Bunject.Patches.LevelBuilderPatches
 
       return tileData != null;
     }
-  }
+  }*/
 }

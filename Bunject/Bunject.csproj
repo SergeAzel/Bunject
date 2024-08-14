@@ -120,7 +120,6 @@
     <Compile Include="Tiling\TileValidator.cs" />
     <Compile Include="Utility\InjectionDictionary.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

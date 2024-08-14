@@ -11,6 +11,8 @@ using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
+  // Represents a bunburrow that exists in save data but not in plugin data
+  // Created by the system so that we can safely handle save data that otherwise would be considered invalid
   public class BNYSLostBunburrow : IModBunburrow
   {
     public BNYSLostBunburrow(CustomBunburrowModel cachedBurrow) 
@@ -21,7 +23,6 @@ namespace Bunject.NewYardSystem.Levels
 
     public int ID { get; set; }
 
-    // To be uncommented when world caching is refined
     public string Name { get; set; }
 
     public string Indicator { get; set; }
@@ -31,6 +32,7 @@ namespace Bunject.NewYardSystem.Levels
     public BunburrowStyle Style { get; set; }
 
     public bool HasEntrance => false;
+
     public bool HasSign => false;
 
     public Vector2Int? OverrideSignCoordinate()
@@ -52,6 +54,5 @@ namespace Bunject.NewYardSystem.Levels
     {
       return null;
     }
-
   }
 }

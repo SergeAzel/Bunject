@@ -101,6 +101,8 @@
     <Compile Include="Levels\EmergencyLevelsList.cs" />
     <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
     <Compile Include="Levels\BNYSModBunburrow.cs" />
+    <Compile Include="Levels\LevelValidationError.cs" />
+    <Compile Include="Levels\TileValidationError.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
     <Compile Include="Model\CustomBunburrowModel.cs" />

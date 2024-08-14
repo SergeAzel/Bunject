@@ -25,18 +25,29 @@ namespace Bunject.NewYardSystem.Levels
      *   F - Fake bunny at start of game
      *   Y - SPOILERS
      */
-    private const string RESTRICTED_TILES = "^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)$";
+    private const string RESTRICTED_TILES = @"^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)|T\{\.*[PS].*\}$";
     private static readonly Regex restrictedTileRegex = new Regex(RESTRICTED_TILES);
 
-    public static bool ValidateLevelContent(string content)
+    public static List<LevelValidationError> ValidateLevelContent(string content)
     {
       var tiles = TileValidator.GetTilesFromContent(content);
-      bool result = true;
-      foreach (var tile in tiles)
+      var validationErrors = new List<LevelValidationError>();
+
+      if (tiles.Count > 15 * 9)
+        validationErrors.Add(new LevelValidationError("Level has too many tiles", true));
+
+      if (tiles.Count < 15 * 9)
+        validationErrors.Add(new LevelValidationError("Level has too few tiles"));
+
+      foreach (var (tile, index) in tiles.Select((t, i) => ( t, i )))
       {
-        result &= (!restrictedTileRegex.IsMatch(tile) && TileValidator.ValidateTile(tile));
+        if (restrictedTileRegex.IsMatch(tile) || !TileValidator.ValidateTile(tile))
+        {
+          validationErrors.Add(new TileValidationError($"Tile '{tile}' is not valid", index / 15, index % 15));
+        }
       }
-      return result;
+
+      return validationErrors;
     }
   }
 }

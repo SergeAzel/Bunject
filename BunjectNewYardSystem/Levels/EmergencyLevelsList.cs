@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
+  // Something goes wrong with loading a level or bunburrow at runtime?  This is where the player is sent.
   public class EmergencyLevelsList : ModLevelsList
   {
     private LevelObject defaultLevel;

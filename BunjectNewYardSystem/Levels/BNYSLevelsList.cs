@@ -174,10 +174,29 @@ namespace Bunject.NewYardSystem.Levels
         Bnys.Logger.LogError($"{ModBunburrow.Name} - {depth}: Level content failed to load.  Ensure {depth}.level exists and is appropriately formatted.");
         content = DefaultLevel.Content;
       }
-      else if (!ContentValidator.ValidateLevelContent(content))
+      else
       {
-        Bnys.Logger.LogError($"{ModBunburrow.Name} - {depth}: Invalid tiles detected.");
-        content = DefaultLevel.Content;
+        var validationErrors = ContentValidator.ValidateLevelContent(content);
+        if (validationErrors.Count > 0)
+        {
+          Bnys.Logger.LogWarning($"{ModBunburrow.Name} - {depth}: Invalid level content found: ");
+          foreach (var err in validationErrors)
+          {
+            if (err.IsWarning)
+            {
+              Bnys.Logger.LogWarning(err);
+            }
+            else
+            {
+              Bnys.Logger.LogError(err);
+            }
+          }
+        }
+
+        if (validationErrors.Any(ve => !ve.IsWarning))
+        {
+          content = DefaultLevel.Content;
+        }
       }
 
       levelConfig.Style = levelConfig.Style ?? ModBunburrow.Model.Style;

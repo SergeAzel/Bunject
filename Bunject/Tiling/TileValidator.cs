@@ -9,7 +9,7 @@ namespace Bunject.Tiling
 {
   public static class TileValidator
   {
-    private const string VALID_TILES = "^(S(?:{K})?|B(?:{[KB]*})?|E|F|D[0-9]|P[0-9]|N[0-9]+|\\!|Oph|X|C|T(?:{[URLDCTKB]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER|PU|A|Y(?:{K})?)$";
+    private const string VALID_TILES = @"^(S(?:{K})?|B(?:{[KB]*})?|E|F|D[0-9]|P[0-9]|N[0-9]+|\!|Oph|X|C|T(?:{[URLDCTKBPS]+})?|W(?:{[URLD]*[0-9]?})?|R(?:{[URLD]*[0-9]?})?|EW|ER|PU|A|Y(?:{K})?)$";
     private static readonly Regex ValidTileRegex = new Regex(VALID_TILES);
 
     private static readonly string[] Separators = new string[4]
