@@ -14,7 +14,8 @@ namespace Bunject.Internal
       var evnt = Traverse.Create(GameManager.BunniesReleaseAnimator).Field<MulticastDelegate>(nameof(BunniesReleaseAnimator.OnBunnyReleased)).Value;
       foreach (var target in evnt.GetInvocationList())
       {
-        target.Method.Invoke(target.Target, new object[] { });
+        // Parameters:  (bool) assumed to be "if released from computer or not"
+        target.Method.Invoke(target.Target, new object[] { false });
       }
     }
   }
