@@ -1,9 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <!-- OLD?
-    <PaquerettePath>C:\Program Files (x86)\Steam\steamapps\common\Pâquerette Down the Bunburrows</PaquerettePath>
-    -->
-    <PaquerettePath>C:\Program Files (x86)\Steam\steamapps\common\Paquerette Down the Bunburrows</PaquerettePath>
+    <!-- MODIFY THIS PATH FOR YOUR SYSTEM -->
+    <!-- Install BepInEx to (a copy of) your Paquerette folder -->
+    <!-- then point this property to it -->
+    <PaquerettePath>C:\Program Files (x86)\Steam\steamapps\common\Paquerette Down the Bunburrows BEPINEX</PaquerettePath>
     <PaquerettePluginPath>$(PaquerettePath)\BepInEx\plugins</PaquerettePluginPath>
   </PropertyGroup>
 </Project>

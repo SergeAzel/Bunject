@@ -122,7 +122,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)Bunject.dll" "..\..\Deploy\Bunject.dll*" /y /f</PostBuildEvent>
   </PropertyGroup>
 </Project>
