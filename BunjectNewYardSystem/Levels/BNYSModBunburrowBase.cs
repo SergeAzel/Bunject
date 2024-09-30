@@ -1,15 +1,10 @@
 ﻿using Bunburrows;
 using Bunject.Levels;
-using Bunject.NewYardSystem.Levels;
+using Bunject.NewYardSystem.Levels.Archive;
 using Bunject.NewYardSystem.Model;
-using Bunject.NewYardSystem.Resources;
-using Bunject.NewYardSystem.Utility;
 using Levels;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,44 +12,39 @@ using UnityEngine;
 
 namespace Bunject.NewYardSystem.Levels
 {
-  public class BNYSModBunburrow : IModBunburrow
+  public abstract class BNYSModBunburrowBase : IBNYSModBunburrow, IModBunburrow
   {
-    private BNYSPlugin bnys;
-    private CustomWorld worldModel;
-    private Burrow burrowModel;
-    public BNYSModBunburrow(BNYSPlugin bnys, CustomWorld worldModel, Burrow burrowModel)
+    public BNYSModBunburrowBase(BNYSPlugin bnys, CustomWorld worldModel, Burrow burrowModel)
     {
-      this.bnys = bnys;
-      this.worldModel = worldModel;
-      this.burrowModel = burrowModel;
-
-      WorldName = worldModel.Title;
-      LocalName = burrowModel.Name;
-
-      WorldPrefix = worldModel.Prefix;
-      LocalIndicator = burrowModel.Indicator;
-
-      IsVoid = burrowModel.IsVoid;
+      Bnys = bnys;
+      World = worldModel;
+      BurrowModel = burrowModel;
 
       InitializeCustomSignCoordinate();
     }
 
+    protected BNYSPlugin Bnys { get; private set; }
+
+    public CustomWorld World { get; private set;}
+
+    public Burrow BurrowModel { get; private set; }
+
+    public string WorldName => World.Title;
+
+    public string LocalName => BurrowModel.Name;
+
+    public string WorldPrefix => World.Prefix;
+
+    public string LocalIndicator => BurrowModel.Indicator;
+
+    public bool IsVoid => BurrowModel.IsVoid;
+
+    // Set by Bunject
     public int ID { get; set; }
 
-    public Burrow Model => burrowModel;
-    public CustomWorld World => worldModel;
-
-    public string WorldName { get; set; }
-    public string LocalName { get; set; }
-
-    // To be uncommented when world caching is refined
     public string Name => WorldName + "::" + LocalName;
 
-    public string WorldPrefix { get; set; }
-    public string LocalIndicator { get; set; }
     public string Indicator => (string.IsNullOrEmpty(WorldPrefix) ? string.Empty : WorldPrefix + "-") + LocalIndicator;
-
-    public bool IsVoid { get; set; }
 
     private BunburrowStyle style = null;
     public BunburrowStyle Style
@@ -63,13 +53,13 @@ namespace Bunject.NewYardSystem.Levels
       {
         if (style == null)
         {
-          style = BNYSPlugin.ResolveStyle(Model.Style);
+          style = BNYSPlugin.ResolveStyle(BurrowModel.Style);
         }
         return style;
       }
     }
 
-    public bool HasEntrance => Model.HasSurfaceEntry;
+    public bool HasEntrance => BurrowModel.HasSurfaceEntry;
     public bool HasSign { get; private set; } = true;
 
     private Vector2Int? customSignCoordinate;
@@ -100,18 +90,17 @@ namespace Bunject.NewYardSystem.Levels
       }
     }
 
-    BNYSLevelsList levels = null;
-    public BNYSLevelsList GetLevels()
-    {
-      if (levels == null)
-      {
-        levels = GenerateLevelsList();
-      }
-      return levels;
-    }
 
-    LevelsList IModBunburrow.GetLevels()
+    public abstract LevelMetadata LoadLevel(int depth);
+
+
+    private LevelsList levelsList;
+    public LevelsList GetLevels()
     {
+      if (levelsList == null)
+      {
+        levelsList = GenerateLevelsList();
+      }
       return GetLevels();
     }
 
@@ -121,19 +110,31 @@ namespace Bunject.NewYardSystem.Levels
       return SurfaceLevel;
     }
 
-    private BNYSLevelsList GenerateLevelsList()
+    protected virtual BNYSLevelsList GenerateLevelsList()
     {
       var levelsList = ScriptableObject.CreateInstance<BNYSLevelsList>();
 
       levelsList.ModBunburrow = this;
-      levelsList.Bnys = bnys;
+      levelsList.Bnys = Bnys;
 
       levelsList.name = Name;
-      levelsList.MaximumDepth = burrowModel.Depth;
-      levelsList.NumberOfRegularBunnies = burrowModel.UpperBunnyCount;
-      levelsList.NumberOfTempleBunnies = burrowModel.TempleBunnyCount;
-      levelsList.NumberOfHellBunnies = burrowModel.HellBunnyCount;
+      levelsList.MaximumDepth = BurrowModel.Depth;
+      levelsList.NumberOfRegularBunnies = BurrowModel.UpperBunnyCount;
+      levelsList.NumberOfTempleBunnies = BurrowModel.TempleBunnyCount;
+      levelsList.NumberOfHellBunnies = BurrowModel.HellBunnyCount;
       return levelsList;
+    }
+
+    protected LevelMetadata CreateDefaultLevelMetadata()
+    {
+      return new LevelMetadata()
+      {
+        Name = "Failed Level Load",
+        LiveReloading = true,
+        IsHell = false,
+        IsTemple = false,
+        Tools = new LevelTools()
+      };
     }
   }
 }

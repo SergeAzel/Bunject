@@ -1,4 +1,5 @@
 ﻿using Bunject.Levels;
+using Bunject.NewYardSystem.Levels.Web;
 using Bunject.NewYardSystem.Model;
 using Dialogue;
 using HarmonyLib;
@@ -24,22 +25,22 @@ namespace Bunject.NewYardSystem.Levels
     public const string OpenRow = "T,T,T,T,T,T,T,T,T,T,T,T,T,T,T";
 
     //Should only be run after burrows are registered.  Burrow ID is required for generation.
-    public static void CreateSurfaceLevels(CustomWorld world, List<BNYSModBunburrow> modBunburrows, LevelObject precedingLevel)
+    public static void CreateSurfaceLevels(CustomWorld world, List<BNYSWebModBunburrow> modBunburrows, LevelObject precedingLevel)
     {
       if (world.GeneratedSurfaceLevels == null)
       {
-        var accessibleBurrows = modBunburrows.Where(b => b.Model.Depth > 0).ToDictionary(b => b.LocalName);
+        var accessibleBurrows = modBunburrows.Where(b => b.BurrowModel.Depth > 0).ToDictionary(b => b.LocalName);
 
         world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
     }
 
-    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSModBunburrow> burrows)
+    private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSWebModBunburrow> burrows)
     {
       foreach (var surfaceEntry in world.SurfaceEntries ?? Enumerable.Empty<SurfaceEntry>())
       {
         string content = null;
-        List<BNYSModBunburrow> consumedBurrows = null;
+        List<BNYSWebModBunburrow> consumedBurrows = null;
 
         switch (GetSurfaceType(surfaceEntry))
         {
@@ -66,7 +67,7 @@ namespace Bunject.NewYardSystem.Levels
         }
       }
 
-      var enterableBurrows = burrows.Values.Where(b => b.Model.HasSurfaceEntry).ToList();
+      var enterableBurrows = burrows.Values.Where(b => b.BurrowModel.HasSurfaceEntry).ToList();
       while (enterableBurrows.Any())
       {
         Console.WriteLine($"{world.Title}: Creating DEFAULT Surface World");
@@ -101,14 +102,14 @@ namespace Bunject.NewYardSystem.Levels
       return level;
     }
 
-    private static (string, List<BNYSModBunburrow>) GenerateCoordinatesSurfaceContent(Dictionary<string, SurfaceCoordinate> coordinates, Dictionary<string, BNYSModBunburrow> bunburrows)
+    private static (string, List<BNYSWebModBunburrow>) GenerateCoordinatesSurfaceContent(Dictionary<string, SurfaceCoordinate> coordinates, Dictionary<string, BNYSWebModBunburrow> bunburrows)
     {
       string[][] content = GetEmptyLevelContent();
-      var consumedBurrows = new List<BNYSModBunburrow>();
+      var consumedBurrows = new List<BNYSWebModBunburrow>();
 
       foreach (var coordinate in coordinates)
       {
-        if (bunburrows.TryGetValue(coordinate.Key, out BNYSModBunburrow bunburrow))
+        if (bunburrows.TryGetValue(coordinate.Key, out BNYSWebModBunburrow bunburrow))
         {
           if (coordinate.Value?.Hole != null && coordinate.Value.Hole.Length > 0)
           {
@@ -130,7 +131,7 @@ namespace Bunject.NewYardSystem.Levels
       return (string.Join(",", content.Select(row => string.Join(",", row)).ToArray()), consumedBurrows);
     }
 
-    private static (string, List<BNYSModBunburrow>) GenerateGridSurfaceContent(SurfaceEntryGrid grid, Dictionary<string, BNYSModBunburrow> bunburrows)
+    private static (string, List<BNYSWebModBunburrow>) GenerateGridSurfaceContent(SurfaceEntryGrid grid, Dictionary<string, BNYSWebModBunburrow> bunburrows)
     {
       // Cheating.. just convert grid to coordinates.
       var coordinates = new Dictionary<string, SurfaceCoordinate>();
@@ -154,9 +155,9 @@ namespace Bunject.NewYardSystem.Levels
       return GenerateCoordinatesSurfaceContent(coordinates, bunburrows);
     }
 
-    private static (string, List<BNYSModBunburrow>) GenerateDefaultSurfaceLevel(List<BNYSModBunburrow> bunburrows)
+    private static (string, List<BNYSWebModBunburrow>) GenerateDefaultSurfaceLevel(List<BNYSWebModBunburrow> bunburrows)
     {
-      var consumedBurrows = new List<BNYSModBunburrow>();
+      var consumedBurrows = new List<BNYSWebModBunburrow>();
 
       var first = bunburrows.FirstOrDefault();
       if (first != null)
@@ -199,7 +200,7 @@ namespace Bunject.NewYardSystem.Levels
       return rows.Select(r => r.Split(',')).ToArray();
     }
 
-    private static string GetBasicLevelContent(BNYSModBunburrow first, BNYSModBunburrow second, BNYSModBunburrow third)
+    private static string GetBasicLevelContent(BNYSWebModBunburrow first, BNYSWebModBunburrow second, BNYSWebModBunburrow third)
     {
       string[] rows =
       {
@@ -216,7 +217,7 @@ namespace Bunject.NewYardSystem.Levels
       return string.Join(System.Environment.NewLine, rows);
     }
 
-    private static string GetLevelEntryCode(BNYSModBunburrow burrow)
+    private static string GetLevelEntryCode(BNYSWebModBunburrow burrow)
     {
       if (burrow != null)
       {

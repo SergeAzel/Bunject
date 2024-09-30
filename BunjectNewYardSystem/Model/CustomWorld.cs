@@ -1,4 +1,6 @@
-﻿using Levels;
+﻿using Bunject.Levels;
+using Bunject.NewYardSystem.Levels;
+using Levels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bunject.NewYardSystem.Model
 {
-  public class CustomWorld
+  public abstract class CustomWorld
   {
     public string ProxyURL { get; set; }
     public bool Enabled { get; set; } = true;
@@ -25,5 +27,7 @@ namespace Bunject.NewYardSystem.Model
 
     [JsonIgnore]
     public List<LevelObject> GeneratedSurfaceLevels { get; set; }
+
+    public abstract BNYSModBunburrowBase GenerateBunburrow(BNYSPlugin pluginRef, string bunburrowName);
   }
 }
