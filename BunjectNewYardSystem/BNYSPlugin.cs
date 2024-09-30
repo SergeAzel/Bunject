@@ -47,7 +47,7 @@ namespace Bunject.NewYardSystem
 
     private List<CustomWorld> CustomWorlds;
     private List<IModBunburrow> AllModBurrows;
-    private List<BNYSWebModBunburrow> BNYSModBurrows;
+    private List<BNYSModBunburrowBase> BNYSModBurrows;
 
     public new ManualLogSource Logger => base.Logger;
 
@@ -122,7 +122,7 @@ namespace Bunject.NewYardSystem
         cache.SaveCache();
 
         AllModBurrows = modBunburrows.ToList();
-        BNYSModBurrows = modBunburrows.OfType<BNYSWebModBunburrow>().ToList();
+        BNYSModBurrows = modBunburrows.OfType<BNYSModBunburrowBase>().ToList();
 
         LinkLevelLists(BNYSModBurrows);
 
@@ -130,7 +130,7 @@ namespace Bunject.NewYardSystem
         {
           BunjectAPI.RegisterBunburrow(bunburrow);
 
-          if (bunburrow is BNYSWebModBunburrow bnysBurrow)
+          if (bunburrow is BNYSModBunburrowBase bnysBurrow)
           {
             foreach (var elevatorDepth in bnysBurrow.BurrowModel.ElevatorDepths)
             {
@@ -264,11 +264,14 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e);
       }
 
+      if (string.IsNullOrEmpty(world.Title))
+        world.Title = "Untitled";
+
       if (!string.IsNullOrEmpty(world.ProxyURL))
       {
         try
         {
-          world = LoadProxyWorld(world);
+          return LoadProxyWorld(world);
         }
         catch (Exception e)
         {
@@ -278,9 +281,6 @@ namespace Bunject.NewYardSystem
           Logger.LogError(e);
         }
       }
-
-      if (string.IsNullOrEmpty(world.Title))
-        world.Title = "Untitled";
 
       return world;
     }
@@ -298,13 +298,13 @@ namespace Bunject.NewYardSystem
         return null;
       }
 
-      CustomWorld world = null;
+      ArchiveCustomWorld world = null;
       try
       {
         using (var stream = config.Open())
         using (var reader = new StreamReader(stream))
         {
-          world = (CustomWorld)new JsonSerializer().Deserialize(reader, typeof(ArchiveCustomWorld));
+          world = (ArchiveCustomWorld)new JsonSerializer().Deserialize(reader, typeof(ArchiveCustomWorld));
         }
       }
       catch (Exception e)
@@ -314,11 +314,16 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e);
       }
 
+      world.Archive = archive;
+
+      if (string.IsNullOrEmpty(world.Title))
+        world.Title = "Untitled";
+
       if (!string.IsNullOrEmpty(world.ProxyURL))
       {
         try
         {
-          world = LoadProxyWorld(world);
+          return LoadProxyWorld(world);
         }
         catch (Exception e)
         {
@@ -327,9 +332,6 @@ namespace Bunject.NewYardSystem
           Logger.LogError(e);
         }
       }
-
-      if (string.IsNullOrEmpty(world.Title))
-        world.Title = "Untitled";
 
       return world;
     }
@@ -364,6 +366,9 @@ namespace Bunject.NewYardSystem
             world.SurfaceEntries = basis.SurfaceEntries;
           }
         }
+
+        if (string.IsNullOrEmpty(world.Title))
+          world.Title = "Untitled";
       }
 
       return world;
@@ -409,7 +414,7 @@ namespace Bunject.NewYardSystem
       Traverse.Create(endcapLevel).Field("specificBackground").SetValue(SurfaceBurrowsPatch.EndingBackground);
     }
 
-    private void LinkLevelLists(List<BNYSWebModBunburrow> burrows)
+    private void LinkLevelLists(List<BNYSModBunburrowBase> burrows)
     {
       foreach (var burrow in burrows)
       {

@@ -36,8 +36,8 @@ namespace Bunject.NewYardSystem.Levels.Archive
 
     public override LevelMetadata LoadLevel(int depth)
     {
-      var levelContentPath = Path.Combine(BurrowModel.Directory, $"{depth}.level");
-      var levelConfigPath = Path.Combine(BurrowModel.Directory, $"{depth}.json");
+      var levelContentPath = BurrowModel.Directory + "/" + $"{depth}.level";
+      var levelConfigPath = BurrowModel.Directory + "/" + $"{depth}.json";
 
       string content = null;
       LevelMetadata levelConfig = null;
@@ -60,7 +60,7 @@ namespace Bunject.NewYardSystem.Levels.Archive
           Bnys.Logger.LogError($"{Name} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
 
           Bnys.Logger.LogError("Error reading zip file entry related to level:");
-          Bnys.Logger.LogError(Path.Combine(BurrowModel.Directory, depth.ToString()));
+          Bnys.Logger.LogError(levelConfigPath);
           Bnys.Logger.LogError(e.Message);
           Bnys.Logger.LogError(e);
 
@@ -72,7 +72,7 @@ namespace Bunject.NewYardSystem.Levels.Archive
         Bnys.Logger.LogError($"{Name} - {depth}: Level json failed to load.  Ensure {depth}.json exists and conforms to JSON standards.");
 
         Bnys.Logger.LogError("Could not find zip file entry:");
-        Bnys.Logger.LogError(Path.Combine(BurrowModel.Directory, depth.ToString()));
+        Bnys.Logger.LogError(levelConfigPath);
 
         levelConfig = CreateDefaultLevelMetadata();
       }

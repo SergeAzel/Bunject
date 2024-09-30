@@ -101,7 +101,7 @@ namespace Bunject.NewYardSystem.Levels
       {
         levelsList = GenerateLevelsList();
       }
-      return GetLevels();
+      return levelsList;
     }
 
     public LevelObject SurfaceLevel { get; set; }
