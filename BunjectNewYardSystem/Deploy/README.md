@@ -1,5 +1,5 @@
-Bunject is a library that injects and wraps around significant portions of the PtdB behavior, to standardize injection of custom behavior. 
+BNYS - "Bunject New Yard System"
 
-Primarily used by BNYS.
+Permits the creation and installation of new Bunburrows, within Paquerette Down the Bunburrows.
 
-THIS MOD WILL HAVE NO EFFECT ON IT'S OWN.  This mod is to be used as a dependency by other mods.
+Please see the user guide here:  https://docs.google.com/document/d/1EjCc8qeLawQy42G--K6RMGXEa4b1whWlzjtRorVef_s/edit#heading=h.n3v079h36372
