@@ -43,7 +43,7 @@ namespace Bunject.NewYardSystem
 
     public static string pluginsDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\"));
     public static string rootDirectory = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-    public static string inlineDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BNYS");
+    public static string inlineDirectory = Path.Combine(rootDirectory, "BNYS");
 
     private List<CustomWorld> CustomWorlds;
     private List<IModBunburrow> AllModBurrows;
@@ -207,7 +207,7 @@ namespace Bunject.NewYardSystem
 		public IEnumerable<CustomWorld> LoadCustomWorlds()
     {
       // loop through all subfolders of our root
-      foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
+      foreach (var directory in Directory.EnumerateDirectories(inlineDirectory))
       {
         var configFile = Path.Combine(directory, "config.json");
         if (File.Exists(configFile))
@@ -379,6 +379,7 @@ namespace Bunject.NewYardSystem
       if (!Path.IsPathRooted(burrow.Directory))
       {
         burrow.Directory = Path.Combine(directory, burrow.Directory);
+        Logger.LogInfo("Burrow Directory: " +  burrow.Directory);
       }
     }
 
