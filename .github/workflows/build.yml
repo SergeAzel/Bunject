@@ -34,8 +34,13 @@ jobs:
           STEAM_APP_ID: ${{ vars.STEAM_APP_ID }}
         run: |
           echo "SteamApp ID: $env:STEAM_APP_ID"
-          .\steam\steamcmd.exe +force_install_dir .\paquerette\ +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
-
+          $PaqPath = (Join-Path -Path $PWD.Path -ChildPath \paquerette\)
+          echo "Target install: $PaqPath"
+          .\steam\steamcmd.exe +force_install_dir $PaqPath +quit
+          echo "Try part 2 now"
+          .\steam\steamcmd.exe +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +quit
+          echo "Full thing"
+          .\steam\steamcmd.exe +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
       - name: Download BepInEx Binaries
         uses: robinraju/release-downloader@v1.12
         with:
