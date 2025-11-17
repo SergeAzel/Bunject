@@ -9,8 +9,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      STEAM_APP_ID: ${{ env.STEAM_APP_ID }}
     steps:
       - uses: actions/checkout@v5
 
@@ -32,6 +30,8 @@ jobs:
           echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > config/config.vdf
 
       - name: Download Paquerette Binaries
+        env:
+          STEAM_APP_ID: ${{ env.STEAM_APP_ID }}
         run: |
           echo "SteamApp ID: $env:STEAM_APP_ID"
           .\steamcmd.exe +force_install_dir .\paquerette\ +login ${{ secrets.STEAM_ACCOUNT }} +app_update $env:STEAM_APP_ID +quit
