@@ -11,8 +11,18 @@ on:
 
 
 jobs:
+  set-version:
+    runs-on: ubuntu-latest
+    outputs:
+      steps: ${{ steps.timestamp.outputs }}
+    steps:
+      - name: Create Version Timestamp
+        id: timestamp
+        run: echo "version=v$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
+
   build:
     runs-on: windows-latest
+    needs: set-version
     permissions: write-all
     outputs:
       artifact-id: ${{ steps.artifact.outputs.artifact-id}}
@@ -68,12 +78,15 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          name: ${{ steps.set-version.outputs.version }}-build.zip
           path: Release
           retention-days: 30
 
   release:
     runs-on: windows-latest
-    needs: build
+    needs:
+      - build
+      - set-version
     if: ${{ github.event_name == 'push' }}
     permissions: write-all
     steps:
@@ -95,4 +108,4 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release create vLatest --notes "Latest Build" BNYSRelease.zip
+          gh release create ${{ steps.set-version.outputs.version }} --notes "Latest Build" BNYSRelease.zip
