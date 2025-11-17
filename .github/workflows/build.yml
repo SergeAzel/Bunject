@@ -106,4 +106,4 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release create ${{ steps.set-version.outputs.version }} --notes "Latest Build" BNYSRelease.zip
+          gh release create "${{ steps.set-version.outputs.version }}" --notes "Latest Build" BNYSRelease.zip
