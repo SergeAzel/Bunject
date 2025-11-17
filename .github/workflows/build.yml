@@ -13,8 +13,6 @@ on:
 jobs:
   set-version:
     runs-on: ubuntu-latest
-    outputs:
-      steps: ${{ steps.timestamp.outputs }}
     steps:
       - name: Create Version Timestamp
         id: timestamp
