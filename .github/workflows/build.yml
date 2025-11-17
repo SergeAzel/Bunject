@@ -31,7 +31,7 @@ jobs:
 
       - name: Download Paquerette Binaries
         run: |
-          .\steamcmd.exe +force_install_dir .\paquerette\ +login ${{ secrets.STEAM_ACCOUNT }} +app_update ${{ env.STEAM_APP_ID }}
+          .\steamcmd.exe +force_install_dir .\paquerette\ +login ${{ secrets.STEAM_ACCOUNT }} +app_update ${{ env.STEAM_APP_ID }} +quit
 
       - name: Download BepInEx Binaries
         uses: robinraju/release-downloader@v1.12
