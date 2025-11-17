@@ -9,22 +9,12 @@ on:
     branches:
       - main
 
-
 jobs:
-  set-version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version-step.outputs.version }}
-    steps:
-      - name: Create Version Timestamp
-        id: version-step
-        run: echo "version=v$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-
   build:
     runs-on: windows-latest
-    needs: set-version
     permissions: write-all
     outputs:
+      version: ${{ steps.version-stamp.outputs.version }}
       artifact-id: ${{ steps.artifact.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v5
@@ -73,12 +63,19 @@ jobs:
           Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
 
+      - name: Create Version Timestamp
+        id: version-stamp
+        run: |
+          $version = "v" + (Get-Date -Format "yyyy.MM.dd.HH.mm.ss")
+          echo $version
+          Write-Host "version=$version" >> $env:GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v5
         id: artifact
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: ${{ steps.set-version.outputs.version }}-build.zip
+          name: ${{ steps.version-stamp.outputs.version }}-build.zip
           path: Release
           retention-days: 30
 
@@ -86,7 +83,6 @@ jobs:
     runs-on: windows-latest
     needs:
       - build
-      - set-version
     if: ${{ github.event_name == 'push' }}
     permissions: write-all
     steps:
@@ -108,4 +104,4 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ steps.set-version.outputs.version }}" --notes "Latest Build" BNYSRelease.zip
+          gh release create "${{ needs.build.outputs.version }}" --notes "Latest Build" BNYSRelease.zip
