@@ -35,10 +35,11 @@ jobs:
 
       - name: Download BepInEx Binaries
         uses: robinraju/release-downloader@v1.12
-        repository: 'bepinex/bepinex'
-        out-file-path: '.\bepinex\'
-        extract: true
-        fileName: 'BepInEx-win-x64_*.zip'
+        inputs:
+          repository: 'bepinex/bepinex'
+          out-file-path: '.\bepinex\'
+          extract: true
+          fileName: 'BepInEx-win-x64_*.zip'
 
       - name: Build Bunject Solution
         run: |
