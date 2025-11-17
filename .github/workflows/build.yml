@@ -89,7 +89,7 @@ jobs:
      
       - name: Compress Artifact
         run: |
-          Compress-Archive -Path build -DestinationPath BNYSRelease.zip
+          Compress-Archive -Path build\* -DestinationPath BNYSRelease.zip
 
       - name: Create Release
         env: 
