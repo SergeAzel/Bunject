@@ -61,10 +61,9 @@ jobs:
           Compress-Archive -Path ".\\Release\\" -DestinationPath "BNYSRelease.zip"
 
       - name: Create BNYS Release
-        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create latest -p ./BNYSRelease.zip -t Test Release
+          gh release create latest -p BNYSRelease.zip -t Test Release
 
 
