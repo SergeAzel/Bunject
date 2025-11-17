@@ -1,0 +1,93 @@
+name: Build Bunject Solution
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      - autobuild
+
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions: write-all
+    outputs:
+      artifact-id: ${{ steps.artifact.outputs.artifact-id}}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download BepInEx Binaries
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: 'bepinex/bepinex'
+          out-file-path: '.\bepinex\'
+          extract: true
+          fileName: 'BepInEx_win_x64_*.zip'
+          tag: 'v5.4.23.4'
+
+      - name: Setup steamcmd
+        uses: CyberAndrii/setup-steamcmd@v1.2.0
+
+      - name: Download Paquerette Binaries
+        env:
+          STEAM_APP_ID: ${{ vars.STEAM_APP_ID }}
+        run: |
+          echo "SteamApp ID: $env:STEAM_APP_ID"
+          $PaqPath = (Join-Path -Path $PWD.Path -ChildPath \paquerette\)
+          echo "Target install: $PaqPath"
+          steamcmd +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
+
+      - name: Build Bunject Solution
+        run: |
+          $BepInExPath = ("bepinex\\BepInEx\\core" | Resolve-Path).Path
+          echo "BepInEx: $BepInExPath"
+
+          $PaqPath = ("paquerette" | Resolve-Path).Path
+          echo "PaqPath: $PaqPath"
+
+          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force 
+
+          msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath="$PaqPath" /p:BepInExPath="$BepInExPath"
+
+      - name: Build BNYS Zip
+        run: |
+          mkdir Release
+          Copy-Item -Path ".\\Bunject\\bin\\Release\\Bunject.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectComputer\\bin\\Release\\Bunject.Computer.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
+
+      - uses: actions/upload-artifact@v5
+        id: artifact
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: Release
+          retention-days: 30
+
+  release:
+    runs-on: windows-latest
+    needs: build
+    if: ${{ ! github.event_name == 'pull_request' }}
+    permissions: write-all
+    steps:
+      - name: Get Build Artifact
+        uses: actions/download-artifact@v5
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        with: 
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: build
+     
+      - name: Compress Artifact
+        run: |
+          Compress-Archive -Path build -DestinationPath BNYSRelease.zip
+
+      - name: Create Release
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create vLatest --notes "Latest Build" BNYSRelease.zip
