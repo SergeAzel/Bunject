@@ -68,7 +68,7 @@ jobs:
         run: |
           $version = "v" + (Get-Date -Format "yyyy.MM.dd.HH.mm.ss")
           echo $version
-          Write-Host "version=$version" >> $env:GITHUB_OUTPUT
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - uses: actions/upload-artifact@v5
         id: artifact
