@@ -40,8 +40,13 @@ jobs:
         run: |
           $BepInExPath = ("bepinex" | Resolve-Path).Path
           echo "BepInEx: $BepInExPath"
+          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+
           $PaqPath = ("paquerette" | Resolve-Path).Path
           echo "PaqPath: $PaqPath"
+
+          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+
           msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath="$PaqPath" /p:BepInExPath="$BepInExPath"
 
       - name: Build BNYS Zip
