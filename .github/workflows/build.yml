@@ -51,6 +51,7 @@ jobs:
           out-file-path: '.\bepinex\'
           extract: true
           fileName: 'BepInEx-win-x64_*.zip'
+          tag: 'v5.4.23.4'
 
       - name: Build Bunject Solution
         run: |
