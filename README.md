@@ -1,7 +1,7 @@
 # Bunject
 Bunject Paquerette Modding
 
-There are four projects in this:
+There are five projects in this:
 
 1. Bunject
    
@@ -18,11 +18,20 @@ BNYS mod - for creating custom burrows.
 Handles all of the processes of importing and interpreting custom burrows and custom levels.
 Generally not intended to do any direct hacking of things, but regularly uses the Harmony Traverse tools to create custom game objects.
 
+3. BunjectComputer
+
+This relatively small dll is used to enable the computer map within custom bunburrows.
+Honestly an extremely strong improvement, created by StartUp.
+
+
+
+The following two projects should be considered deprecated:
+
 4. BunjectExtractor
    
 Will save .level files of CORE game levels to an EXTRACTED folder.  Only intended for reading how core levels do things if absolutely needed.
 
-6. SaveFileCleanup
+5. SaveFileCleanup
    
 Used to clean up any save files from any knowledge of custom burrows and custom levels, in case a save file gets horribly fucked up.
 If used WITH bunject, will affect your MOD save files.
