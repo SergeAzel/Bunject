@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           mkdir config
-          echo ${{ secrets.STEAM_CONFIG_VDF }} | base64 -d > config/config.vdf
+          echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > config/config.vdf
 
       - name: Download Paquerette Binaries
         run: |
