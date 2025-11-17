@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - autobuild
+  push:
+    branches:
+      - main
 
 
 jobs:
@@ -71,7 +74,7 @@ jobs:
   release:
     runs-on: windows-latest
     needs: build
-    if: ${{ ! github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'push' }}
     permissions: write-all
     steps:
       - name: Get Build Artifact
