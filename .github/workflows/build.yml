@@ -40,7 +40,7 @@ jobs:
         run: |
           $BepInExPath = ("bepinex" | Resolve-Path).Path
           echo "BepInEx: $BepInExPath"
-          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force 
 
           $PaqPath = ("paquerette" | Resolve-Path).Path
           echo "PaqPath: $PaqPath"
