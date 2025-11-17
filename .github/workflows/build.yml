@@ -35,7 +35,7 @@ jobs:
 
       - name: Download BepInEx Binaries
         uses: robinraju/release-downloader@v1.12
-        inputs:
+        with:
           repository: 'bepinex/bepinex'
           out-file-path: '.\bepinex\'
           extract: true
