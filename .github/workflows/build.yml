@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: windows-latest
     permissions: write-all
+    outputs:
+      artifact-id: ${{ steps.artifact.outputs.artifact-id}}
     steps:
       - uses: actions/checkout@v5
 
@@ -58,12 +60,34 @@ jobs:
           Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
 
-          Compress-Archive -Path ".\\Release\\" -DestinationPath "BNYSRelease.zip"
+      - uses: actions/upload-artifact@v5
+        id: artifact
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path: Release
+          retention-days: 30
 
-      - name: Create BNYS Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release:
+    runs-on: windows-latest
+    needs: build
+    if: ${{ ! github.event_name == 'pull_request' }}
+    permissions: write-all
+    steps:
+      - name: Get Build Artifact
+        uses: actions/download-artifact@v5
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        with: 
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+          path: build
+     
+      - name: Compress Artifact
         run: |
-          gh release create latest -p BNYSRelease.zip -t Test Release
+          Compress-Archive -Path build -DestinationPath BNYSRelease.zip
 
-
+      - name: Create Release
+        env: 
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create vLatest --notes "Latest Build" BNYSRelease.zip
