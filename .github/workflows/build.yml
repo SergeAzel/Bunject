@@ -77,6 +77,8 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     permissions: write-all
     steps:
+      - uses: actions/checkout@v5
+      
       - name: Get Build Artifact
         uses: actions/download-artifact@v5
         env: 
