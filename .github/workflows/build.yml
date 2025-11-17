@@ -15,6 +15,15 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Download BepInEx Binaries
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: 'bepinex/bepinex'
+          out-file-path: '.\bepinex\'
+          extract: true
+          fileName: 'BepInEx_win_x64_*.zip'
+          tag: 'v5.4.23.4'
+
       - name: Setup steamcmd
         uses: CyberAndrii/setup-steamcmd@v1.2.0
 
@@ -27,25 +36,15 @@ jobs:
           echo "Target install: $PaqPath"
           steamcmd +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
 
-      - name: Download BepInEx Binaries
-        uses: robinraju/release-downloader@v1.12
-        with:
-          repository: 'bepinex/bepinex'
-          out-file-path: '.\bepinex\'
-          extract: true
-          fileName: 'BepInEx_win_x64_*.zip'
-          tag: 'v5.4.23.4'
-
       - name: Build Bunject Solution
         run: |
-          $BepInExPath = ("bepinex" | Resolve-Path).Path
+          $BepInExPath = ("bepinex\\BepInEx\\core" | Resolve-Path).Path
           echo "BepInEx: $BepInExPath"
-          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force 
 
           $PaqPath = ("paquerette" | Resolve-Path).Path
           echo "PaqPath: $PaqPath"
 
-          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force -ErrorAction SilentlyContinue | Select-Object FullName
+          Get-ChildItem -Path $BepInExPath -Recurse -Directory -Force 
 
           msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath="$PaqPath" /p:BepInExPath="$BepInExPath"
 
