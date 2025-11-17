@@ -1,0 +1,62 @@
+name: Build Bunject Solution
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      - autobuild
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Download Steam CMD
+        run: |
+          $SteamCMDURI = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+          $LocalPath = ".\\steamcmd.zip"
+
+          Invoke-WebRequest -Uri $SteamCMDURI -OutFile $LocalPath
+          Expand-Archive -Path $LocalPath -DestinationPath "."
+
+      - name: Setup Steam Credentials
+        shell: bash
+        run: |
+          mkdir config
+          echo ${{ secrets.STEAM_CONFIG_VDF }} | base64 -d > config/config.vdf
+
+      - name: Download Paquerette Binaries
+        run: |
+          .\steamcmd.exe +force_install_dir .\paquerette\ +login ${{ secrets.STEAM_ACCOUNT }} +app_update ${{ env.STEAM_APP_ID }}
+
+      - name: Download BepInEx Binaries
+        uses: robinraju/release-downloader@v1.12
+        repository: 'bepinex/bepinex'
+        out-file-path: '.\bepinex\'
+        extract: true
+        fileName: 'BepInEx-win-x64_*.zip'
+
+      - name: Build Bunject Solution
+        run: |
+          msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath=".\paquerette" /p:BepInExPath=".\\bepinex"
+
+      - name: Build BNYS Zip
+        run: |
+          mkdir Release
+          Copy-Item -Path ".\\Bunject\\bin\\Release\\Bunject.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectComputer\\bin\\Release\\Bunject.Computer.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recursive
+
+          Compress-Archive -Path ".\\Release\\" -DestinationPath "BNYSRelease.zip"
+
+      - name: Create BNYS Release
+        shell: bash
+        run: |
+          gh release create latest -p ./BNYSRelease.zip -t Test Release
+
+

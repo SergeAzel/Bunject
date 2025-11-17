@@ -12,11 +12,23 @@ namespace Bunject.Computer
 {
 	[BepInPlugin("startup.bunject.computer", "Bunject Computer", "0.1.0")]
 	[BepInDependency("sergedev.bunject.newyardsystem", BepInDependency.DependencyFlags.HardDependency)]
-	public class ComputerPlugin : BaseUnityPlugin
+	public class ComputerPlugin : BaseUnityPlugin, IBunjectorPlugin
 	{
-		private void Awake()
+    public void OnAssetsLoaded()
+    {
+      // Nothing needed
+    }
+
+    public void OnProgressionLoaded(GeneralProgression progression)
+    {
+      progression.HandleMapUnlock();
+    }
+
+    private void Awake()
 		{
 			new Harmony("bunject.computer").PatchAll(Assembly.GetExecutingAssembly());
+
+      BunjectAPI.RegisterPlugin(this);
 		}
 	}
 }
