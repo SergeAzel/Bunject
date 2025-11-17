@@ -23,18 +23,18 @@ jobs:
           Invoke-WebRequest -Uri $SteamCMDURI -OutFile $LocalPath
           Expand-Archive -Path $LocalPath -DestinationPath ".\\steam\\"
 
-      - name: Setup Steam Credentials
-        shell: bash
-        run: |
-          mkdir config
-          echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > config/config.vdf
+#      - name: Setup Steam Credentials
+#        shell: bash
+#        run: |
+#          mkdir config
+#          echo "${{ secrets.STEAM_CONFIG_VDF }}" | base64 -d > config/config.vdf
 
       - name: Download Paquerette Binaries
         env:
           STEAM_APP_ID: ${{ vars.STEAM_APP_ID }}
         run: |
           echo "SteamApp ID: $env:STEAM_APP_ID"
-          .\steam\steamcmd.exe +force_install_dir .\paquerette\ +login "${{ secrets.STEAM_ACCOUNT }}" "" +app_update $env:STEAM_APP_ID +quit
+          .\steam\steamcmd.exe +force_install_dir .\paquerette\ +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
 
       - name: Download BepInEx Binaries
         uses: robinraju/release-downloader@v1.12
