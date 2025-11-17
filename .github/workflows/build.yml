@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Create Version Timestamp
         id: timestamp
-        run: echo "version=v$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+        run: echo "version=v$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
   build:
     runs-on: windows-latest
