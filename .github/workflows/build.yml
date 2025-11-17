@@ -42,7 +42,7 @@ jobs:
           echo "BepInEx: $BepInExPath"
           $PaqPath = ("paquerette" | Resolve-Path).Path
           echo "PaqPath: $PaqPath"
-          msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath=".\\paquerette" /p:BepInExPath=".\\bepinex"
+          msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath="$PaqPath" /p:BepInExPath="$BepInExPath"
 
       - name: Build BNYS Zip
         run: |
