@@ -54,7 +54,7 @@ jobs:
           Copy-Item -Path ".\\Bunject\\bin\\Release\\Bunject.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectComputer\\bin\\Release\\Bunject.Computer.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recursive
+          Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
 
           Compress-Archive -Path ".\\Release\\" -DestinationPath "BNYSRelease.zip"
 
