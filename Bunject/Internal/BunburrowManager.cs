@@ -49,11 +49,16 @@ namespace Bunject.Internal
       var burrow = Bunburrows.FirstOrDefault(x => x.ID == bunburrowID);
       if (burrow is null)
         throw new ArgumentException($"Bunburrow id {bunburrowID} does not exist!  Please use an existing id.");
-      if (burrow.Elevators.Contains(depth))
-        throw new ArgumentException($"Bunburrow depth {depth} already contains elevator!  Please use a depth without one.");
-      burrow.Elevators.Add(depth);
+      if (!burrow.Elevators.Contains(depth))
+        burrow.Elevators.Add(depth);
     }
-    private BunburrowManager()
+
+    internal static void ClearRegisters()
+    {
+      instance.FullReset();
+    }
+
+    internal void FullReset()
     {
       bunburrows = Enum.GetValues(typeof(global::Bunburrows.Bunburrow)).OfType<global::Bunburrows.Bunburrow>().Select(burrowEnum =>
         new BunburrowMetadata()
@@ -64,8 +69,13 @@ namespace Bunject.Internal
           ModBunburrow = new CoreBunburrow(burrowEnum.ToBunburrowName(), burrowEnum.ToIndicator(), burrowEnum.IsVoidBunburrow())
         }).ToList();
 
-      maxID = bunburrows.Max(bb => bb.ID) + CustomBunburrowThreshold; 
+      maxID = bunburrows.Max(bb => bb.ID) + CustomBunburrowThreshold;
       // pad out some space - ids are internally generated in our mods, but we're reusing them for a bunch of different internal identifiers
+    }
+
+    private BunburrowManager()
+    {
+      FullReset();
     }
 
     private List<BunburrowMetadata> bunburrows;

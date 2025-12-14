@@ -1,7 +1,9 @@
 ﻿using Bunburrows;
 using Bunject.Levels;
+using Bunject.Menu;
 using Bunject.Monitoring;
 using Bunject.Tiling;
+using Characters.Bunny.Data;
 using HarmonyLib;
 using Levels;
 using System;
@@ -14,7 +16,7 @@ using UnityEngine;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -76,6 +78,22 @@ namespace Bunject.Internal
       }
       return result;
     }
+
+    public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnBunnyCapture(bunnyIdentity, wasHomeCapture);
+      }
+    }
+
+    public void OnMainMenu()
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnMainMenu();
+      }
+    }
     #endregion
 
     #region ITileSource Implementation
@@ -87,6 +105,28 @@ namespace Bunject.Internal
     public Tile LoadTile(LevelObject levelObject, string tile, Vector2Int position)
     {
       return BunjectAPI.TileSources.FirstOrDefault(ts => ts.SupportsTile(tile))?.LoadTile(levelObject, tile, position);
+    }
+    #endregion
+
+    #region MenuSource - NOT IMPLEMENTED INTENTIONALLY
+    // Implemented because IMenuSource is an IBunjectorPlugin, but we handle it elsewhere / differently
+    public string MenuTitle => throw new NotImplementedException();
+    public void Draw()
+    {
+      throw new NotImplementedException();
+    }
+
+    private GameObject PluginMenuObject { get; set; }
+
+    internal void ShowOrHideMenu(bool showMenu)
+    {
+      if (PluginMenuObject == null)
+      {
+        PluginMenuObject = new GameObject();
+        PluginMenuObject.AddComponent<MenuDisplay>();
+      }
+
+      PluginMenuObject.SetActive(showMenu);
     }
     #endregion
   }

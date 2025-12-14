@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace Bunject.Archipelago.Archipelago
+{
+  public class ArchipelagoClient
+  {
+    public ArchipelagoClient() { 
+    
+       GUI.
+    }
+
+
+    
+  }
+}

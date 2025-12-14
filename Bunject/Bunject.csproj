@@ -63,6 +63,9 @@
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
@@ -90,9 +93,15 @@
     <Compile Include="Levels\LoadingContext.cs" />
     <Compile Include="Levels\ModLevelObject.cs" />
     <Compile Include="Levels\ModLevelsList.cs" />
+    <Compile Include="Menu\IMenuSource.cs" />
+    <Compile Include="Menu\MenuDisplay.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
+    <Compile Include="Patches\LevelStatePatches.cs" />
+    <Compile Include="Patches\MenuPatches.cs" />
+    <Compile Include="Patches\PauseControllerPatches.cs" />
     <Compile Include="Patches\VisualEffectsPatches.cs" />
+    <Compile Include="Save\SaveProvider.cs" />
     <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
     <Compile Include="Tiling\ITileSource.cs" />
     <Compile Include="Patches\AssetsManagerPatches.cs" />

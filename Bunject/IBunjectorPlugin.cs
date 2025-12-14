@@ -14,6 +14,5 @@ namespace Bunject
     void OnAssetsLoaded();
 
     void OnProgressionLoaded(GeneralProgression progression);
-
   }
 }

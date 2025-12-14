@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Characters.Bunny.Data;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,9 @@ namespace Bunject.Monitoring
     LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity);
 
     LevelsList LoadEmergencyLevelsList(LevelsList original);
+
+    void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture);
+
+    void OnMainMenu();
   }
 }

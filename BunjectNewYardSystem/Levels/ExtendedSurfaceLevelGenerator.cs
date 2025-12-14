@@ -8,6 +8,7 @@ using Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -24,14 +25,23 @@ namespace Bunject.NewYardSystem.Levels
     public const string OpenRow = "T,T,T,T,T,T,T,T,T,T,T,T,T,T,T";
 
     //Should only be run after burrows are registered.  Burrow ID is required for generation.
-    public static void CreateSurfaceLevels(CustomWorld world, List<BNYSModBunburrow> modBunburrows, LevelObject precedingLevel)
+    public static void CreateSurfaceLevels(CustomWorld world, List<BNYSModBunburrow> modBunburrows, LevelObject shop)
     {
       if (world.GeneratedSurfaceLevels == null)
       {
         var accessibleBurrows = modBunburrows.Where(b => b.Model.Depth > 0).ToDictionary(b => b.LocalName);
 
-        world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
+        world.GeneratedSurfaceLevels = GenerateLevels(shop, world, accessibleBurrows).ToList();
       }
+      else 
+      {
+        LinkSurface(shop, world.GeneratedSurfaceLevels.First());
+      }
+    }
+
+    public static void LinkSurface(LevelObject shop, LevelObject rightOfShop)
+    {
+      shop.SideLevels.SetPart(Direction.Right, rightOfShop);
     }
 
     private static IEnumerable<LevelObject> GenerateLevels(LevelObject precedingLevel, CustomWorld world, Dictionary<string, BNYSModBunburrow> burrows)

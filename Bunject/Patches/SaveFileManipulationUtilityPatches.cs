@@ -9,14 +9,79 @@ using System.Threading.Tasks;
 
 namespace Bunject.Patches.SaveFileManipulationUtilityPatches
 {
-  [HarmonyPatch(typeof(SaveFileManipulationUtility), "GetRootSaveDataPath")]
-  internal class GetRootSaveDataPathPatches
+  internal static class SaveFileCustomData
   {
-    private static string Postfix(string __result)
+    internal const int CustomSaveFileIndex = 999;
+
+    internal static string CustomSavePath { get; set; }
+    internal static string CustomSaveBackupPath { get; set; }
+    internal static string CustomDeletedSavePath { get; set; }
+    internal static string CustomOldSaveDataPath { get; set; }
+  }
+
+  [HarmonyPatch(typeof(SaveFileManipulationUtility), nameof(GetSaveDataPath))]
+  internal class GetSaveDataPath
+  {
+    internal static bool Prefix(int saveIndex, bool platformSpecific, ref string __result)
     {
-      if (!string.IsNullOrEmpty(BunjectAPI.SaveFolder))
-        return (Path.Combine(__result, BunjectAPI.SaveFolder));
-      return __result;
+      if (saveIndex == SaveFileCustomData.CustomSaveFileIndex)
+      {
+        __result = SaveFileCustomData.CustomSavePath;
+        return false; // skip
+      }
+      return true; // use original
+    }
+  }
+
+  [HarmonyPatch(typeof(SaveFileManipulationUtility), nameof(GetBackupSaveDataPath))]
+  internal class GetBackupSaveDataPath
+  {
+    internal static bool Prefix(int saveIndex, bool platformSpecific, ref string __result)
+    {
+      if (saveIndex == SaveFileCustomData.CustomSaveFileIndex)
+      {
+        __result = SaveFileCustomData.CustomSaveBackupPath;
+        return false; // skip
+      }
+      return true; // use original
+    }
+  }
+
+  [HarmonyPatch(typeof(SaveFileManipulationUtility), nameof(GetOldSaveDataPath))]
+  internal class GetOldSaveDataPath
+  {
+    internal static bool Prefix(int saveIndex, bool platformSpecific, ref string __result)
+    {
+      if (saveIndex == SaveFileCustomData.CustomSaveFileIndex)
+      {
+        __result = SaveFileCustomData.CustomOldSaveDataPath;
+        return false; // skip
+      }
+      return true; // use original
+    }
+  }
+
+  [HarmonyPatch(typeof(SaveFileManipulationUtility), nameof(GetDeletedSaveDataPath))]
+  internal class GetDeletedSaveDataPath
+  {
+    internal static bool Prefix(int saveIndex, bool platformSpecific, ref string __result)
+    {
+      if (saveIndex == SaveFileCustomData.CustomSaveFileIndex)
+      {
+        __result = SaveFileCustomData.CustomDeletedSavePath;
+        return false; // skip
+      }
+      return true; // use original
+    }
+  }
+
+  [HarmonyPatch(typeof(SaveFileManipulationUtility), nameof(HandleBackToMainMenu))]
+  internal class HandleBackToMainMenu
+  {
+    internal static void Postfix()
+    {
+      SaveFileCustomData.CustomSavePath = null;
+      SaveFileCustomData.CustomSaveBackupPath = null;
     }
   }
 }
