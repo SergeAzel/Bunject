@@ -60,20 +60,31 @@ namespace Bunject
       BunburrowManager.ClearRegisters();
     }
 
-    public static Action BeginLoadingPluginSave(string pluginName, string saveName)
+
+    public static void BeginLoadingScreen()
     {
       var menu = GameObject.FindObjectOfType<MenuController>();
       if (menu == null)
-        return null;
+        return;
 
-      new Traverse(menu).Field<Camera>("mainCamera").Value.backgroundColor = new Color(0.97f, 0.94f, 0.94f);
+
+      var camera = new Traverse(menu).Field<Camera>("mainCamera").Value;
+      camera.backgroundColor = new Color(0.97f, 0.94f, 0.94f);
       menu.ShowLoadingScreen();
-
-
-      return () => LoadSave(pluginName, saveName);
     }
 
-    private static bool LoadSave(string pluginName, string saveName)
+    public static void CancelLoadingScreen()
+    {
+      var menu = GameObject.FindObjectOfType<MenuController>();
+      if (menu == null)
+        return;
+
+      var camera = new Traverse(menu).Field<Camera>("mainCamera").Value;
+      camera.backgroundColor = new Color(64.0f / 255.0f, 16.0f / 255.0f, 40.0f / 256.0f);
+      new Traverse(menu).Field<GameObject>("loadingScreen").Value.SetActive(false);
+    }
+
+    public static bool LoadSave(string pluginName, string saveName)
     {
       SaveFileCustomData.CustomSavePath = SaveFileModUtility.GetPluginSaveFilePath(pluginName, saveName);
       SaveFileCustomData.CustomSaveBackupPath = SaveFileModUtility.GetPluginSaveBackupFilePath(pluginName, saveName);

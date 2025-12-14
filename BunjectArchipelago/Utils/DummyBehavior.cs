@@ -5,16 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Bunject.Archipelago.Archipelago
+namespace Bunject.Archipelago.Utils
 {
-  public class ArchipelagoClient
+  public class DummyBehavior : MonoBehaviour
   {
-    public ArchipelagoClient() { 
-    
-       GUI.
-    }
-
-
-    
   }
 }

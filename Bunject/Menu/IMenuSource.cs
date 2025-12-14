@@ -9,6 +9,6 @@ namespace Bunject.Menu
   public interface IMenuSource : IBunjectorPlugin
   {
     string MenuTitle { get; }
-    void Draw();
+    void DrawMenuOptions();
   }
 }

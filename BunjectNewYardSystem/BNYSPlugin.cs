@@ -125,7 +125,6 @@ namespace Bunject.NewYardSystem
         LinkLevelLists(BNYSModBurrows);
 
         BunjectAPI.RegisterPlugin(this);
-        BunjectAPI.RegisterPlugin(new TestMenuSource());
 
         Logger.LogInfo("Initial Load Finished!");
       }
@@ -149,7 +148,7 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    public LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity)
+    public LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity)
     {
       return level;
     }
@@ -318,8 +317,6 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private bool surfaceLevelsGenerated = false;
-
     private void GenerateSurfaceLevels(LevelObject coreSurfaceRight, CustomWorld world)
     {
       var previous = coreSurfaceRight;
@@ -406,7 +403,7 @@ namespace Bunject.NewYardSystem
 
     #region MenuSource implementation
     public string MenuTitle => "BNYS";
-    public void Draw()
+    public void DrawMenuOptions()
     {
       foreach (var world in CustomWorlds)
       {
@@ -417,14 +414,14 @@ namespace Bunject.NewYardSystem
     public void CreateButtonFor(CustomWorld world)
     {
       GUILayout.BeginHorizontal();
-      GUILayout.Label(world.Title);
+      GUILayout.Label(world.Title, GUILayout.ExpandWidth(true));
 
-      if (GUILayout.Button("Load"))
+      if (GUILayout.Button("Load", GUILayout.Width(100)))
       {
         LoadWorld(world);
       }
 
-      if (GUILayout.Button("Delete"))
+      if (GUILayout.Button("Delete", GUILayout.Width(100)))
       {
         DeleteWorldSave(world);
       }
@@ -434,31 +431,40 @@ namespace Bunject.NewYardSystem
 
     private void LoadWorld(CustomWorld world)
     {
-      var finishLoad = BunjectAPI.BeginLoadingPluginSave("BNYS", world.Title);
+      BunjectAPI.BeginLoadingScreen();
 
-      // TODO replace this behavior - its outdated
-      SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel, null);
-
-      // Ensure our bunburrows are registered.
-      foreach (var bunburrow in BNYSModBurrows.Where(b => b.World == world))
+      try
       {
-        BunjectAPI.RegisterBunburrow(bunburrow);
+        // TODO replace this behavior - its outdated
+        SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel, null);
 
-        if (bunburrow is BNYSModBunburrow bnysBurrow)
+        // Ensure our bunburrows are registered.
+        foreach (var bunburrow in BNYSModBurrows.Where(b => b.World == world))
         {
-          foreach (var elevatorDepth in bnysBurrow.Model.ElevatorDepths)
+          BunjectAPI.RegisterBunburrow(bunburrow);
+
+          if (bunburrow is BNYSModBunburrow bnysBurrow)
           {
-            BunjectAPI.RegisterElevator(bunburrow.ID, elevatorDepth);
+            foreach (var elevatorDepth in bnysBurrow.Model.ElevatorDepths)
+            {
+              BunjectAPI.RegisterElevator(bunburrow.ID, elevatorDepth);
+            }
           }
         }
+
+        //Now do our surface generation if it hasn't been done.
+        GenerateSurfaceLevels(AssetsManager.SurfaceMiddleLevel, world);
+
+        BunjectAPI.LoadSave("BNYS", world.Title);
+        IsInCustomWorld = true;
       }
+      catch (Exception ex)
+      {
+        Debug.LogException(ex);
 
-      //Now do our surface generation if it hasn't been done.
-      GenerateSurfaceLevels(AssetsManager.SurfaceMiddleLevel, world);
-
-      IsInCustomWorld = true;
-
-      finishLoad();
+        IsInCustomWorld = false;
+        BunjectAPI.CancelLoadingScreen();
+      }
     }
 
     private void DeleteWorldSave(CustomWorld world)

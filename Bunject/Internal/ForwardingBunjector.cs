@@ -57,14 +57,15 @@ namespace Bunject.Internal
     }
     #endregion
 
+
     #region IMonitor implementation
 
-    public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
+    public LevelObject OnLevelLoad(LevelObject target, LevelIdentity identity)
     {
       var result = target;
       foreach (var monitors in BunjectAPI.Monitors)
       {
-        result = monitors.StartLevelTransition(result, identity);
+        result = monitors.OnLevelLoad(result, identity);
       }
       return result;
     }
@@ -111,7 +112,7 @@ namespace Bunject.Internal
     #region MenuSource - NOT IMPLEMENTED INTENTIONALLY
     // Implemented because IMenuSource is an IBunjectorPlugin, but we handle it elsewhere / differently
     public string MenuTitle => throw new NotImplementedException();
-    public void Draw()
+    public void DrawMenuOptions()
     {
       throw new NotImplementedException();
     }

@@ -42,7 +42,7 @@ namespace Bunject.Menu
       }
       GUILayout.EndHorizontal();
 
-      menuSources[activeMenu].Draw();
+      menuSources[activeMenu].DrawMenuOptions();
 
       GUILayout.EndVertical();
     }

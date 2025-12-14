@@ -12,7 +12,7 @@ namespace Bunject.Monitoring
   // Aka, event monitoring?
   public interface IMonitor : IBunjectorPlugin
   {
-    LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity);
+    LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity);
 
     LevelsList LoadEmergencyLevelsList(LevelsList original);
 

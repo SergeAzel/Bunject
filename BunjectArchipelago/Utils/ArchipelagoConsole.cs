@@ -3,6 +3,7 @@ using System.Linq;
 using BepInEx;
 using Bunject.Archipelago;
 using UnityEngine;
+using Bunject.Archipelago.Archipelago;
 
 namespace Bunject.Archipelago.Utils;
 
@@ -71,7 +72,7 @@ public static class ArchipelagoConsole
         CommandText = GUI.TextField(CommandTextRect, CommandText);
         if (!CommandText.IsNullOrWhiteSpace() && GUI.Button(SendCommandButton, "Send"))
         {
-            ArchipelagoPlugin.ArchipelagoClient.SendMessage(CommandText);
+            //ArchipelagoPlugin.ArchipelagoClient.SendMessage(CommandText);
             CommandText = "";
         }
     }

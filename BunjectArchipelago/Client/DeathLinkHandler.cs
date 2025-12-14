@@ -5,6 +5,7 @@ using BepInEx;
 
 namespace Bunject.Archipelago;
 
+/*
 public class DeathLinkHandler
 {
     private static bool deathLinkEnabled;
@@ -114,4 +115,4 @@ public class DeathLinkHandler
             ArchipelagoPlugin.BepinLogger.LogError(e);
         }
     }
-}
+}*/
