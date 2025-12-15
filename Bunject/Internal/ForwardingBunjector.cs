@@ -34,9 +34,8 @@ namespace Bunject.Internal
         bunjector.OnProgressionLoaded(progression);
       }
     }
-
-
     #endregion
+
 
     #region ILevelSource (not actually a thing anymore but still used) Implementation
     public ModLevelsList LoadLevelsList(string name, ModLevelsList original)

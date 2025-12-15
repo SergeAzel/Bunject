@@ -12,6 +12,8 @@ using Bunject.Archipelago.Archipelago;
 using Bunject.Menu;
 using System;
 using System.Collections;
+using Misc;
+using HarmonyLib;
 
 namespace Bunject.Archipelago
 {
@@ -19,6 +21,8 @@ namespace Bunject.Archipelago
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
   public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor
   {
+    public static ArchipelagoPlugin Instance { get; private set; }
+
     public const string PluginGUID = "sergedev.bunject.archipelago";
     public const string PluginName = "BunjectArchipelago";
     public const string PluginVersion = "1.0.0";
@@ -39,7 +43,17 @@ namespace Bunject.Archipelago
 
     public void OnAssetsLoaded() { }
 
-    public void OnProgressionLoaded(GeneralProgression progression) { }
+    public void OnProgressionLoaded(GeneralProgression progression)
+    {
+      if (ArchipelagoClient != null)
+      {
+        if (ArchipelagoClient.Options.unlock_computer)
+          progression.HandleOphelinePortableComputerUnlock();
+
+        if (ArchipelagoClient.Options.unlock_map)
+          progression.HandleMapUnlock();
+      }
+    }
 
     public LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity)
     {
@@ -59,12 +73,21 @@ namespace Bunject.Archipelago
     {
       if (ArchipelagoClient != null)
       {
-        ArchipelagoClient.NotifyBunnyCaptured(bunny.GetIdentityString(), wasHomeCapture);
+        if (wasHomeCapture || (ArchipelagoClient.Options.home_captures == false))
+        {
+          BepinLogger.LogInfo("Was home capture? " + wasHomeCapture);
+          BepinLogger.LogInfo("Home capture only? " + ArchipelagoClient.Options.home_captures);
+          ArchipelagoClient.NotifyBunnyCaptured(bunny.GetIdentityString(), wasHomeCapture);
+        }
       }
     }
 
     protected void Awake()
     {
+      DontDestroyOnLoad(gameObject);
+
+      Instance = this;
+
       // Plugin startup logic
       BepinLogger = Logger;
 

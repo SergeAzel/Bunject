@@ -2,6 +2,8 @@
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Packets;
+using Bunburrows;
+using Bunject.Archipelago.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +23,14 @@ namespace Bunject.Archipelago.Archipelago
     public string Seed { get; private set; }
     public int Slot { get; private set; }
 
+    public ArchipelagoOptions Options { get; private set; }
+
     private ArchipelagoSession session;
     private bool disposedValue;
 
-    private HashSet<string> MissingTools = new HashSet<string>();
+    private HashSet<string> MissingTools = MissingToolsGenerator.Generate();
     private HashSet<string> ToolsFound = new HashSet<string>();
+    private Dictionary<string, int> AllItemsFound = new Dictionary<string, int>();
 
     public static ArchipelagoClient Connect(string hostName, string userName, string password)
     {
@@ -36,15 +41,10 @@ namespace Bunject.Archipelago.Archipelago
       var loginResult = session.TryConnectAndLogin(GameName, userName, ItemsHandlingFlags.AllItems, password: password, requestSlotData: true);
       if (loginResult.Successful && loginResult is LoginSuccessful successful)
       {
-        foreach (var thing in successful.SlotData)
-        {
-          Console.WriteLine($"SLOT DATA: '{thing.Key}': '{thing.Value}'");
-        }
+        client.Options = ArchipelagoOptions.ParseSlotData(successful.SlotData);
 
         client.Seed = session.RoomState.Seed;
         client.Slot = successful.Slot;
-
-        client.MissingTools = MissingToolsGenerator.Generate();
 
         return client;
       }
@@ -53,7 +53,6 @@ namespace Bunject.Archipelago.Archipelago
 
       return null;
     }
-
 
     private ArchipelagoClient(ArchipelagoSession session)
     {
@@ -87,12 +86,32 @@ namespace Bunject.Archipelago.Archipelago
       var itemReceived = items.PeekItem();
       if (itemReceived != null)
       {
-        // TODO print to log
         if (itemReceived.ItemGame == GameName)
         {
-          // TODO maybe not everything is a tool
-          ToolsFound.Add(itemReceived.ItemName);
-          Console.WriteLine($"Item Recieved: {itemReceived.ItemName}");
+          if (MissingTools.Contains(itemReceived.ItemName))
+          {
+            ToolsFound.Add(itemReceived.ItemName);
+          }
+
+          if (AllItemsFound.ContainsKey(itemReceived.ItemName))
+          {
+            AllItemsFound[itemReceived.ItemName] += 1;
+          }
+          else
+          {
+            AllItemsFound.Add(itemReceived.ItemName, 1);
+          }
+
+          if (Options.victory_condition == VictoryCondition.GoldenFluffle)
+          {
+            if (itemReceived.ItemName == "Golden Fluffle")
+            {
+              if (AllItemsFound[itemReceived.ItemName] >= Options.golden_fluffles)
+              {
+                session.SetGoalAchieved();
+              }
+            }
+          }
         }
       }
       items.DequeueItem();
@@ -109,7 +128,8 @@ namespace Bunject.Archipelago.Archipelago
         {
           if (session.Socket.Connected)
           {
-            session.Socket.DisconnectAsync().Wait();
+            // Note - intentionally not waiting for disconnect
+            session.Socket.DisconnectAsync();
           }
         }
         catch { /* Well, we tried */ }
