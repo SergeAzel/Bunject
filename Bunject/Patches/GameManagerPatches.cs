@@ -228,4 +228,23 @@ namespace Bunject.Patches.GameManagerPatches
       levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
     }
   }
+
+  [HarmonyPatch(typeof(GameManager), nameof(LoadLevelAtUndo))]
+  internal class LoadLevelAtUndo
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      // Give one last chance for plugins to modify level details
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
+    }
+  }
+
+  [HarmonyPatch(typeof(GameManager), nameof(LoadLevelFromSave))]
+  internal class LoadLevelFromSave
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
+    }
+  }
 }

@@ -14,6 +14,8 @@ using System;
 using System.Collections;
 using Misc;
 using HarmonyLib;
+using System.IO;
+using System.Reflection;
 
 namespace Bunject.Archipelago
 {
@@ -30,6 +32,8 @@ namespace Bunject.Archipelago
     public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
     public const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";
     public static ManualLogSource BepinLogger;
+
+    public static string RootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
     
     
     private ArchipelagoClient ArchipelagoClient = null;
@@ -53,6 +57,8 @@ namespace Bunject.Archipelago
         if (ArchipelagoClient.Options.unlock_map)
           progression.HandleMapUnlock();
       }
+
+      ArchipelagoConsole.ShowConsole(); 
     }
 
     public LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity)
@@ -62,11 +68,23 @@ namespace Bunject.Archipelago
         var levelString = identity.Bunburrow.ToIndicator() + "-" + identity.Depth;
         if (!ArchipelagoClient.HasToolsForLevel(levelString))
         {
-          BepinLogger.LogInfo("Level still locked " + levelString);
           return LevelLocker.Lock(level);
         }
       }
       return level;
+    }
+
+    public string OnLevelTitle(string title, LevelIdentity identity, bool useWhite)
+    {
+      if (ArchipelagoClient != null)
+      {
+        var levelString = identity.Bunburrow.ToIndicator() + "-" + identity.Depth;
+        if (!ArchipelagoClient.HasToolsForLevel(levelString))
+        {
+          return LevelLocker.AppendLock(title);
+        }
+      }
+      return title;
     }
 
     public void OnBunnyCapture(BunnyIdentity bunny, bool wasHomeCapture)
@@ -75,10 +93,16 @@ namespace Bunject.Archipelago
       {
         if (wasHomeCapture || (ArchipelagoClient.Options.home_captures == false))
         {
-          BepinLogger.LogInfo("Was home capture? " + wasHomeCapture);
-          BepinLogger.LogInfo("Home capture only? " + ArchipelagoClient.Options.home_captures);
-          ArchipelagoClient.NotifyBunnyCaptured(bunny.GetIdentityString(), wasHomeCapture);
+          ArchipelagoClient.NotifyBunnyCaptured(bunny.GetIdentityString());
         }
+      }
+    }
+
+    public void OnShowCredits()
+    {
+      if (ArchipelagoClient != null)
+      {
+        ArchipelagoClient.OnShowCredits();
       }
     }
 
@@ -92,7 +116,6 @@ namespace Bunject.Archipelago
       BepinLogger = Logger;
 
       ArchipelagoConsole.Awake();
-      ArchipelagoConsole.LogMessage($"{ModDisplayInfo} loaded!");
 
       Menu = new ArchipelagoMenu(() => new GameObject().AddComponent<DummyBehavior>().StartCoroutine(TryConnect()));
 
@@ -105,8 +128,12 @@ namespace Bunject.Archipelago
       // We're back from the game - disconnect and reset any major changes
       if (ArchipelagoClient != null)
       {
+        BunjectAPI.ClearRegisters();
+
         ArchipelagoClient.Dispose();
         ArchipelagoClient = null;
+
+        ArchipelagoConsole.ShowConsole(false);
       }
     }
 
@@ -123,8 +150,10 @@ namespace Bunject.Archipelago
 
         if (ArchipelagoClient != null)
         {
+          BunjectAPI.RegisterBunburrow(ElevatorTrapBunburrow.Instance);
+
           // Get world id from client
-          string saveName = GetSaveName(ArchipelagoClient); //TODO
+          string saveName = GetSaveName(ArchipelagoClient);
 
           BunjectAPI.LoadSave("Archipelago", saveName);
         }
@@ -135,10 +164,16 @@ namespace Bunject.Archipelago
       }
       catch (Exception e)
       {
-        Debug.LogException(e);
+        BepinLogger.LogError(e);
+        ArchipelagoConsole.LogMessage(e.Message);
 
         BunjectAPI.CancelLoadingScreen();
       }
+      finally
+      {
+        ArchipelagoConsole.ShowConsole(true);
+      }
+
       yield return null;
     }
 

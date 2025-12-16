@@ -97,6 +97,7 @@
     <Compile Include="Menu\MenuDisplay.cs" />
     <Compile Include="Monitoring\IMonitor.cs" />
     <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
+    <Compile Include="Patches\ElevatorController.cs" />
     <Compile Include="Patches\LevelStatePatches.cs" />
     <Compile Include="Patches\MenuPatches.cs" />
     <Compile Include="Patches\PauseControllerPatches.cs" />

@@ -14,10 +14,14 @@ namespace Bunject.Monitoring
   {
     LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity);
 
+    string OnLevelTitle(string title, LevelIdentity identity, bool useWhite);
+
     LevelsList LoadEmergencyLevelsList(LevelsList original);
 
     void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture);
 
     void OnMainMenu();
+
+    void OnShowCredits();
   }
 }

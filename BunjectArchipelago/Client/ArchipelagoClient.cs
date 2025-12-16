@@ -1,9 +1,12 @@
 ﻿using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Packets;
 using Bunburrows;
 using Bunject.Archipelago.Client;
+using Bunject.Archipelago.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +34,10 @@ namespace Bunject.Archipelago.Archipelago
     private HashSet<string> MissingTools = MissingToolsGenerator.Generate();
     private HashSet<string> ToolsFound = new HashSet<string>();
     private Dictionary<string, int> AllItemsFound = new Dictionary<string, int>();
+    private DeathLinkHandler deathLink;
+    private TrapHandler trapHandler;
+
+    private int lastElevatorTrapDepth = 0;
 
     public static ArchipelagoClient Connect(string hostName, string userName, string password)
     {
@@ -46,10 +53,17 @@ namespace Bunject.Archipelago.Archipelago
         client.Seed = session.RoomState.Seed;
         client.Slot = successful.Slot;
 
+        client.trapHandler = new TrapHandler(client);
+        client.lastElevatorTrapDepth = client.Options.elevator_trap_depth;
+
+        client.deathLink = new DeathLinkHandler(session.CreateDeathLinkService(), userName, client.Options, client.trapHandler);
+
         return client;
       }
-
-      Console.WriteLine("Login Failed oops");
+      else
+      {
+        ArchipelagoConsole.LogMessage($"Failed to Connect: {loginResult}");
+      }
 
       return null;
     }
@@ -58,6 +72,10 @@ namespace Bunject.Archipelago.Archipelago
     {
       this.session = session;
       session.Items.ItemReceived += OnItemReceieved;
+
+      session.MessageLog.OnMessageReceived += message => ArchipelagoConsole.LogMessage(message.ToString());
+      session.Socket.ErrorReceived += OnSessionErrorReceived;
+      session.Socket.SocketClosed += OnSessionSocketClosed;
     }
 
     public bool HasToolsForLevel(string level)
@@ -69,7 +87,7 @@ namespace Bunject.Archipelago.Archipelago
       return true;
     }
 
-    public void NotifyBunnyCaptured(string bunny, bool wasHomeCapture)
+    public void NotifyBunnyCaptured(string bunny)
     {
       var locationId = session.Locations.GetLocationIdFromName(GameName, bunny);
 
@@ -77,9 +95,33 @@ namespace Bunject.Archipelago.Archipelago
       {
         session.Locations.CompleteLocationChecks(locationId);
       }
+
+      if (bunny == "C-27-1" && Options.victory_condition == VictoryCondition.GoldenBunny)
+      {
+        ArchipelagoConsole.LogMessage("Game Complete!");
+        session.SetGoalAchieved();
+      }
+
+      if (session.Locations.AllMissingLocations.Count == 0 && Options.victory_condition == VictoryCondition.FullClear)
+      {
+        ArchipelagoConsole.LogMessage("Game Complete!");
+        session.SetGoalAchieved();
+      }
     }
 
-    public void SendMessage(string message) { }
+    public void OnShowCredits()
+    {
+      if (Options.victory_condition == VictoryCondition.Credits)
+      {
+        ArchipelagoConsole.LogMessage("Game Complete!");
+        session.SetGoalAchieved();
+      }
+    }
+
+    public void SendMessage(string message)
+    {
+      session.Socket.SendPacketAsync(new SayPacket { Text = message });
+    }
 
     private void OnItemReceieved(ReceivedItemsHelper items)
     {
@@ -92,6 +134,8 @@ namespace Bunject.Archipelago.Archipelago
           {
             ToolsFound.Add(itemReceived.ItemName);
           }
+
+          HandlePossibleTrap(itemReceived.ItemName);
 
           if (AllItemsFound.ContainsKey(itemReceived.ItemName))
           {
@@ -109,12 +153,49 @@ namespace Bunject.Archipelago.Archipelago
               if (AllItemsFound[itemReceived.ItemName] >= Options.golden_fluffles)
               {
                 session.SetGoalAchieved();
+                ArchipelagoConsole.LogMessage($"You found the last Golden Fluffle!  Game Complete!");
+              }
+              else
+              {
+                ArchipelagoConsole.LogMessage($"You found a Golden Fluffle!  Only {Options.golden_fluffles - AllItemsFound[itemReceived.ItemName]} to go!");
               }
             }
           }
         }
       }
       items.DequeueItem();
+    }
+
+    private void HandlePossibleTrap(string itemName)
+    {
+      switch (itemName)
+      {
+        case "Surface Teleport Trap":
+          trapHandler.TrapRecieved(Trap.SurfaceTeleport);
+          break;
+        case "Elevator Trap":
+          trapHandler.TrapRecieved(Trap.Elevator);
+          break;
+      }
+    }
+
+    private void OnSessionErrorReceived(Exception e, string message)
+    {
+      ArchipelagoPlugin.BepinLogger.LogError(e);
+      ArchipelagoConsole.LogMessage(message);
+    }
+
+    private void OnSessionSocketClosed(string reason)
+    {
+      ArchipelagoPlugin.BepinLogger.LogError($"Connection to Archipelago lost: {reason}");
+      session = null;
+    }
+
+    public int GetElevatorTrapDepth()
+    {
+      lastElevatorTrapDepth += Options.elevator_trap_increment;
+
+      return lastElevatorTrapDepth; 
     }
 
     #region IDisposable Implementation
@@ -126,11 +207,11 @@ namespace Bunject.Archipelago.Archipelago
 
         try
         {
-          if (session.Socket.Connected)
+          if (session != null && session.Socket.Connected)
           {
-            // Note - intentionally not waiting for disconnect
-            session.Socket.DisconnectAsync();
+            Task.Run(() => session.Socket.DisconnectAsync().Wait());
           }
+          session = null;
         }
         catch { /* Well, we tried */ }
 

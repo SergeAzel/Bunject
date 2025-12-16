@@ -94,6 +94,23 @@ namespace Bunject.Internal
         bunjector.OnMainMenu();
       }
     }
+
+    public string OnLevelTitle(string title, LevelIdentity identity, bool useWhite)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        title = bunjector.OnLevelTitle(title, identity, useWhite);
+      }
+      return title;
+    }
+
+    public void OnShowCredits()
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnShowCredits();
+      }
+    }
     #endregion
 
     #region ITileSource Implementation
