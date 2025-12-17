@@ -44,6 +44,7 @@ public class ArchipelagoConsole : MonoBehaviour
 
   public static void LogMessage(string message)
   {
+    ArchipelagoPlugin.BepinLogger.LogMessage(message);
     if (message.IsNullOrWhiteSpace()) return;
 
     if (logLines.Count == MaxLogLines)
@@ -51,7 +52,6 @@ public class ArchipelagoConsole : MonoBehaviour
       logLines.RemoveAt(0);
     }
     logLines.Add(message);
-    ArchipelagoPlugin.BepinLogger.LogMessage(message);
     lastUpdateTime = Time.time;
     UpdateWindow();
   }

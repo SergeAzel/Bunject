@@ -153,6 +153,11 @@ namespace Bunject.NewYardSystem
       return level;
     }
 
+    public string OnLevelTitle(string title, LevelIdentity _, bool useWhite)
+    {
+      return title;
+    }
+
     public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture) { }
 
     public void OnMainMenu()
@@ -167,6 +172,8 @@ namespace Bunject.NewYardSystem
         IsInCustomWorld = false;
       }
     }
+
+    public void OnShowCredits() { }
 
     private EmergencyLevelsList emergencyList;
     public LevelsList LoadEmergencyLevelsList(LevelsList original)

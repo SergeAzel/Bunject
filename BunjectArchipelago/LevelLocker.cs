@@ -28,7 +28,12 @@ namespace Bunject.Archipelago
     public static string AppendLock(string levelTitle)
     {
       var idx = levelTitle.LastIndexOf(">");
-      return levelTitle.Substring(0, idx + 1) + " [LOCKED]";
+      if (idx > 0)
+      {
+        return levelTitle.Substring(0, idx + 1) + " [LOCKED]";
+      }
+
+      return levelTitle.Split(' ')[0] + " [LOCKED]";
     }
   }
 }

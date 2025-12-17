@@ -37,7 +37,8 @@ namespace Bunject.Archipelago.Archipelago
     private DeathLinkHandler deathLink;
     private TrapHandler trapHandler;
 
-    private int lastElevatorTrapDepth = 0;
+    public bool GoalAchieved { get; private set; } = false;
+
 
     public static ArchipelagoClient Connect(string hostName, string userName, string password)
     {
@@ -53,10 +54,14 @@ namespace Bunject.Archipelago.Archipelago
         client.Seed = session.RoomState.Seed;
         client.Slot = successful.Slot;
 
-        client.trapHandler = new TrapHandler(client);
-        client.lastElevatorTrapDepth = client.Options.elevator_trap_depth;
+        client.trapHandler = new TrapHandler(client, session.DataStorage);
 
         client.deathLink = new DeathLinkHandler(session.CreateDeathLinkService(), userName, client.Options, client.trapHandler);
+
+        client.CheckForGoldenFluffles(false);
+
+        ArchipelagoConsole.LogMessage("Enabling Traps...");
+        client.trapHandler.Enable();
 
         return client;
       }
@@ -96,25 +101,25 @@ namespace Bunject.Archipelago.Archipelago
         session.Locations.CompleteLocationChecks(locationId);
       }
 
-      if (bunny == "C-27-1" && Options.victory_condition == VictoryCondition.GoldenBunny)
+      if (bunny == "C-27-1" && Options.victory_condition == VictoryCondition.GoldenBunny && !GoalAchieved)
       {
         ArchipelagoConsole.LogMessage("Game Complete!");
-        session.SetGoalAchieved();
+        SetGoalAchieved();
       }
 
-      if (session.Locations.AllMissingLocations.Count == 0 && Options.victory_condition == VictoryCondition.FullClear)
+      if (session.Locations.AllMissingLocations.Count == 0 && Options.victory_condition == VictoryCondition.FullClear && !GoalAchieved)
       {
         ArchipelagoConsole.LogMessage("Game Complete!");
-        session.SetGoalAchieved();
+        SetGoalAchieved();
       }
     }
 
     public void OnShowCredits()
     {
-      if (Options.victory_condition == VictoryCondition.Credits)
+      if (Options.victory_condition == VictoryCondition.Credits && !GoalAchieved)
       {
         ArchipelagoConsole.LogMessage("Game Complete!");
-        session.SetGoalAchieved();
+        SetGoalAchieved();
       }
     }
 
@@ -125,7 +130,7 @@ namespace Bunject.Archipelago.Archipelago
 
     private void OnItemReceieved(ReceivedItemsHelper items)
     {
-      var itemReceived = items.PeekItem();
+      var itemReceived = items?.PeekItem();
       if (itemReceived != null)
       {
         if (itemReceived.ItemGame == GameName)
@@ -135,7 +140,10 @@ namespace Bunject.Archipelago.Archipelago
             ToolsFound.Add(itemReceived.ItemName);
           }
 
-          HandlePossibleTrap(itemReceived.ItemName);
+          if (!GoalAchieved)
+          {
+            HandlePossibleTrap(itemReceived.ItemName);
+          }
 
           if (AllItemsFound.ContainsKey(itemReceived.ItemName))
           {
@@ -146,24 +154,33 @@ namespace Bunject.Archipelago.Archipelago
             AllItemsFound.Add(itemReceived.ItemName, 1);
           }
 
-          if (Options.victory_condition == VictoryCondition.GoldenFluffle)
-          {
-            if (itemReceived.ItemName == "Golden Fluffle")
-            {
-              if (AllItemsFound[itemReceived.ItemName] >= Options.golden_fluffles)
-              {
-                session.SetGoalAchieved();
-                ArchipelagoConsole.LogMessage($"You found the last Golden Fluffle!  Game Complete!");
-              }
-              else
-              {
-                ArchipelagoConsole.LogMessage($"You found a Golden Fluffle!  Only {Options.golden_fluffles - AllItemsFound[itemReceived.ItemName]} to go!");
-              }
-            }
-          }
+          CheckForGoldenFluffles(itemReceived.ItemName == GoldenFluffle);
         }
       }
       items.DequeueItem();
+    }
+
+    const string GoldenFluffle = "Golden Fluffle";
+    private void CheckForGoldenFluffles(bool printProgress)
+    {
+      if (Options?.victory_condition == VictoryCondition.GoldenFluffle && !GoalAchieved)
+      {
+        if (AllItemsFound[GoldenFluffle] >= Options.golden_fluffles)
+        {
+          SetGoalAchieved();
+          ArchipelagoConsole.LogMessage($"You found the last Golden Fluffle!  Game Complete!");
+        }
+        else if (printProgress)
+        {
+          ArchipelagoConsole.LogMessage($"You found a Golden Fluffle!  Only {Options.golden_fluffles - AllItemsFound[GoldenFluffle]} to go!");
+        }
+      }
+    }
+
+    private void SetGoalAchieved()
+    {
+      GoalAchieved = true;
+      session.SetGoalAchieved();
     }
 
     private void HandlePossibleTrap(string itemName)
@@ -171,10 +188,10 @@ namespace Bunject.Archipelago.Archipelago
       switch (itemName)
       {
         case "Surface Teleport Trap":
-          trapHandler.TrapRecieved(Trap.SurfaceTeleport);
+          trapHandler?.TrapRecieved(Trap.SurfaceTeleport);
           break;
         case "Elevator Trap":
-          trapHandler.TrapRecieved(Trap.Elevator);
+          trapHandler?.TrapRecieved(Trap.Elevator);
           break;
       }
     }
@@ -191,12 +208,6 @@ namespace Bunject.Archipelago.Archipelago
       session = null;
     }
 
-    public int GetElevatorTrapDepth()
-    {
-      lastElevatorTrapDepth += Options.elevator_trap_increment;
-
-      return lastElevatorTrapDepth; 
-    }
 
     #region IDisposable Implementation
     protected virtual void Dispose(bool disposing)

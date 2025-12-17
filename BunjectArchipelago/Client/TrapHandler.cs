@@ -1,4 +1,5 @@
 ﻿using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Archipelago.MultiClient.Net.Helpers;
 using Audio;
 using Bunject.Archipelago.Archipelago;
 using Bunject.Archipelago.UI;
@@ -26,16 +27,25 @@ namespace Bunject.Archipelago.Client
     private GameObject trapGameObject;
     private IModBunburrow modBunburrow;
     private ModLevelsList elevatorLevelsList;
+    private IDataStorageHelper dataStorageHelper;
+    private bool enabled = false;
 
-    public TrapHandler(ArchipelagoClient client)
+    public TrapHandler(ArchipelagoClient client, IDataStorageHelper dataStorage)
     {
       this.client = client;
+      this.dataStorageHelper = dataStorage;
 
       modBunburrow = ElevatorTrapBunburrow.Instance;
+
+      int? maybeDepth = dataStorageHelper[nameof(ArchipelagoOptions.elevator_trap_depth)];
+      lastElevatorTrapDepth = maybeDepth ?? client.Options.elevator_trap_depth;
     }
 
     public void TrapRecieved(Trap trap)
     {
+      if (!enabled)
+        return;
+
       trapQueue.Enqueue(trap);
 
       ArchipelagoConsole.LogMessage("Trap Recieved!");
@@ -48,6 +58,12 @@ namespace Bunject.Archipelago.Client
       }
     }
 
+    public void Enable()
+    {
+      this.enabled = true;
+    }
+
+
     private bool IsSafeToTrap()
     {
       return (GeneralInputManager.CanGoBackToSurface)
@@ -58,7 +74,7 @@ namespace Bunject.Archipelago.Client
     {
       if (trapQueue.Count > 0 && IsSafeToTrap())
       {
-        var nextTrap = Derandomize(trapQueue.Dequeue());
+        var nextTrap = trapQueue.Dequeue();
 
         switch (nextTrap)
         {
@@ -102,15 +118,17 @@ namespace Bunject.Archipelago.Client
 
     private LevelIdentity MakeFakeIdentity()
     {
-      return new LevelIdentity((Bunburrows.Bunburrow)ElevatorTrapBunburrow.Instance.ID, client.GetElevatorTrapDepth());
+      return new LevelIdentity((Bunburrows.Bunburrow)ElevatorTrapBunburrow.Instance.ID, GetElevatorTrapDepth());
     }
 
-    private static System.Random rng = new System.Random();
-    private Trap Derandomize(Trap trap)
+    private int lastElevatorTrapDepth = 0;
+    private int GetElevatorTrapDepth()
     {
-      if (trap == Trap.Random)
-        return (Trap) 1 + rng.Next() % 2;
-      return trap;
+      lastElevatorTrapDepth += client.Options.elevator_trap_increment;
+
+      dataStorageHelper[nameof(ArchipelagoOptions.elevator_trap_depth)] = lastElevatorTrapDepth;
+
+      return lastElevatorTrapDepth;
     }
   }
 

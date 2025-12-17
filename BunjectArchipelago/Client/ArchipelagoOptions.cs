@@ -16,7 +16,6 @@ namespace Bunject.Archipelago.Client
 
   public enum Trap
   {
-    Random,
     SurfaceTeleport,
     Elevator,
   }
@@ -79,9 +78,9 @@ namespace Bunject.Archipelago.Client
 
     public bool death_link { get; private set; }
 
-    public Trap death_link_behavior { get; private set; } = Trap.Random;
+    public Trap death_link_behavior { get; private set; } = Trap.SurfaceTeleport;
 
-    public int elevator_trap_depth { get; private set; } = 5;
+    public int elevator_trap_depth { get; private set; } = 10;
 
     public int elevator_trap_increment { get; private set; }
   }
