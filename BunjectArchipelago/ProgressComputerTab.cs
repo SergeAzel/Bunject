@@ -1,5 +1,7 @@
 ﻿using Bunject.Archipelago.Archipelago;
 using Bunject.Computer;
+using Items;
+using Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Bunject.Archipelago
 {
-  internal class GameComputerTab : BasicCustomComputerTab
+  internal class ProgressComputerTab : BasicCustomComputerTab
   {
-    public override string Title => "Prog";
+    public override string Title => "Arch";
 
     private ArchipelagoClient client => ArchipelagoPlugin.Instance.ArchipelagoClient;
 
@@ -66,11 +68,46 @@ namespace Bunject.Archipelago
 
     public override string GetSpecialText()
     {
-      if (client != null && client.Options.victory_condition == Client.VictoryCondition.GoldenFluffle)
+      if (client != null)
       {
-        return "Golden Fluffles: <color=#D3AF37>" + client.GoldenFluffleCount + "</color> of <color=#D3AF37>" + client.Options.golden_fluffles + "</color>";
+        var bunny = client.Options.home_captures ? FullBunnyIcon() : HalfBunnyIcon();
+
+        switch (client.Options.victory_condition)
+        {
+          case Client.VictoryCondition.Credits:
+            return bunny + " Reach E-12!";
+          case Client.VictoryCondition.GoldenBunny:
+            return bunny + " Find the " + StartGold() + "Golden Bunny" + EndColor() + "!";
+          case Client.VictoryCondition.GoldenFluffle:
+            if (client.Options.golden_fluffles < 10)
+              return bunny + " Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+            else  // Not enough room for 2-digit counts with the bun icon
+              return "Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+          case Client.VictoryCondition.FullClear:
+            return bunny + " Collect All Bunnies!";
+        }
       }
       return null;
+    }
+
+    private static string StartGold()
+    {
+      return "<color=#D3AF37>";
+    }
+
+    private static string EndColor()
+    {
+      return "</color>";
+    }
+
+    private static string HalfBunnyIcon()
+    {
+      return StringHelpers.SurroundStringWithBunnySizeTag(StringHelpers.ReplaceVariables("<sprite name=\"$notHomeCapturedBunnyWhite\">", AssetsManager.BunburrowsListOfStyles.GetBunburrowStyleFromID(-1)), inComputer: true);
+    }
+
+    private static string FullBunnyIcon()
+    {
+      return StringHelpers.SurroundStringWithBunnySizeTag(StringHelpers.ReplaceVariables("<sprite name=\"$homeCapturedBunnyWhite\">", AssetsManager.BunburrowsListOfStyles.GetBunburrowStyleFromID(-1)), inComputer: true);
     }
   }
 }

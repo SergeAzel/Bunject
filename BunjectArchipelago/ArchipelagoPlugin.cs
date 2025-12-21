@@ -212,7 +212,7 @@ namespace Bunject.Archipelago
     {
       if (ArchipelagoClient != null)
       {
-        var computerTab = manager.CreateTab<GameComputerTab>();
+        var computerTab = manager.CreateTab<ProgressComputerTab>();
       }
     }
   }
