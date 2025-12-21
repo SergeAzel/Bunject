@@ -56,6 +56,10 @@
     <Reference Include="Unity.ResourceManager">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.ResourceManager.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Paqurette Build\Binary\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
@@ -76,8 +80,17 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Paqurette Build\Binary\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Computer\ComputerExtensions.cs" />
+    <Compile Include="Computer\ComputerTabManager.cs" />
+    <Compile Include="Computer\BasicCustomComputerTab.cs" />
+    <Compile Include="Computer\CustomComputerTab.cs" />
+    <Compile Include="Computer\IComputerTabSource.cs" />
     <Compile Include="IBunjectorPlugin.cs" />
     <Compile Include="Internal\AssetsManagerRewiring.cs" />
     <Compile Include="Internal\BunnyReleaser.cs" />
@@ -100,6 +113,7 @@
     <Compile Include="Patches\ElevatorController.cs" />
     <Compile Include="Patches\LevelStatePatches.cs" />
     <Compile Include="Patches\MenuPatches.cs" />
+    <Compile Include="Patches\OphelineComputerCanvasControllerPatches.cs" />
     <Compile Include="Patches\PauseControllerPatches.cs" />
     <Compile Include="Patches\VisualEffectsPatches.cs" />
     <Compile Include="Save\SaveProvider.cs" />

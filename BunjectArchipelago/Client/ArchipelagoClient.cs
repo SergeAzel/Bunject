@@ -7,6 +7,7 @@ using Archipelago.MultiClient.Net.Packets;
 using Bunburrows;
 using Bunject.Archipelago.Client;
 using Bunject.Archipelago.UI;
+using Bunject.Computer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +32,9 @@ namespace Bunject.Archipelago.Archipelago
     private ArchipelagoSession session;
     private bool disposedValue;
 
-    private HashSet<string> MissingTools = MissingToolsGenerator.Generate();
-    private HashSet<string> ToolsFound = new HashSet<string>();
-    private Dictionary<string, int> AllItemsFound = new Dictionary<string, int>();
+    public HashSet<string> MissingTools = MissingToolsGenerator.Generate();
+    public HashSet<string> ToolsFound = new HashSet<string>();
+    public Dictionary<string, int> AllItemsFound = new Dictionary<string, int>();
     private DeathLinkHandler deathLink;
     private TrapHandler trapHandler;
 
@@ -81,6 +82,8 @@ namespace Bunject.Archipelago.Archipelago
       session.MessageLog.OnMessageReceived += message => ArchipelagoConsole.LogMessage(message.ToString());
       session.Socket.ErrorReceived += OnSessionErrorReceived;
       session.Socket.SocketClosed += OnSessionSocketClosed;
+
+      AllItemsFound[GoldenFluffle] = 0;
     }
 
     public bool HasToolsForLevel(string level)
@@ -174,6 +177,14 @@ namespace Bunject.Archipelago.Archipelago
         {
           ArchipelagoConsole.LogMessage($"You found a Golden Fluffle!  Only {Options.golden_fluffles - AllItemsFound[GoldenFluffle]} to go!");
         }
+      }
+    }
+
+    public int GoldenFluffleCount
+    {
+      get
+      {
+        return AllItemsFound.ContainsKey(GoldenFluffle) ? AllItemsFound[GoldenFluffle] : 0;
       }
     }
 

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Bunject.Computer;
 using Bunject.Internal;
 using Bunject.Levels;
 using Bunject.Menu;
@@ -39,6 +40,8 @@ namespace Bunject
     internal static IEnumerable<IMonitor> Monitors { get => Instance.bunjectors.OfType<IMonitor>(); }
 
     internal static IEnumerable<IMenuSource> MenuOptions { get => Instance.bunjectors.OfType<IMenuSource>(); }
+
+    internal static IEnumerable<IComputerTabSource> ComputerTabSources { get => Instance.bunjectors.OfType<IComputerTabSource>(); }
 
     public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {

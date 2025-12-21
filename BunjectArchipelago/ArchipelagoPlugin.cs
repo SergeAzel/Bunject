@@ -2,27 +2,35 @@
 using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
+using Bunject.Archipelago.Archipelago;
+using Bunject.Archipelago.UI;
+using Bunject.Archipelago.Utils;
+using Bunject.Computer;
+using Bunject.Menu;
 using Bunject.Monitoring;
 using Characters.Bunny.Data;
+using HarmonyLib;
+using Items;
 using Levels;
-using UnityEngine;
-using Bunject.Archipelago.Utils;
-using Bunject.Archipelago.UI;
-using Bunject.Archipelago.Archipelago;
-using Bunject.Menu;
+using Misc;
 using System;
 using System.Collections;
-using Misc;
-using HarmonyLib;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using TMPro;
+using UnityEngine;
 
 namespace Bunject.Archipelago
 {
-
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor
+  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor, IComputerTabSource
   {
+    static ArchipelagoPlugin()
+    {
+      Harmony.CreateAndPatchAll(typeof(ArchipelagoPlugin).Assembly);
+    }
+
     public static ArchipelagoPlugin Instance { get; private set; }
 
     public const string PluginGUID = "sergedev.bunject.archipelago";
@@ -36,7 +44,7 @@ namespace Bunject.Archipelago
     public static string RootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
     
     
-    private ArchipelagoClient ArchipelagoClient = null;
+    internal ArchipelagoClient ArchipelagoClient = null;
     private ArchipelagoMenu Menu = null;
 
 
@@ -180,6 +188,32 @@ namespace Bunject.Archipelago
     private string GetSaveName(ArchipelagoClient client)
     {
       return $"{client.Seed}_{client.Slot}";
+    }
+
+    public void LockComputerVisuals(ItemListOf<TextMeshProUGUI> levelItemTexts, ItemListOf<GameObject> levelItemObjects)
+    {
+      var items = Enum.GetValues(typeof(Item)).OfType<Item>().ToList();
+      foreach (var item in items.Skip(1))
+      {
+        var obj = levelItemObjects[item];
+        if (obj != null)
+        {
+          levelItemTexts[item].text = "";
+          obj.SetActive(false);
+        }
+      }
+
+      var firstItem = items.First();
+      levelItemTexts[firstItem].text = "Locked";
+      levelItemObjects[firstItem].SetActive(true);
+    }
+
+    public void GenerateTabs(ComputerTabManager manager)
+    {
+      if (ArchipelagoClient != null)
+      {
+        var computerTab = manager.CreateTab<GameComputerTab>();
+      }
     }
   }
 }

@@ -141,7 +141,7 @@ namespace Bunject.Patches.GameManagerPatches
   [HarmonyPatch(typeof(GameManager), "InstantiateBunburrowEntrySigns")]
   internal class InstantiateBunburrowEntrySignsPatch
   {
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+    internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
     {
       var tileLevelData_LeftTile = AccessTools.PropertyGetter(typeof(TileLevelData), nameof(TileLevelData.LeftTile));
       int state = 0;

@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Computer;
 using Bunject.Levels;
 using Bunject.Menu;
 using Bunject.Monitoring;
@@ -13,10 +14,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Tiling.Behaviour;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource, IComputerTabSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -144,6 +146,16 @@ namespace Bunject.Internal
       }
 
       PluginMenuObject.SetActive(showMenu);
+    }
+    #endregion
+
+    #region IComputerTabSource
+    public void GenerateTabs(ComputerTabManager manager)
+    {
+      foreach (var bunjector in BunjectAPI.ComputerTabSources)
+      {
+        bunjector.GenerateTabs(manager);
+      }
     }
     #endregion
   }
