@@ -4,8 +4,6 @@
     <!-- Install BepInEx to (a copy of) your Paquerette folder -->
     <!-- then point this property to it -->
     <PaquerettePath>C:\Paqurette Build\Binary</PaquerettePath>
-    <BepInExPath>$(PaquerettePath)\BepInEx\core</BepInExPath>
-    <!-- C:\Program Files (x86)\Steam\steamapps\common\Paquerette Down the Bunburrows BEPINEX -->
     <PaquerettePluginPath>$(PaquerettePath)\BepInEx\plugins</PaquerettePluginPath>
   </PropertyGroup>
 </Project>

@@ -10,6 +10,9 @@ using Bunject.Monitoring;
 using Bunject.NewYardSystem.Exceptions;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
+using Bunject.NewYardSystem.Levels.Archive;
+using Bunject.NewYardSystem.Levels.Local;
+using Bunject.NewYardSystem.Levels.Web;
 using Bunject.NewYardSystem.Model;
 using Bunject.NewYardSystem.Resources;
 using Bunject.NewYardSystem.Utility;
@@ -23,9 +26,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using UnityEngine;
 using static UnityEngine.UI.Image;
@@ -37,13 +42,15 @@ namespace Bunject.NewYardSystem
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
-    public const string pluginVersion = "1.0.10.1";
+    public const string pluginVersion = "1.1.1";
 
-    public static string rootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BNYS");
+    public static string pluginsDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\"));
+    public static string rootDirectory = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+    public static string inlineDirectory = Path.Combine(rootDirectory, "BNYS");
 
     private List<CustomWorld> CustomWorlds;
     private List<IModBunburrow> AllModBurrows;
-    private List<BNYSModBunburrow> BNYSModBurrows;
+    private List<BNYSModBunburrowBase> BNYSModBurrows;
 
     public new ManualLogSource Logger => base.Logger;
 
@@ -92,7 +99,7 @@ namespace Bunject.NewYardSystem
             cachedBurrow.Prefix = customWorld.Prefix;
             cachedBurrow.Indicator = burrowModel.Indicator; //update cached indicator if needed
 
-            modBunburrows.Add(new BNYSModBunburrow(this, customWorld, burrowModel));
+            modBunburrows.Add(customWorld.GenerateBunburrow(this, burrowModel.Name)); //   new BNYSModBunburrow(this, customWorld, burrowModel));
           }
           else
           {
@@ -111,7 +118,7 @@ namespace Bunject.NewYardSystem
           if (cachedBurrow == null)
           {
             Logger.LogInfo($"Uncached Burrow : {burrow.Name} built!");
-            var newBurrow = new BNYSModBunburrow(this, customWorld, burrow);
+            var newBurrow = customWorld.GenerateBunburrow(this, burrow.Name);
             modBunburrows.Add(newBurrow);
             cache.CacheBunburrow(newBurrow);
           }
@@ -120,7 +127,7 @@ namespace Bunject.NewYardSystem
         cache.SaveCache();
 
         AllModBurrows = modBunburrows.ToList();
-        BNYSModBurrows = modBunburrows.OfType<BNYSModBunburrow>().ToList();
+        BNYSModBurrows = modBunburrows.OfType<BNYSModBunburrowBase>().ToList();
 
         LinkLevelLists(BNYSModBurrows);
 
@@ -210,7 +217,7 @@ namespace Bunject.NewYardSystem
     public IEnumerable<CustomWorld> LoadCustomWorlds()
     {
       // loop through all subfolders of our root
-      foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
+      foreach (var directory in Directory.EnumerateDirectories(inlineDirectory))
       {
         var configFile = Path.Combine(directory, "config.json");
         if (File.Exists(configFile))
@@ -221,10 +228,27 @@ namespace Bunject.NewYardSystem
             if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
               continue;
 
+            // TODO REPLACE THIS WITH BETTER. 
             foreach (var burrow in world.Burrows)
             {
               PatchBurrowDetails(directory, burrow);
             }
+
+            yield return world;
+          }
+        }
+      }
+
+      // loop through all other plugins installed
+      foreach (var directory in Directory.EnumerateDirectories(pluginsDirectory))
+      {
+        foreach (var bnysFile in Directory.EnumerateFiles(directory, "*.bnys"))
+        {
+          CustomWorld world = LoadWorldConfigFromArchive(bnysFile);
+          if (world != null)
+          {
+            if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
+              continue;
 
             yield return world;
           }
@@ -239,7 +263,7 @@ namespace Bunject.NewYardSystem
       {
         using (var reader = new StreamReader(filename))
         {
-          world = (CustomWorld)new JsonSerializer().Deserialize(reader, typeof(CustomWorld));
+          world = (CustomWorld)new JsonSerializer().Deserialize(reader, typeof(LocalCustomWorld));
         }
       }
       catch (Exception e)
@@ -250,56 +274,14 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e);
       }
 
+      if (string.IsNullOrEmpty(world.Title))
+        world.Title = "Untitled";
+
       if (!string.IsNullOrEmpty(world.ProxyURL))
       {
         try
         {
-          world.ProxyUri = new Uri(world.ProxyURL);
-
-          var configUri = new Uri(world.ProxyUri, "config.json");
-
-          CustomWorld proxyWorld = configUri.Load<CustomWorld>();
-
-          if (proxyWorld != null)
-          {
-            world.Enabled = world.Enabled || proxyWorld.Enabled;
-            world.LiveReloading = false; // force global reload off.
-
-            if (string.IsNullOrEmpty(world.Title))
-              world.Title = proxyWorld.Title;
-
-            if (proxyWorld.Burrows != null)
-            {
-              foreach (var proxyBurrow in proxyWorld.Burrows)
-              {
-                proxyBurrow.ProxyUri = new Uri(world.ProxyUri, $"{proxyBurrow.Directory}/");
-              }
-
-              if (world.Burrows == null)
-              {
-                world.Burrows = proxyWorld.Burrows;
-              }
-              else
-              {
-                foreach (var proxyBurrow in proxyWorld.Burrows)
-                {
-                  if (!world.Burrows.Any(b => b.Name == proxyBurrow.Name))
-                  {
-                    world.Burrows.Add(proxyBurrow);
-                  }
-                  else
-                  {
-                    world.ProxyUri = proxyBurrow.ProxyUri;
-                  }
-                }
-              }
-
-              if (world.SurfaceEntries == null || world.SurfaceEntries.Count == 0)
-              {
-                world.SurfaceEntries = proxyWorld.SurfaceEntries;
-              }
-            }
-          }
+          return LoadProxyWorld(world);
         }
         catch (Exception e)
         {
@@ -310,17 +292,104 @@ namespace Bunject.NewYardSystem
         }
       }
 
+      return world;
+    }
+
+    private CustomWorld LoadWorldConfigFromArchive(string archivePath)
+    {
+      var archive = ZipFile.OpenRead(archivePath);
+      Logger.LogInfo("Opening World Archive: " + archivePath);
+
+      var config = archive.GetEntry("config.json");
+      if (config == null)
+      {
+        Logger.LogError("Archive " + Path.GetFileName(archivePath) + " is missing config.json.");
+        Logger.LogError("Please double check that config.json is at the root level of the .bnys (zip) file.");
+        return null;
+      }
+
+      ArchiveCustomWorld world = null;
+      try
+      {
+        using (var stream = config.Open())
+        using (var reader = new StreamReader(stream))
+        {
+          world = (ArchiveCustomWorld)new JsonSerializer().Deserialize(reader, typeof(ArchiveCustomWorld));
+        }
+      }
+      catch (Exception e)
+      {
+        Logger.LogError("Archive " + Path.GetFileName(archivePath) + " config.json file could not be parsed: ");
+        Logger.LogError(e.Message);
+        Logger.LogError(e);
+      }
+
+      world.Archive = archive;
+
       if (string.IsNullOrEmpty(world.Title))
         world.Title = "Untitled";
+
+      if (!string.IsNullOrEmpty(world.ProxyURL))
+      {
+        try
+        {
+          return LoadProxyWorld(world);
+        }
+        catch (Exception e)
+        {
+          Logger.LogError("Error loading Archive Proxy World config.json - " + Path.GetFileName(archivePath));
+          Logger.LogError(e.Message);
+          Logger.LogError(e);
+        }
+      }
 
       return world;
     }
 
-    public void PatchBurrowDetails(string directory, Burrow burrow)
+    private WebCustomWorld LoadProxyWorld(CustomWorld basis)
+    {
+      var uri = new Uri(basis.ProxyURL);
+      var configUri = new Uri(uri, "config.json");
+
+      var world = configUri.Load<WebCustomWorld>();
+
+      if (world != null)
+      {
+        world.ProxyUri = uri;
+        world.ProxyURL = basis.ProxyURL;
+
+        world.Enabled = world.Enabled || basis.Enabled;
+        world.LiveReloading = false; // force global reload off.
+
+        if (string.IsNullOrEmpty(world.Title))
+          world.Title = basis.Title;
+
+        if (world.Burrows != null)
+        {
+          foreach (var burrow in world.Burrows)
+          {
+            burrow.ProxyUri = new Uri(world.ProxyUri, $"{burrow.Directory}/");
+          }
+
+          if (world.SurfaceEntries == null || world.SurfaceEntries.Count == 0)
+          {
+            world.SurfaceEntries = basis.SurfaceEntries;
+          }
+        }
+
+        if (string.IsNullOrEmpty(world.Title))
+          world.Title = "Untitled";
+      }
+
+      return world;
+    }
+
+    private void PatchBurrowDetails(string directory, Burrow burrow)
     {
       if (!Path.IsPathRooted(burrow.Directory))
       {
         burrow.Directory = Path.Combine(directory, burrow.Directory);
+        Logger.LogInfo("Burrow Directory: " +  burrow.Directory);
       }
     }
 
@@ -348,31 +417,31 @@ namespace Bunject.NewYardSystem
       Traverse.Create(endcapLevel).Field("specificBackground").SetValue(SurfaceBurrowsPatch.EndingBackground);
     }
 
-    private void LinkLevelLists(List<BNYSModBunburrow> burrows)
+    private void LinkLevelLists(List<BNYSModBunburrowBase> burrows)
     {
       foreach (var burrow in burrows)
       {
-        if (!string.IsNullOrEmpty(burrow.Model.Links.Left))
+        if (!string.IsNullOrEmpty(burrow.BurrowModel.Links.Left))
         {
-          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Left);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.BurrowModel.Links.Left);
           if (target != null)
             burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Left, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Model.Links.Up))
+        if (!string.IsNullOrEmpty(burrow.BurrowModel.Links.Up))
         {
-          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Up);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.BurrowModel.Links.Up);
           if (target != null)
             burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Up, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Model.Links.Right))
+        if (!string.IsNullOrEmpty(burrow.BurrowModel.Links.Right))
         {
-          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Right);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.BurrowModel.Links.Right);
           if (target != null)
             burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Right, target.GetLevels());
         }
-        if (!string.IsNullOrEmpty(burrow.Model.Links.Down))
+        if (!string.IsNullOrEmpty(burrow.BurrowModel.Links.Down))
         {
-          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.Model.Links.Down);
+          var target = burrows.FirstOrDefault(bb => bb.LocalName == burrow.BurrowModel.Links.Down);
           if (target != null)
             burrow.GetLevels().AdjacentBunburrows.SetPart(Direction.Down, target.GetLevels());
         }

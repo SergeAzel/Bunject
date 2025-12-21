@@ -55,6 +55,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -94,15 +96,22 @@
   <ItemGroup>
     <Compile Include="BNYSPlugin.cs" />
     <Compile Include="Exceptions\InvalidBurrowLinkException.cs" />
-    <Compile Include="Levels\BNYSLevelObject.cs" />
     <Compile Include="Levels\BNYSLevelsList.cs" />
+    <Compile Include="Levels\BNYSLevelObject.cs" />
+    <Compile Include="Levels\BNYSModBunburrowBase.cs" />
+    <Compile Include="Levels\IBNYSModBunburrow.cs" />
+    <Compile Include="Levels\Archive\BNYSArchiveModBunburrow.cs" />
     <Compile Include="Levels\ContentValidator.cs" />
     <Compile Include="Levels\CustomBunburrowCache.cs" />
     <Compile Include="Levels\EmergencyLevelsList.cs" />
     <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
-    <Compile Include="Levels\BNYSModBunburrow.cs" />
+    <Compile Include="Levels\Local\BNYSLocalModBunburrow.cs" />
+    <Compile Include="Levels\Local\LocalCustomWorld.cs" />
     <Compile Include="Levels\LevelValidationError.cs" />
     <Compile Include="Levels\TileValidationError.cs" />
+    <Compile Include="Levels\Archive\ArchiveCustomWorld.cs" />
+    <Compile Include="Levels\Web\BNYSWebModBunburrow.cs" />
+    <Compile Include="Levels\Web\WebCustomWorld.cs" />
     <Compile Include="Model\Burrow.cs" />
     <Compile Include="Model\BurrowLinks.cs" />
     <Compile Include="Model\CustomBunburrowModel.cs" />
@@ -175,6 +184,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(MSBuildProjectDirectory)\Assets\BNYS" "$(PaquerettePluginPath)\BNYS" /E /C /I /Y
-xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f</PostBuildEvent>
+xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f
+xcopy "$(TargetDir)Bunject.NewYardSystem.dll" "..\..\Deploy\Bunject.NewYardSystem.dll*" /y /f</PostBuildEvent>
   </PropertyGroup>
 </Project>
