@@ -20,8 +20,8 @@ namespace Bunject.NewYardSystem.Levels
   internal class ExtendedSurfaceLevelGenerator
   {
     public const string WallRow = "W,W,W,W,W,W,W,W,W,W,W,W,W,W,W";
-    public const string TopRow = "W,T,T,T,T,T,T,T,T,T,T,T,W{0},W,W";
-    public const string SpaceRow = "W,W{0},T,T,T,T,T,T,T,T,T,T,T,W,W";
+    public const string TopRow = "W,T,T,T,T,T,T,T,T,T,T,T,T,W,W";
+    public const string SpaceRow = "W,T,T,T,T,T,T,T,T,T,T,T,T,W,W";
     public const string EntryRow = "W,T,T,T,{0},T,T,{1},T,T,{2},T,T,W,W";
     public const string OpenRow = "T,T,T,T,T,T,T,T,T,T,T,T,T,T,T";
 

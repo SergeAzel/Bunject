@@ -25,7 +25,16 @@ namespace Bunject.NewYardSystem.Levels
         EndingBackground = originalBurrows.SpecificBackground;
 
       if (ExtendedBackground == null)
-        ExtendedBackground = ImportImage.ImportSprite(PatchedTexture, Path.Combine(BNYSPlugin.rootDirectory, PatchedTexturePath), new Vector2(0.0f, 1.0f), 16);
+      {
+        // Directory used by thunderstore variant
+        var filePath = Path.Combine(BNYSPlugin.rootDirectory, PatchedTexturePath);
+
+        // If the file doesnt exist there, try in the original location variant
+        if (!File.Exists(filePath))
+          filePath = Path.Combine(BNYSPlugin.inlineDirectory, PatchedTexturePath);
+
+        ExtendedBackground = ImportImage.ImportSprite(PatchedTexture, filePath, new Vector2(0.0f, 1.0f), 16);
+      }
     }
   }
 }

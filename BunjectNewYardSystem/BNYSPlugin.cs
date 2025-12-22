@@ -3,10 +3,12 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
+using Bunject.Computer;
 using Bunject.Internal;
 using Bunject.Levels;
 using Bunject.Menu;
 using Bunject.Monitoring;
+using Bunject.NewYardSystem.Computer;
 using Bunject.NewYardSystem.Exceptions;
 using Bunject.NewYardSystem.Internal;
 using Bunject.NewYardSystem.Levels;
@@ -37,7 +39,7 @@ using UnityEngine;
 namespace Bunject.NewYardSystem
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource, IComputerTabSource
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -54,7 +56,7 @@ namespace Bunject.NewYardSystem
     public new ManualLogSource Logger => base.Logger;
 
 
-    private bool IsInCustomWorld = false;
+    private CustomWorld CurrentCustomWorld = null;
 
 
     public void Awake()
@@ -146,7 +148,7 @@ namespace Bunject.NewYardSystem
     // IMPORTANT NOTE: DEPTH is 1-indexed.
     public void OnProgressionLoaded(GeneralProgression progression)
     {
-      if (IsInCustomWorld)
+      if (CurrentCustomWorld != null)
       {
         progression.HandleBunburrowSignsDiscovery();
         progression.HandleBackToSurfaceUnlock();
@@ -168,14 +170,14 @@ namespace Bunject.NewYardSystem
 
     public void OnMainMenu()
     {
-      if (IsInCustomWorld)
+      if (CurrentCustomWorld != null)
       {
         // Undo all major changes
         BunjectAPI.ClearRegisters();
 
         ExtendedSurfaceLevelGenerator.LinkSurface(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel);
 
-        IsInCustomWorld = false;
+        CurrentCustomWorld = null;
       }
     }
 
@@ -534,13 +536,13 @@ namespace Bunject.NewYardSystem
         GenerateSurfaceLevels(AssetsManager.SurfaceMiddleLevel, world);
 
         BunjectAPI.LoadSave("BNYS", world.Title);
-        IsInCustomWorld = true;
+        CurrentCustomWorld = world;
       }
       catch (Exception ex)
       {
         Debug.LogException(ex);
 
-        IsInCustomWorld = false;
+        CurrentCustomWorld = null;
         BunjectAPI.CancelLoadingScreen();
       }
     }
@@ -550,6 +552,16 @@ namespace Bunject.NewYardSystem
       if (SaveFileModUtility.PluginSaveExists("BNYS", world.Title))
       {
         File.Delete(SaveFileModUtility.GetPluginSaveFilePath("BNYS", world.Title));
+      }
+    }
+
+    public void GenerateTabs(ComputerTabManager manager)
+    {
+      if (CurrentCustomWorld != null)
+      {
+        var creditsTab = manager.CreateTab<CreditsTab>();
+
+        creditsTab.World = CurrentCustomWorld;
       }
     }
 

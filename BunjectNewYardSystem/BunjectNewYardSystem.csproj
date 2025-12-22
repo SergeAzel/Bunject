@@ -50,6 +50,7 @@
     <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\Assets\BNYS&quot; &quot;$(PaquerettePluginPath)\BNYS&quot; /E /C /I /Y&#xD;&#xA;xcopy &quot;$(TargetDir)*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)Bunject.NewYardSystem.dll&quot; &quot;Deploy\*&quot; /y /f" />
   </Target>
   <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ZipDirectory SourceDirectory="Assets\BNYS\Pursuit" DestinationFile="Deploy\Pursuit.bnys" Overwrite="true" />
     <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\BNYS.zip" Overwrite="true" />
   </Target>
 </Project>

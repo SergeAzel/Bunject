@@ -18,6 +18,10 @@ namespace Bunject.NewYardSystem.Model
     public string Title { get; set; }
     public string Prefix { get; set; }
 
+    public string Author { get; set; }
+
+    public string Description { get; set; }
+
     public List<Burrow> Burrows { get; set; }
 
     public List<SurfaceEntry> SurfaceEntries { get; set; }

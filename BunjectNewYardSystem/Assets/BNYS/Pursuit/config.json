@@ -2,6 +2,8 @@
   "Enabled": true,
   "Title": "Pursuit of a God",
   "Prefix": "PG",
+  "Author": "SergeAzel",
+  "Description": "A beloved deity from the deepest bunburrows, abandoned us long ago.\nWill you seek them out?\nWill you find them?",
   "Burrows": [
     {
       "Directory": "BurrowA",
