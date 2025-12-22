@@ -33,7 +33,6 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using UnityEngine;
-using static UnityEngine.UI.Image;
 
 namespace Bunject.NewYardSystem
 {
@@ -42,7 +41,7 @@ namespace Bunject.NewYardSystem
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
-    public const string pluginVersion = "1.1.1";
+    public const string pluginVersion = "1.2.0";
 
     public static string pluginsDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\"));
     public static string rootDirectory = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -217,24 +216,27 @@ namespace Bunject.NewYardSystem
     public IEnumerable<CustomWorld> LoadCustomWorlds()
     {
       // loop through all subfolders of our root
-      foreach (var directory in Directory.EnumerateDirectories(inlineDirectory))
+      if (Directory.Exists(inlineDirectory))
       {
-        var configFile = Path.Combine(directory, "config.json");
-        if (File.Exists(configFile))
+        foreach (var directory in Directory.EnumerateDirectories(inlineDirectory))
         {
-          CustomWorld world = LoadWorldConfig(configFile);
-          if (world != null)
+          var configFile = Path.Combine(directory, "config.json");
+          if (File.Exists(configFile))
           {
-            if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
-              continue;
-
-            // TODO REPLACE THIS WITH BETTER. 
-            foreach (var burrow in world.Burrows)
+            CustomWorld world = LoadWorldConfig(configFile);
+            if (world != null)
             {
-              PatchBurrowDetails(directory, burrow);
-            }
+              if (!world.Burrows.Any(b => b.HasSurfaceEntry && b.Depth > 0) || !world.Enabled)
+                continue;
 
-            yield return world;
+              // TODO REPLACE THIS WITH BETTER. 
+              foreach (var burrow in world.Burrows)
+              {
+                PatchBurrowDetails(directory, burrow);
+              }
+
+              yield return world;
+            }
           }
         }
       }
@@ -519,9 +521,9 @@ namespace Bunject.NewYardSystem
         {
           BunjectAPI.RegisterBunburrow(bunburrow);
 
-          if (bunburrow is BNYSModBunburrow bnysBurrow)
+          if (bunburrow is BNYSModBunburrowBase bnysBurrow)
           {
-            foreach (var elevatorDepth in bnysBurrow.Model.ElevatorDepths)
+            foreach (var elevatorDepth in bnysBurrow.BurrowModel.ElevatorDepths)
             {
               BunjectAPI.RegisterElevator(bunburrow.ID, elevatorDepth);
             }

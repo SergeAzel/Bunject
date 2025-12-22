@@ -1,9 +1,11 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- MODIFY THIS PATH FOR YOUR SYSTEM -->
+    <PaquerettePath>C:\Paqurette Build\Binary</PaquerettePath>
     <!-- Install BepInEx to (a copy of) your Paquerette folder -->
     <!-- then point this property to it -->
-    <PaquerettePath>C:\Paqurette Build\Binary</PaquerettePath>
+
+    <!-- Recommend leaving this property alone unless necessary -->
     <PaquerettePluginPath>$(PaquerettePath)\BepInEx\plugins</PaquerettePluginPath>
   </PropertyGroup>
 </Project>

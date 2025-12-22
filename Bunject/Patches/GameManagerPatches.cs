@@ -84,7 +84,7 @@ namespace Bunject.Patches.GameManagerPatches
     }
   }
 
-  [HarmonyPatch(typeof(GameManager), "set_GeneralProgression")]
+  [HarmonyPatch(typeof(GameManager), "GeneralProgression", MethodType.Setter)]
   class SetGeneralProgressionPatches
   {
     private static void Prefix(GeneralProgression value)

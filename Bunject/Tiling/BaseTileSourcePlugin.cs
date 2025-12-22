@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Bunject.Tiling
 {
-  public abstract class BaseTileSourcePlugin : BaseUnityPlugin, ITileSource
+  public abstract class BaseTileSourcePlugin //: BaseUnityPlugin, ITileSource
   {
     public abstract void Awake();
 

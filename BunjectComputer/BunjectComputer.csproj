@@ -1,101 +1,53 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4D448F27-4F13-493C-A71F-9CF366D9A8AB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Bunject.Computer</RootNamespace>
     <AssemblyName>Bunject.Computer</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(BepInExPath)\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34" IncludeAssets="compile" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>$(BepInExPath)\BepInEx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Unity.TextMeshPro">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.GridModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.GridModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UI">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
+  
   <ItemGroup>
-    <Compile Include="Patches\ComputerMapInfoControllerPatches.cs" />
-    <Compile Include="Patches\ComputerMapLevelCellsControllerPatches.cs" />
-    <Compile Include="Patches\ComputerMapDrawerPatches.cs" />
-    <Compile Include="ComputerPlugin.cs" />
-    <Compile Include="Internal\ModComputerMapDrawer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\Bunject\Bunject.csproj" />
+    <ProjectReference Include="..\BunjectNewYardSystem\BunjectNewYardSystem.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Bunject\Bunject.csproj">
-      <Project>{2CDF8A36-D56D-43FC-A1A4-2E64AC6B8D90}</Project>
-      <Name>Bunject</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BunjectNewYardSystem\BunjectNewYardSystem.csproj">
-      <Project>{72607052-293c-42fa-b044-aed2841c5102}</Project>
-      <Name>BunjectNewYardSystem</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f
-xcopy "$(TargetDir)Bunject.Computer.dll" "..\..\Deploy\Bunject.Computer.dll*" /y /f</PostBuildEvent>
+   
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Update="mscorlib">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)Bunject.Computer.dll&quot; &quot;Deploy\*&quot; /y /f" />
+  </Target>
+  <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\Bunject.Computer.zip" Overwrite="true" />
+  </Target>
 </Project>

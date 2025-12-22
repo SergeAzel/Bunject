@@ -1,190 +1,55 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{72607052-293C-42FA-B044-AED2841C5102}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bunject.NewYardSystem</RootNamespace>
     <AssemblyName>Bunject.NewYardSystem</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>false</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(BepInExPath)\0Harmony.dll</HintPath>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Data.DataSetExtensions">
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>$(BepInExPath)\BepInEx.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>$(BepInExPath)\BepInEx.Harmony.dll</HintPath>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Unity.ResourceManager">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.ResourceManager.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.Physics2DModule">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BNYSPlugin.cs" />
-    <Compile Include="Exceptions\InvalidBurrowLinkException.cs" />
-    <Compile Include="Levels\BNYSLevelsList.cs" />
-    <Compile Include="Levels\BNYSLevelObject.cs" />
-    <Compile Include="Levels\BNYSModBunburrowBase.cs" />
-    <Compile Include="Levels\IBNYSModBunburrow.cs" />
-    <Compile Include="Levels\Archive\BNYSArchiveModBunburrow.cs" />
-    <Compile Include="Levels\ContentValidator.cs" />
-    <Compile Include="Levels\CustomBunburrowCache.cs" />
-    <Compile Include="Levels\EmergencyLevelsList.cs" />
-    <Compile Include="Levels\ExtendedSurfaceLevelGenerator.cs" />
-    <Compile Include="Levels\Local\BNYSLocalModBunburrow.cs" />
-    <Compile Include="Levels\Local\LocalCustomWorld.cs" />
-    <Compile Include="Levels\LevelValidationError.cs" />
-    <Compile Include="Levels\TileValidationError.cs" />
-    <Compile Include="Levels\Archive\ArchiveCustomWorld.cs" />
-    <Compile Include="Levels\Web\BNYSWebModBunburrow.cs" />
-    <Compile Include="Levels\Web\WebCustomWorld.cs" />
-    <Compile Include="Model\Burrow.cs" />
-    <Compile Include="Model\BurrowLinks.cs" />
-    <Compile Include="Model\CustomBunburrowModel.cs" />
-    <Compile Include="Model\CustomWorld.cs" />
-    <Compile Include="Model\GlobalConfig.cs" />
-    <Compile Include="Model\LevelMetadata.cs" />
-    <Compile Include="Model\SurfaceEntry.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\DefaultLevel.cs" />
-    <Compile Include="Resources\ImportImage.cs" />
-    <Compile Include="Levels\SurfaceBurrowsPatch.cs" />
-    <Compile Include="Utility\UriExtensions.cs" />
-    <Compile Include="Utility\CoordinateJsonConverter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Bunject\Bunject.csproj">
-      <Project>{2cdf8a36-d56d-43fc-a1a4-2e64ac6b8d90}</Project>
-      <Name>Bunject</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\1.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\1.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\10.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\10.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\2.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\2.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\3.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\3.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\4.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\4.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\5.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\5.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\6.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\6.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\7.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\7.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\8.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\8.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\9.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowA\9.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\1.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\1.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\10.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\10.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\2.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\2.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\3.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\3.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\4.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\4.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\5.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\5.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\6.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\6.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\7.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\7.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\8.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\8.level" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\9.json" />
-    <None Include="Assets\BNYS\Pursuit\BurrowB\9.level" />
-    <None Include="Assets\BNYS\Pursuit\config.json" />
-    <Compile Include="Levels\BNYSLostBunburrow.cs" />
+    <ProjectReference Include="..\Bunject\Bunject.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\BNYS\ExtendedRegion.png" />
     <Content Include="Assets\BNYS\UserGuide.txt" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(MSBuildProjectDirectory)\Assets\BNYS" "$(PaquerettePluginPath)\BNYS" /E /C /I /Y
-xcopy "$(TargetDir)\*.dll" "$(PaquerettePluginPath)" /y /f
-xcopy "$(TargetDir)Bunject.NewYardSystem.dll" "..\..\Deploy\Bunject.NewYardSystem.dll*" /y /f</PostBuildEvent>
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
   </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\Assets\BNYS&quot; &quot;$(PaquerettePluginPath)\BNYS&quot; /E /C /I /Y&#xD;&#xA;xcopy &quot;$(TargetDir)*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)Bunject.NewYardSystem.dll&quot; &quot;Deploy\*&quot; /y /f" />
+  </Target>
+  <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\BNYS.zip" Overwrite="true" />
+  </Target>
 </Project>

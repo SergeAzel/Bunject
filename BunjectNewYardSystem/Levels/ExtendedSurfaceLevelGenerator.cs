@@ -32,11 +32,11 @@ namespace Bunject.NewYardSystem.Levels
       {
         var accessibleBurrows = modBunburrows.Where(b => b.BurrowModel.Depth > 0).ToDictionary(b => b.LocalName);
 
-        world.GeneratedSurfaceLevels = GenerateLevels(shop, world, accessibleBurrows).ToList();
+        world.GeneratedSurfaceLevels = GenerateLevels(precedingLevel, world, accessibleBurrows).ToList();
       }
       else 
       {
-        LinkSurface(shop, world.GeneratedSurfaceLevels.First());
+        LinkSurface(precedingLevel, world.GeneratedSurfaceLevels.First());
       }
     }
 
