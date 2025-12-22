@@ -20,6 +20,8 @@ namespace Bunject.Computer
 
     // Reference to original ComputerTabController
     private Traverse traverse;
+    private ButtonController buttonController;
+    internal Action selectTab;
 
     internal void SetCustomTitle(string title)
     {
@@ -35,7 +37,25 @@ namespace Bunject.Computer
     protected virtual void Awake()
     {
       var coreTabController = gameObject.GetComponent<ComputerTabController>();
+
+      buttonController = gameObject.GetComponent<ButtonController>();
+      buttonController.OnClick += OnClickWrapper;
+
       this.traverse = Traverse.Create(coreTabController);
+    }
+
+    private void OnClickWrapper()
+    {
+      selectTab?.Invoke();
+    }
+
+    protected virtual void OnDestroy()
+    {
+      if (buttonController != null)
+      {
+        buttonController.OnClick -= OnClickWrapper;
+        buttonController = null;
+      }
     }
 
     public virtual bool ShouldShow()

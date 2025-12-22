@@ -96,7 +96,7 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
     private static void SwitchToCustomTab(int currentTabIndex, List<ComputerTabController> availableTabs)
     {
       var core = availableTabs[currentTabIndex];
-      ComputerTabManager.instance.SelectTab(core.ToCustom());
+      ComputerTabManager.instance.TabSelected(core.ToCustom());
     }
   }
 }

@@ -59,7 +59,7 @@ namespace Bunject.Computer
       renderingTabList.AddRange(tabsToShow.Select(t => t.ToCore()).Where(c => !renderingTabList.Contains(c)));
     }
 
-    internal void SelectTab(CustomComputerTab customTab)
+    internal void TabSelected(CustomComputerTab customTab)
     {
       traverse.Field<CanvasGroup>("mapCanvasGroup").Value.Deactivate();
 
@@ -79,10 +79,29 @@ namespace Bunject.Computer
       clone.transform.localScale = Vector3.one;
 
       var custom = clone.AddComponent<T>();
+      custom.selectTab = () => SelectTab(custom);  // Set the "Button" action
 
       controllers.Add(custom);
 
       return custom;
+    }
+
+    private List<ComputerTabController> GetInternalAvailableTabs()
+    {
+      return traverse.Field<List<ComputerTabController>>("availableTabs").Value;
+    }
+
+    private void SelectTab(CustomComputerTab customTab)
+    {
+      var core = customTab.ToCore();
+      var availableTabs = GetInternalAvailableTabs();
+
+      var index = availableTabs.IndexOf(core);
+
+      if (index >= 0)
+      {
+        traverse.Method("SwitchTab", index).GetValue();
+      }
     }
   }
 }
