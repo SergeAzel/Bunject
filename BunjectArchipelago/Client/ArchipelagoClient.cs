@@ -32,7 +32,8 @@ namespace Bunject.Archipelago.Archipelago
     private ArchipelagoSession session;
     private bool disposedValue;
 
-    public HashSet<string> MissingTools = MissingToolsGenerator.Generate();
+    public HashSet<string> AllMissingTools = MissingToolsGenerator.Generate(true);
+    public HashSet<string> MissingTools = null;
     public HashSet<string> ToolsFound = new HashSet<string>();
     public Dictionary<string, int> AllItemsFound = new Dictionary<string, int>();
     private DeathLinkHandler deathLink;
@@ -51,6 +52,7 @@ namespace Bunject.Archipelago.Archipelago
       if (loginResult.Successful && loginResult is LoginSuccessful successful)
       {
         client.Options = ArchipelagoOptions.ParseSlotData(successful.SlotData);
+        client.MissingTools = MissingToolsGenerator.Generate(client.Options.victory_condition != VictoryCondition.Credits);
 
         client.Seed = session.RoomState.Seed;
         client.Slot = successful.Slot;
@@ -138,7 +140,7 @@ namespace Bunject.Archipelago.Archipelago
       {
         if (itemReceived.ItemGame == GameName)
         {
-          if (MissingTools.Contains(itemReceived.ItemName))
+          if (AllMissingTools.Contains(itemReceived.ItemName))
           {
             ToolsFound.Add(itemReceived.ItemName);
           }

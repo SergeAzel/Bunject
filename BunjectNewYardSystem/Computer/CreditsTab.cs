@@ -48,8 +48,10 @@ namespace Bunject.NewYardSystem.Computer
     private string Center(string text)
     {
       var totalSpace = 24 - (text?.Length ?? 0);
+
       if (totalSpace <= 0)
         return text;
+
       return new string(' ', totalSpace / 2) + text + new string(' ', (totalSpace + 1) / 2);
     }
 
