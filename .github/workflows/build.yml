@@ -67,11 +67,11 @@ jobs:
       - name: Build Plugin Zip
         run: |
           mkdir Release
-          Copy-Item -Path ".\\Bunject\\bin\\Release\\net472\\Bunject.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectComputer\\bin\\Release\\net472\\Bunject.Computer.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectArchipelago\\bin\\Release\\net472\\Bunject.Archipelago.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectArchipelago\\bin\\Release\\net472\\Archipelago.MultiClient.Net.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\net472\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\Bunject\\Deploy\\Bunject.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectComputer\\Deploy\\Bunject.Computer.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Bunject.Archipelago.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Archipelago.MultiClient.Net.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\Deploy\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
 
       - name: Create Version Timestamp
