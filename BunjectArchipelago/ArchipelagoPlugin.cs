@@ -35,7 +35,7 @@ namespace Bunject.Archipelago
 
     public const string PluginGUID = "sergedev.bunject.archipelago";
     public const string PluginName = "BunjectArchipelago";
-    public const string PluginVersion = "1.2.2";
+    public const string PluginVersion = "1.2.3";
 
     public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
     public const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";

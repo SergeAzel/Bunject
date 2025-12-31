@@ -1,6 +1,6 @@
 {
     "name": "Bunject",
-    "version_number": "1.2.2",
+    "version_number": "1.2.3",
     "website_url": "https://github.com/SergeAzel/Bunject",
     "description": "This mod acts as a library to standardize modifying core features of the game.",
     "dependencies": [

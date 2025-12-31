@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Bunject.Computer
 {
-	[BepInPlugin("startup.bunject.computer", "Bunject Computer", "1.2.2")]
+	[BepInPlugin("startup.bunject.computer", "Bunject Computer", "1.2.3")]
 	[BepInDependency("sergedev.bunject.newyardsystem", BepInDependency.DependencyFlags.HardDependency)]
 	public class ComputerPlugin : BaseUnityPlugin, IBunjectorPlugin
 	{

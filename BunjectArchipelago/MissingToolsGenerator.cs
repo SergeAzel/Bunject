@@ -56,11 +56,18 @@ namespace Bunject.Archipelago
       "E-5",
       "E-6",
       "E-7",
+      "E-8",
       "E-9",
       "E-10",
       "E-11",
 
       "C-13",
+      "C-14",
+      "C-15",
+      "C-16",
+      "C-17",
+      "C-18",
+      "C-19",
 
       "W-14",
       "W-15",
@@ -87,14 +94,6 @@ namespace Bunject.Archipelago
 
     static HashSet<string> Full = new HashSet<string>(Credits)
     {
-      "C-14",
-      "C-15",
-      "C-16",
-      "C-17",
-      "C-18",
-      "C-19",
-
-      "E-8",
       "S-20",
 
       "E-16",
