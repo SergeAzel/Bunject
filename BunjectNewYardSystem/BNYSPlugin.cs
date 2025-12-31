@@ -43,7 +43,7 @@ namespace Bunject.NewYardSystem
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
-    public const string pluginVersion = "1.2.0";
+    public const string pluginVersion = "1.2.1";
 
     public static string pluginsDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\"));
     public static string rootDirectory = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
