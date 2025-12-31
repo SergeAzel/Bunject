@@ -44,6 +44,10 @@ jobs:
           echo "Target install: $PaqPath"
           steamcmd +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
 
+      - name: Add Nuget Source
+        run: |
+          nuget sources add -Name "BepInEx" -Source "https://nuget.bepinex.dev/v3/index.json"
+
       - name: Restore Nuget Packages
         run: |
           msbuild -t:Restore
