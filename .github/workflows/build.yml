@@ -145,16 +145,16 @@ jobs:
 
       - name: Upload Thunderstore Package - Bunject
         run: |
-          tcli publish --package "Deploy\\Bunject.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+          tcli publish --file "Deploy\\Bunject.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "Bunject\\thunderstore.toml"
 
       - name: Upload Thunderstore Package - Bunject.Computer
         run: |
-          tcli publish --package "Deploy\\Bunject.Computer.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+          tcli publish --file "Deploy\\Bunject.Computer.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "BunjectComputer\\thunderstore.toml"
 
       - name: Upload Thunderstore Package - BNYSmod
         run: |
-          tcli publish --package "Deploy\\BNYS.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+          tcli publish --file "Deploy\\BNYS.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "BunjectNewYardSystem\\thunderstore.toml"
 
       - name: Upload Thunderstore Package - Bunject.Archipelago
         run: |
-          tcli publish --package "Deploy\\Bunject.Archipelago.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+          tcli publish --file "Deploy\\Bunject.Archipelago.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "BunjectArchipelago\\thunderstore.toml"

@@ -1,0 +1,16 @@
+[config]
+schemaVersion = "0.0.1"
+
+[general]
+repository = "https://thunderstore.io"
+
+[package]
+namespace = "BNYSmod"
+
+# Build is handled via deploy folder and csproj for now.
+
+[publish]
+communities = [ "paquerette-down-the-bunburrows" ]
+
+[publish.categories]
+paquerette-down-the-bunburrows = [ "mods", "libraries", "misc" ]
