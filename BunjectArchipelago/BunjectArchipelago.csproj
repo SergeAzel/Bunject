@@ -19,12 +19,16 @@
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+    <IsPublishable>False</IsPublishable>
+    <Deterministic>True</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+    <IsPublishable>False</IsPublishable>
+    <Deterministic>True</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.0" />
@@ -56,7 +60,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(TargetDir)\*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)\*.dll&quot; &quot;Deploy\*&quot; /y /f" />
+    <Exec Command="xcopy &quot;$(TargetDir)\*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)\Bunject.Archipelago.dll*&quot; &quot;Deploy\*&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)\Archipelago.MultiClient.Net.dll*&quot; &quot;Deploy\*&quot; /y /f" />
   </Target>
   <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\Bunject.Archipelago.zip" Overwrite="true" />
