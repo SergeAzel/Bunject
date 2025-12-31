@@ -23,11 +23,12 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
           + Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>()
           + " ";
         var name = GameManager.CurrentLevel.BaseData.CustomNameKey;
-        return res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
+        __result = res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
           ? LevelIndicatorGenerator.GenerateVoidLevelName()
           : name);
       }
-      return __result;
+
+      return BunjectAPI.Forward.OnLevelTitle(__result, identity, useWhite);
     }
   }
 

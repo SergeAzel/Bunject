@@ -1,13 +1,21 @@
 ﻿using BepInEx;
+using Bunject.Computer;
 using Bunject.Internal;
 using Bunject.Levels;
+using Bunject.Menu;
 using Bunject.Monitoring;
+using Bunject.Patches.SaveFileManipulationUtilityPatches;
 using Bunject.Tiling;
 using HarmonyLib;
+using Menu;
+using Saving;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Bunject
 {
@@ -21,8 +29,6 @@ namespace Bunject
       harmony.PatchAll(System.Reflection.Assembly.GetAssembly(typeof(BunjectAPI)));
     }
 
-    public static string SaveFolder { get; set; } = null;
-
     internal static BunjectAPI Instance { get; private set; }
 
     internal static ForwardingBunjector Forward { get; private set; } = new ForwardingBunjector();
@@ -32,6 +38,10 @@ namespace Bunject
     internal static IEnumerable<ITileSource> TileSources { get => Instance.bunjectors.OfType<ITileSource>(); }
 
     internal static IEnumerable<IMonitor> Monitors { get => Instance.bunjectors.OfType<IMonitor>(); }
+
+    internal static IEnumerable<IMenuSource> MenuOptions { get => Instance.bunjectors.OfType<IMenuSource>(); }
+
+    internal static IEnumerable<IComputerTabSource> ComputerTabSources { get => Instance.bunjectors.OfType<IComputerTabSource>(); }
 
     public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {
@@ -46,6 +56,62 @@ namespace Bunject
     public static void RegisterElevator(int bunburrowID, int depth)
     {
       BunburrowManager.RegisterElevator(bunburrowID, depth);
+    }
+
+    public static void ClearRegisters()
+    {
+      BunburrowManager.ClearRegisters();
+    }
+
+
+    public static void BeginLoadingScreen()
+    {
+      var menu = GameObject.FindObjectOfType<MenuController>();
+      if (menu == null)
+        return;
+
+
+      var camera = new Traverse(menu).Field<Camera>("mainCamera").Value;
+      camera.backgroundColor = new Color(0.97f, 0.94f, 0.94f);
+      menu.ShowLoadingScreen();
+    }
+
+    public static void CancelLoadingScreen()
+    {
+      var menu = GameObject.FindObjectOfType<MenuController>();
+      if (menu == null)
+        return;
+
+      var camera = new Traverse(menu).Field<Camera>("mainCamera").Value;
+      camera.backgroundColor = new Color(64.0f / 255.0f, 16.0f / 255.0f, 40.0f / 256.0f);
+      new Traverse(menu).Field<GameObject>("loadingScreen").Value.SetActive(false);
+    }
+
+    public static bool LoadSave(string pluginName, string saveName)
+    {
+      SaveFileCustomData.CustomSavePath = SaveFileModUtility.GetPluginSaveFilePath(pluginName, saveName);
+      SaveFileCustomData.CustomSaveBackupPath = SaveFileModUtility.GetPluginSaveBackupFilePath(pluginName, saveName);
+      SaveFileCustomData.CustomDeletedSavePath = SaveFileModUtility.GetPluginSaveDeletedFilePath(pluginName, saveName);
+      SaveFileCustomData.CustomOldSaveDataPath = SaveFileCustomData.CustomSavePath + ".old";
+
+      EnsureFileExists(SaveFileCustomData.CustomSavePath);
+      EnsureFileExists(SaveFileCustomData.CustomSaveBackupPath);
+      EnsureFileExists(SaveFileCustomData.CustomDeletedSavePath);
+      EnsureFileExists(SaveFileCustomData.CustomOldSaveDataPath);
+    
+      SaveFileManipulationUtility.TryLoadSave(SaveFileCustomData.CustomSaveFileIndex);
+
+      SceneManager.LoadSceneAsync("Game");
+      return true;
+    }
+
+    private static void EnsureFileExists(string path)
+    {
+      if (!File.Exists(path))
+      {
+        new FileInfo(path).Directory.Create();
+        File.WriteAllBytes(path, new byte[0]);
+      }
     }
 
 

@@ -15,7 +15,8 @@ jobs:
     permissions: write-all
     outputs:
       version: ${{ steps.version-stamp.outputs.version }}
-      artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+      artifact-id: ${{ steps.artifact-raw.outputs.artifact-id }}
+      thunderstore-id: ${{ steps.artifact-thunderstore.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v5
 
@@ -43,6 +44,14 @@ jobs:
           echo "Target install: $PaqPath"
           steamcmd +force_install_dir $PaqPath +login "${{ secrets.STEAM_ACCOUNT }}" "${{secrets.STEAM_PASSWORD}}" +app_update $env:STEAM_APP_ID +quit
 
+      - name: Add Nuget Source
+        run: |
+          nuget sources add -Name "BepInEx" -Source "https://nuget.bepinex.dev/v3/index.json"
+
+      - name: Restore Nuget Packages
+        run: |
+          msbuild -t:Restore
+
       - name: Build Bunject Solution
         run: |
           $BepInExPath = ("bepinex\\BepInEx\\core" | Resolve-Path).Path
@@ -55,12 +64,14 @@ jobs:
 
           msbuild Bunject.sln /p:Configuration=Release /p:PaquerettePath="$PaqPath" /p:BepInExPath="$BepInExPath"
 
-      - name: Build BNYS Zip
+      - name: Build Plugin Zip
         run: |
           mkdir Release
-          Copy-Item -Path ".\\Bunject\\bin\\Release\\Bunject.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectComputer\\bin\\Release\\Bunject.Computer.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectNewYardSystem\\bin\\Release\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\Bunject\\Deploy\\Bunject.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectComputer\\Deploy\\Bunject.Computer.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Bunject.Archipelago.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Archipelago.MultiClient.Net.dll" -Destination ".\\Release\\"
+          Copy-Item -Path ".\\BunjectNewYardSystem\\Deploy\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\Assets\\BNYS\\" -Destination ".\\Release\\BNYS\\" -Recurse
 
       - name: Create Version Timestamp
@@ -70,14 +81,24 @@ jobs:
           echo $version
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
-      - uses: actions/upload-artifact@v5
-        id: artifact
+      - uses: actions/upload-artifact@v6
+        id: artifact-raw
         env: 
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: ${{ steps.version-stamp.outputs.version }}-build.zip
+          name: ${{ steps.version-stamp.outputs.version }}-build
           path: Release
           retention-days: 30
+
+      - uses: actions/upload-artifact@v6
+        id: artifact-thunderstore
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          name: thunderstore-packages
+          path: Deploy
+          retention-days: 30
+
 
   release:
     runs-on: windows-latest
@@ -87,6 +108,14 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with: 
+          dotnet-version: '8.0.x'
+
+      - name: Install Thunderstore CLI
+        run: | 
+          dotnet tool install -g tcli
       
       - name: Get Build Artifact
         uses: actions/download-artifact@v5
@@ -105,3 +134,27 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ needs.build.outputs.version }}" --notes "Latest Build" BNYSRelease.zip
+
+      - name: Get Thunderstore Artifact
+        uses: actions/download-artifact@v5
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with: 
+          artifact-ids: ${{ needs.build.outputs.thunderstore-id }}
+          path: Deploy
+
+      - name: Upload Thunderstore Package - Bunject
+        run: |
+          tcli publish --package "Deploy\\Bunject.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+
+      - name: Upload Thunderstore Package - Bunject.Computer
+        run: |
+          tcli publish --package "Deploy\\Bunject.Computer.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+
+      - name: Upload Thunderstore Package - BNYSmod
+        run: |
+          tcli publish --package "Deploy\\BNYS.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod
+
+      - name: Upload Thunderstore Package - Bunject.Archipelago
+        run: |
+          tcli publish --package "Deploy\\Bunject.Archipelago.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --community paquerette-down-the-bunburrows --namespace BNYSmod

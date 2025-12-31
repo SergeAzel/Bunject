@@ -1,4 +1,5 @@
-﻿using Levels;
+﻿using Characters.Bunny.Data;
+using Levels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,16 @@ namespace Bunject.Monitoring
   // Aka, event monitoring?
   public interface IMonitor : IBunjectorPlugin
   {
-    LevelObject StartLevelTransition(LevelObject level, LevelIdentity identity);
+    LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity);
+
+    string OnLevelTitle(string title, LevelIdentity identity, bool useWhite);
 
     LevelsList LoadEmergencyLevelsList(LevelsList original);
+
+    void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture);
+
+    void OnMainMenu();
+
+    void OnShowCredits();
   }
 }

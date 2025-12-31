@@ -1,128 +1,86 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2CDF8A36-D56D-43FC-A1A4-2E64AC6B8D90}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Bunject</RootNamespace>
-    <AssemblyName>Bunject</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>$(BepInExPath)\0Harmony.dll</HintPath>
-    </Reference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets></IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Core" Version="5.4.21">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34">
+      <PrivateAssets></PrivateAssets>
+      <IncludeAssets></IncludeAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>$(BepInExPath)\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>$(BepInExPath)\BepInEx.Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="Unity.ResourceManager">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.ResourceManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.GridModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.Physics2DModule">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.TilemapModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="UnityEngine.UI">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="IBunjectorPlugin.cs" />
-    <Compile Include="Internal\AssetsManagerRewiring.cs" />
-    <Compile Include="Internal\BunnyReleaser.cs" />
-    <Compile Include="Internal\BunburrowMetadata.cs" />
-    <Compile Include="Internal\BunburrowManager.cs" />
-    <Compile Include="Internal\CustomBunburrowExtension.cs" />
-    <Compile Include="Internal\ForwardingBunjector.cs" />
-    <Compile Include="Internal\LevelBuilderExtensions.cs" />
-    <Compile Include="Internal\ElevatorManager.cs" />
-    <Compile Include="Internal\SaveFileModUtility.cs" />
-    <Compile Include="Levels\CoreBunburrow.cs" />
-    <Compile Include="Levels\IModBunburrow.cs" />
-    <Compile Include="Levels\LoadingContext.cs" />
-    <Compile Include="Levels\ModLevelObject.cs" />
-    <Compile Include="Levels\ModLevelsList.cs" />
-    <Compile Include="Monitoring\IMonitor.cs" />
-    <Compile Include="Patches\BunburrowListOfStylePatches.cs" />
-    <Compile Include="Patches\VisualEffectsPatches.cs" />
-    <Compile Include="Tiling\BaseTileSourcePlugin.cs" />
-    <Compile Include="Tiling\ITileSource.cs" />
-    <Compile Include="Patches\AssetsManagerPatches.cs" />
-    <Compile Include="BunjectAPI.cs" />
-    <Compile Include="Patches\BunburrowEntryTilePatches.cs" />
-    <Compile Include="Patches\BunburrowExtensionPatches.cs" />
-    <Compile Include="Patches\BunburrowSignControllerPatches.cs" />
-    <Compile Include="Patches\BunniesReleaseAnimatorPatches.cs" />
-    <Compile Include="Patches\ChoiceSelectorPatches.cs" />
-    <Compile Include="Patches\UpdateTileSpritePatch.cs" />
-    <Compile Include="Patches\GameManagerPatches.cs" />
-    <Compile Include="Patches\GeneralProgressionPatches.cs" />
-    <Compile Include="Patches\LevelBuilderPatches.cs" />
-    <Compile Include="Patches\LevelIndicatorGeneratorPatches.cs" />
-    <Compile Include="Patches\LevelLoaderPatches.cs" />
-    <Compile Include="Patches\LevelsListPatches.cs" />
-    <Compile Include="Patches\PaqueretteActionResolverPatches.cs" />
-    <Compile Include="Patches\PlatformSpecificManagerPatches.cs" />
-    <Compile Include="Patches\ReleasedBunnyController.cs" />
-    <Compile Include="Patches\SaveFileManipulationUtilityPatches.cs" />
-    <Compile Include="Patches\SettingsManagerPatches.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tiling\IUpdateTileSprite.cs" />
-    <Compile Include="Tiling\TileData.cs" />
-    <Compile Include="Tiling\TileValidator.cs" />
-    <Compile Include="Utility\InjectionDictionary.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)Bunject.dll&quot; &quot;Deploy\*&quot; /y /f" />
+  </Target>
+  <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <MakeDir Directories="..\Deploy" />
+    <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\Bunject.zip" Overwrite="true" />
+  </Target>
 </Project>

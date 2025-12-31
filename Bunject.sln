@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunjectExtractor", "Bunject
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunjectComputer", "BunjectComputer\BunjectComputer.csproj", "{4D448F27-4F13-493C-A71F-9CF366D9A8AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunjectArchipelago", "BunjectArchipelago\BunjectArchipelago.csproj", "{300A3868-0337-B32B-8D08-9D9DDC09DB3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{4D448F27-4F13-493C-A71F-9CF366D9A8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D448F27-4F13-493C-A71F-9CF366D9A8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D448F27-4F13-493C-A71F-9CF366D9A8AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{300A3868-0337-B32B-8D08-9D9DDC09DB3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{300A3868-0337-B32B-8D08-9D9DDC09DB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{300A3868-0337-B32B-8D08-9D9DDC09DB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{300A3868-0337-B32B-8D08-9D9DDC09DB3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

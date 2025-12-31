@@ -16,8 +16,8 @@ namespace Bunject.Patches.BunburrowsListOfStylesPatches
     private static MethodBase TargetMethod()
     {
       return typeof(BunburrowsListOfStyles).GetProperties().First(pi => pi.GetIndexParameters().Length == 1).GetGetMethod();
-
     }
+
     private static BunburrowStyle Postfix(BunburrowStyle __result, Bunburrow bunburrow)
     {
       if (bunburrow.IsCustomBunburrow())

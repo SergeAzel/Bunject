@@ -55,9 +55,11 @@ namespace Bunject.Internal
 			if (!level.Bunburrow.IsCustomBunburrow() || !BunburrowManager.Bunburrows.Any(burrow => burrow.ID == (int)level.Bunburrow && burrow.Elevators.Contains(level.Depth)))
 			{
 				elevatorData = "";
-				instance.elevatorCache.Add(level, elevatorData);
+        if (!instance.elevatorCache.ContainsKey(level))
+          instance.elevatorCache.Add(level, elevatorData);
 				return false;
 			}
+
 			elevatorData = JsonConvert.SerializeObject(level.ProduceSaveData());
 			instance.elevatorCache.Add(level, elevatorData);
 			return true;

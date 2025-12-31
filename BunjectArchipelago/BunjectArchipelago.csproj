@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\BuildPath.props" />
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>Bunject.Archipelago</AssemblyName>
+    <Description>Example Archipelago Plugin</Description>
+    <Version>1.0.0</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>Bunject.Archipelago</RootNamespace>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <IsPublishable>False</IsPublishable>
+    <Deterministic>True</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <IsPublishable>False</IsPublishable>
+    <Deterministic>True</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.0" />
+    <PackageReference Include="Archipelago.MultiClient.Net.Analyzers" Version="2.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bunject\Bunject.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(TargetDir)\*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)\Bunject.Archipelago.dll*&quot; &quot;Deploy\*&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)\Archipelago.MultiClient.Net.dll*&quot; &quot;Deploy\*&quot; /y /f" />
+  </Target>
+  <Target Name="ZipBuild" AfterTargets="PostBuild" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ZipDirectory SourceDirectory="Deploy" DestinationFile="..\Deploy\Bunject.Archipelago.zip" Overwrite="true" />
+  </Target>
+
+</Project>

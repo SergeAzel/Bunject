@@ -81,11 +81,10 @@ namespace Bunject.Patches.GameManagerPatches
   {
     private static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
     {
-      levelObject = BunjectAPI.Forward.StartLevelTransition(levelObject, levelIdentity);
     }
   }
 
-  [HarmonyPatch(typeof(GameManager), "set_GeneralProgression")]
+  [HarmonyPatch(typeof(GameManager), "GeneralProgression", MethodType.Setter)]
   class SetGeneralProgressionPatches
   {
     private static void Prefix(GeneralProgression value)
@@ -142,7 +141,7 @@ namespace Bunject.Patches.GameManagerPatches
   [HarmonyPatch(typeof(GameManager), "InstantiateBunburrowEntrySigns")]
   internal class InstantiateBunburrowEntrySignsPatch
   {
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
+    internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il)
     {
       var tileLevelData_LeftTile = AccessTools.PropertyGetter(typeof(TileLevelData), nameof(TileLevelData.LeftTile));
       int state = 0;
@@ -201,32 +200,51 @@ namespace Bunject.Patches.GameManagerPatches
   {
     public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity, LevelTransitionType levelTransitionType)
     {
-      switch (levelTransitionType)
+      // If i'm being honest, I dont recall at all what the intention of this block is
+      if (levelTransitionType != LevelTransitionType.Elevator)
       {
-        // may want other types to not attempt loading, for now just elevator
-        case LevelTransitionType.Elevator:
-          return;
-      }
-
-      //Attempt to find this level's mod list
-      if (levelIdentity.Bunburrow.IsCustomBunburrow())
-      {
-        var modBunburrow = levelIdentity.Bunburrow.GetModBunburrow();
-        if (modBunburrow != null && modBunburrow.GetLevels() is LevelsList levelsList)
+        //Attempt to find this level's mod list
+        if (levelIdentity.Bunburrow.IsCustomBunburrow())
         {
-          var previousState = CurrentLoadingContext.Value;
-          try
+          var modBunburrow = levelIdentity.Bunburrow.GetModBunburrow();
+          if (modBunburrow != null && modBunburrow.GetLevels() is LevelsList levelsList)
           {
-            CurrentLoadingContext.Value = LoadingContext.LevelTransition;
-            // Forcefully reload the level with the "LevelTransition" context - signifying that paquerette is entering this level
-            levelObject = levelsList[levelIdentity.Depth];
-          }
-          finally
-          {
-            CurrentLoadingContext.Value = previousState;
+            var previousState = CurrentLoadingContext.Value;
+            try
+            {
+              CurrentLoadingContext.Value = LoadingContext.LevelTransition;
+              // Forcefully reload the level with the "LevelTransition" context - signifying that paquerette is entering this level
+              levelObject = levelsList[levelIdentity.Depth];
+            }
+            finally
+            {
+              CurrentLoadingContext.Value = previousState;
+            }
           }
         }
       }
+
+      // Give one last chance for plugins to modify level details
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
+    }
+  }
+
+  [HarmonyPatch(typeof(GameManager), nameof(LoadLevelAtUndo))]
+  internal class LoadLevelAtUndo
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      // Give one last chance for plugins to modify level details
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
+    }
+  }
+
+  [HarmonyPatch(typeof(GameManager), nameof(LoadLevelFromSave))]
+  internal class LoadLevelFromSave
+  {
+    public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity)
+    {
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
     }
   }
 }

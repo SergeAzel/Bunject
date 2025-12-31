@@ -1,7 +1,10 @@
 ﻿using Bunburrows;
+using Bunject.Computer;
 using Bunject.Levels;
+using Bunject.Menu;
 using Bunject.Monitoring;
 using Bunject.Tiling;
+using Characters.Bunny.Data;
 using HarmonyLib;
 using Levels;
 using System;
@@ -11,10 +14,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Tiling.Behaviour;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource, IComputerTabSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -32,9 +36,8 @@ namespace Bunject.Internal
         bunjector.OnProgressionLoaded(progression);
       }
     }
-
-
     #endregion
+
 
     #region ILevelSource (not actually a thing anymore but still used) Implementation
     public ModLevelsList LoadLevelsList(string name, ModLevelsList original)
@@ -55,14 +58,15 @@ namespace Bunject.Internal
     }
     #endregion
 
+
     #region IMonitor implementation
 
-    public LevelObject StartLevelTransition(LevelObject target, LevelIdentity identity)
+    public LevelObject OnLevelLoad(LevelObject target, LevelIdentity identity)
     {
       var result = target;
       foreach (var monitors in BunjectAPI.Monitors)
       {
-        result = monitors.StartLevelTransition(result, identity);
+        result = monitors.OnLevelLoad(result, identity);
       }
       return result;
     }
@@ -76,6 +80,39 @@ namespace Bunject.Internal
       }
       return result;
     }
+
+    public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnBunnyCapture(bunnyIdentity, wasHomeCapture);
+      }
+    }
+
+    public void OnMainMenu()
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnMainMenu();
+      }
+    }
+
+    public string OnLevelTitle(string title, LevelIdentity identity, bool useWhite)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        title = bunjector.OnLevelTitle(title, identity, useWhite);
+      }
+      return title;
+    }
+
+    public void OnShowCredits()
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnShowCredits();
+      }
+    }
     #endregion
 
     #region ITileSource Implementation
@@ -87,6 +124,38 @@ namespace Bunject.Internal
     public Tile LoadTile(LevelObject levelObject, string tile, Vector2Int position)
     {
       return BunjectAPI.TileSources.FirstOrDefault(ts => ts.SupportsTile(tile))?.LoadTile(levelObject, tile, position);
+    }
+    #endregion
+
+    #region MenuSource - NOT IMPLEMENTED INTENTIONALLY
+    // Implemented because IMenuSource is an IBunjectorPlugin, but we handle it elsewhere / differently
+    public string MenuTitle => throw new NotImplementedException();
+    public void DrawMenuOptions()
+    {
+      throw new NotImplementedException();
+    }
+
+    private GameObject PluginMenuObject { get; set; }
+
+    internal void ShowOrHideMenu(bool showMenu)
+    {
+      if (PluginMenuObject == null)
+      {
+        PluginMenuObject = new GameObject();
+        PluginMenuObject.AddComponent<MenuDisplay>();
+      }
+
+      PluginMenuObject.SetActive(showMenu);
+    }
+    #endregion
+
+    #region IComputerTabSource
+    public void GenerateTabs(ComputerTabManager manager)
+    {
+      foreach (var bunjector in BunjectAPI.ComputerTabSources)
+      {
+        bunjector.GenerateTabs(manager);
+      }
     }
     #endregion
   }
