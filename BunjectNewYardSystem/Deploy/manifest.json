@@ -1,11 +1,11 @@
 {
     "name": "BNYS_mod",
-    "version_number": "1.2.1",
+    "version_number": "1.2.2",
     "website_url": "https://github.com/SergeAzel/Bunject",
     "description": "This mod permits the creation and addition of new Bunburrows.",
     "dependencies": [
         "BepInEx-BepInExPack-5.4.2100",
-        "BNYSmod-Bunject-1.2.1",
-        "BNYSmod-Bunject_Computer-1.2.1"
+        "BNYSmod-Bunject-1.2.2",
+        "BNYSmod-Bunject_Computer-1.2.2"
     ]
 }

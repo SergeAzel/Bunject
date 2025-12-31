@@ -1,6 +1,6 @@
 {
     "name": "Bunject_Archipelago",
-    "version_number": "1.2.1",
+    "version_number": "1.2.2",
     "website_url": "https://github.com/SergeAzel/Bunject",
     "description": "Archipelago Client for Paquerette Down the Bunburrows.  APWorld can be found in: https://github.com/SergeAzel/Archipelago_PDTB/",
     "dependencies": [
