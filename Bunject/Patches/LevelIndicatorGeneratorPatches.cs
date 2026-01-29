@@ -14,21 +14,22 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   [HarmonyPatch(typeof(LevelIndicatorGenerator), nameof(LevelIndicatorGenerator.GetLongLevelIndicator))]
   internal class GetLongLevelIndicatorPatches
   {
-    private static string Postfix(ref string __result, bool useWhite)
+    private static string Postfix(string __result, bool useWhite)
     {
+      var result = __result;
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
       if (identity.Bunburrow.IsCustomBunburrow())
       {
-        var res = LevelIndicatorGenerator.GetShortLevelIndicator()
+        var shortIndicator = LevelIndicatorGenerator.GetShortLevelIndicator()
           + Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>()
           + " ";
         var name = GameManager.CurrentLevel.BaseData.CustomNameKey;
-        __result = res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
+        result = shortIndicator + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
           ? LevelIndicatorGenerator.GenerateVoidLevelName()
           : name);
       }
 
-      return BunjectAPI.Forward.OnLevelTitle(__result, identity, useWhite);
+      return BunjectAPI.Forward.OnLevelTitle(result, identity, useWhite);
     }
   }
 

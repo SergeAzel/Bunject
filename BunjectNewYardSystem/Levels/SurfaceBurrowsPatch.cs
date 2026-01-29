@@ -19,7 +19,7 @@ namespace Bunject.NewYardSystem.Levels
     public static Sprite EndingBackground = null;
     public static Sprite ExtendedBackground = null;
 
-    public static void PatchSurfaceBurrows(LevelObject shop, LevelObject originalBurrows, LevelObject newRightExit)
+    public static void PatchSurfaceBurrows(LevelObject originalBurrows, LevelObject newRightExit)
     {
       if (EndingBackground == null)
         EndingBackground = originalBurrows.SpecificBackground;

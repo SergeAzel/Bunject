@@ -35,6 +35,7 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 namespace Bunject.NewYardSystem
 {
@@ -175,7 +176,15 @@ namespace Bunject.NewYardSystem
         // Undo all major changes
         BunjectAPI.ClearRegisters();
 
-        ExtendedSurfaceLevelGenerator.LinkSurface(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel);
+        var assetManager = Traverse.Create(typeof(AssetsManager));
+        var middleBase = assetManager.Field<LevelObject>("surfaceMiddleLevelBase").Value;
+        var middleExpanded = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded").Value;
+        var middleNoHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2NoHerbe").Value;
+        var middleHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2Herbe").Value;
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleBase, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleExpanded, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleNoHerbe, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleHerbe, AssetsManager.SurfaceRightLevel);
 
         CurrentCustomWorld = null;
       }
@@ -397,14 +406,19 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private void GenerateSurfaceLevels(LevelObject coreSurfaceRight, CustomWorld world)
+    private void GenerateSurfaceLevels(CustomWorld world)
     {
-      var previous = coreSurfaceRight;
+      var assetManager = Traverse.Create(typeof(AssetsManager));
+      var middleBase = assetManager.Field<LevelObject>("surfaceMiddleLevelBase").Value;
+      var middleExpanded = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded").Value;
+      var middleNoHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2NoHerbe").Value;
+      var middleHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2Herbe").Value;
+
+      var previous = middleBase;
 
       try
       {
         ExtendedSurfaceLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
-        previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
       }
       catch (Exception e)
       {
@@ -412,6 +426,14 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e.Message);
         Logger.LogError(e);
       }
+
+      previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+      var first = world.GeneratedSurfaceLevels.FirstOrDefault() ?? previous;
+
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleBase, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleExpanded, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleNoHerbe, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleHerbe, first);
 
       PatchLevelAsEndcap(previous);
     }
@@ -516,7 +538,7 @@ namespace Bunject.NewYardSystem
       try
       {
         // TODO replace this behavior - its outdated
-        SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel, null);
+        SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceRightLevel, null);
 
         // Ensure our bunburrows are registered.
         foreach (var bunburrow in BNYSModBurrows.Where(b => b.World == world))
@@ -533,9 +555,10 @@ namespace Bunject.NewYardSystem
         }
 
         //Now do our surface generation if it hasn't been done.
-        GenerateSurfaceLevels(AssetsManager.SurfaceMiddleLevel, world);
+        GenerateSurfaceLevels(world);
 
         BunjectAPI.LoadSave("BNYS", world.Title);
+
         CurrentCustomWorld = world;
       }
       catch (Exception ex)
