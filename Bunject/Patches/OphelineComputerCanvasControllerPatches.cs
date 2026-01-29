@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
 {
+  /* 
+   * TODO: Rework all computer stuff
 
   [HarmonyPatch(typeof(OphelineComputerCanvasController), nameof(Awake))]
   internal static class Awake
@@ -98,5 +100,5 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
       var core = availableTabs[currentTabIndex];
       ComputerTabManager.instance.TabSelected(core.ToCustom());
     }
-  }
+  }*/
 }

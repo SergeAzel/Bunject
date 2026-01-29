@@ -17,10 +17,9 @@ namespace Bunject.Patches.ReleasedBunnyControllerPatches
   {
     private static bool Prefix(ReleasedBunnyController __instance, BunnyIdentity bunnyIdentity, BunniesReleaseAnimator bunniesReleaseAnimator)
     {
-      if ((int)bunnyIdentity.Bunburrow < BunburrowManager.CustomBunburrowThreshold)
+      var ident = bunnyIdentity;
+      if ((int)ident.Bunburrow < BunburrowManager.CustomBunburrowThreshold)
         return true;
-
-      //Console.WriteLine("BUNJECT - Releasing custom bun");
 
       // Consider it done
       bunniesReleaseAnimator.NotifyBunnyInHole(__instance);

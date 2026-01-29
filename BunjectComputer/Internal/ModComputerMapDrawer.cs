@@ -16,6 +16,8 @@ using UnityEngine;
 
 namespace Bunject.Computer.Internal
 {
+	/*
+	TODO Oh no...
 	internal class ModComputerMapDrawer
 	{
 		private static ModComputerMapDrawer _instance;
@@ -209,5 +211,5 @@ namespace Bunject.Computer.Internal
 			=> burrow1 != null && burrow2 != null
 			? burrow1.AdjacentBunburrows[dirFrom1] == burrow2.AdjacentBunburrows[dirFrom2] ? burrow1.AdjacentBunburrows[dirFrom1] : null
 			: burrow1?.AdjacentBunburrows[dirFrom1] ?? burrow2?.AdjacentBunburrows[dirFrom2];
-	}
+	}*/
 }

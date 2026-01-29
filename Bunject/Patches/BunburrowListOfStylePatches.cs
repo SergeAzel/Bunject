@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Bunject.Patches.BunburrowsListOfStylesPatches
 {
@@ -20,8 +21,9 @@ namespace Bunject.Patches.BunburrowsListOfStylesPatches
 
     private static BunburrowStyle Postfix(BunburrowStyle __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
-        return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.Style ?? __result;
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
+        return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunb)?.ModBunburrow?.Style ?? __result;
       return __result;
     }
   }

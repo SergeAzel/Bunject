@@ -18,7 +18,7 @@ using static UnityEngine.UI.Image;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource, IComputerTabSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource //, IComputerTabSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -150,12 +150,13 @@ namespace Bunject.Internal
     #endregion
 
     #region IComputerTabSource
-    public void GenerateTabs(ComputerTabManager manager)
+    public void GenerateTabs(/*ComputerTabManager manager*/)
     {
+      /*
       foreach (var bunjector in BunjectAPI.ComputerTabSources)
       {
         bunjector.GenerateTabs(manager);
-      }
+      }*/
     }
     #endregion
   }

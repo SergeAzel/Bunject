@@ -14,7 +14,7 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   [HarmonyPatch(typeof(LevelIndicatorGenerator), nameof(LevelIndicatorGenerator.GetLongLevelIndicator))]
   internal class GetLongLevelIndicatorPatches
   {
-    private static string Postfix(string __result, bool useWhite)
+    private static string Postfix(ref string __result, bool useWhite)
     {
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
       if (identity.Bunburrow.IsCustomBunburrow())
@@ -38,9 +38,10 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   {
     public static BunburrowStyle Postfix(BunburrowStyle __result, LevelIdentity levelIdentity)
     {
-      if (levelIdentity.Bunburrow.IsCustomBunburrow())
+      var levelIdent = levelIdentity;
+      if (levelIdent.Bunburrow.IsCustomBunburrow())
       {
-        return AssetsManager.LevelsLists[levelIdentity.Bunburrow.ToBunburrowName()][levelIdentity.Depth].BunburrowStyle;
+        return AssetsManager.LevelsLists[levelIdent.Bunburrow.ToBunburrowName()][levelIdent.Depth].BunburrowStyle;
       }
       return __result;
     }

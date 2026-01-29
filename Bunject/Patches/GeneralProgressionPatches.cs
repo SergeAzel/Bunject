@@ -16,46 +16,6 @@ using System.Threading.Tasks;
 
 namespace Bunject.Patches.GeneralProgressionPatches
 {
-  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetVoidlessPillarsProgress))]
-  internal class GetVoidlesssPillarsProgressPatch
-  {
-    static MethodInfo IsVoidBunburrow = typeof(BunburrowExtension).GetMethod(nameof(BunburrowExtension.IsVoidBunburrow));
-
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    {
-      foreach (var instruction in instructions)
-      {
-        if (instruction.Calls(IsVoidBunburrow))
-        {
-          yield return CodeInstruction.Call(typeof(CustomBunburrowExtension), nameof(CustomBunburrowExtension.IsVoidOrCustomBunburrow));
-        }
-        else
-        {
-          yield return instruction;
-        }
-      }
-    }
-  }
-
-  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetNonVoidBunniesCount))]
-  internal class GetNonVoidBunniesCountPatches
-  {
-    static MethodInfo IsNonVoidBunburrow = typeof(BunburrowExtension).GetMethod(nameof(BunburrowExtension.IsNonVoidBunburrow));
-
-    private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-    {
-      foreach (var codeInstruction in instructions)
-      {
-        if (codeInstruction.Calls(IsNonVoidBunburrow))
-        {
-          yield return CodeInstruction.Call(typeof(CustomBunburrowExtension), nameof(CustomBunburrowExtension.IsCoreBunburrow));
-          continue;
-        }
-        yield return codeInstruction;
-      }
-    }
-  }
-
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.FreeAllNonVoidBunnies))]
   internal class FreeAllNonVoidBunniesPatches
   {
@@ -65,34 +25,6 @@ namespace Bunject.Patches.GeneralProgressionPatches
       BunnyReleaser.NotifyReleased();
     }
   }
-
-  /*
-  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetCapturedBunniesFromBunburrow))]
-  internal class GetCapturedBunniesFromBunburrowPatch
-  {
-    private static List<BunnyIdentity> Postfix(List<BunnyIdentity> __result, GeneralProgression __instance, Bunburrow bunburrow)
-    {
-      Console.WriteLine($"BUNJECT - {nameof(GetCapturedBunniesFromBunburrowPatch)} - count: {__result.Count} - BurrowID {(int)bunburrow}");
-      foreach (var id in __result)
-        Console.WriteLine($"BUNJECT - brw: {(int)id.Bunburrow}, lvl: {id.LevelID}, str: {id.GetIdentityString()}");
-
-      foreach (var capturedBunny in __instance.CapturedBunnies)
-        Console.WriteLine($"BUNJECT - CAPBUN: {(int)capturedBunny.Bunburrow}, lvl: {capturedBunny.LevelID}, STR: {capturedBunny.GetIdentityString()}");
-
-      return __result;
-    }
-  }*/
-
-  /*
-  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetBunniesCountByBunburrow))]
-  internal class GetBunniesCountByBunburrowPatches
-  {
-    private static BunniesCount Postfix(BunniesCount __result, GeneralProgression __instance, Bunburrow bunburrow)
-    {
-      Console.WriteLine($"BUNJECT - {nameof(GetBunniesCountByBunburrowPatches)} - count: {__result.RegularBunniesCount} - BurrowID {(int)bunburrow}");
-      return __result;
-    }
-  }*/
 
   [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.FreeBunniesFromBunburrow))]
   internal class FreeBunniesFromBunburrowPatches

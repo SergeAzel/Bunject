@@ -200,13 +200,15 @@ namespace Bunject.Patches.GameManagerPatches
   {
     public static void Prefix(ref LevelObject levelObject, LevelIdentity levelIdentity, LevelTransitionType levelTransitionType)
     {
+      var levelIdent = levelIdentity;
+
       // If i'm being honest, I dont recall at all what the intention of this block is
       if (levelTransitionType != LevelTransitionType.Elevator)
       {
         //Attempt to find this level's mod list
-        if (levelIdentity.Bunburrow.IsCustomBunburrow())
+        if (levelIdent.Bunburrow.IsCustomBunburrow())
         {
-          var modBunburrow = levelIdentity.Bunburrow.GetModBunburrow();
+          var modBunburrow = levelIdent.Bunburrow.GetModBunburrow();
           if (modBunburrow != null && modBunburrow.GetLevels() is LevelsList levelsList)
           {
             var previousState = CurrentLoadingContext.Value;
@@ -214,7 +216,7 @@ namespace Bunject.Patches.GameManagerPatches
             {
               CurrentLoadingContext.Value = LoadingContext.LevelTransition;
               // Forcefully reload the level with the "LevelTransition" context - signifying that paquerette is entering this level
-              levelObject = levelsList[levelIdentity.Depth];
+              levelObject = levelsList[levelIdent.Depth];
             }
             finally
             {
@@ -225,7 +227,7 @@ namespace Bunject.Patches.GameManagerPatches
       }
 
       // Give one last chance for plugins to modify level details
-      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdentity);
+      levelObject = BunjectAPI.Forward.OnLevelLoad(levelObject, levelIdent);
     }
   }
 

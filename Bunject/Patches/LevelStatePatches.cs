@@ -15,7 +15,8 @@ namespace Bunject.Patches.LevelStatePatches
   {
     private static void Postfix(BunnyCaptureData bunnyCaptureData)
     {
-      BunjectAPI.Forward.OnBunnyCapture(bunnyCaptureData.BunnyIdentity, bunnyCaptureData.IsHomeCapture());
+      var capData = bunnyCaptureData;
+      BunjectAPI.Forward.OnBunnyCapture(capData.BunnyIdentity, capData.IsHomeCapture);
     }
   }
 }

@@ -9,6 +9,9 @@ namespace Bunject.Computer
 {
   public static class ComputerExtensions
   {
+    /*
+    TODO: Rework all computer tab stuff
+
     public static CustomComputerTab ToCustom(this ComputerTabController controller)
     {
       return controller.gameObject.GetComponent<CustomComputerTab>();
@@ -17,6 +20,6 @@ namespace Bunject.Computer
     public static ComputerTabController ToCore(this CustomComputerTab custom)
     {
       return custom.gameObject.GetComponent<ComputerTabController>();
-    }
+    }*/
   }
 }

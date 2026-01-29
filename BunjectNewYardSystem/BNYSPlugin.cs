@@ -39,7 +39,7 @@ using UnityEngine;
 namespace Bunject.NewYardSystem
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource, IComputerTabSource
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource //, IComputerTabSource
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -555,6 +555,7 @@ namespace Bunject.NewYardSystem
       }
     }
 
+    /*
     public void GenerateTabs(ComputerTabManager manager)
     {
       if (CurrentCustomWorld != null)
@@ -563,7 +564,7 @@ namespace Bunject.NewYardSystem
 
         creditsTab.World = CurrentCustomWorld;
       }
-    }
+    }*/
 
     #endregion
   }

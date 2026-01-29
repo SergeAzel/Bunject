@@ -12,6 +12,8 @@ using UnityEngine;
 
 namespace Bunject.Computer
 {
+  /*
+   * TODO: Rework all computer tab stuff
   public class ComputerTabManager : MonoBehaviour
   {
     public static ComputerTabManager instance = null;
@@ -103,5 +105,5 @@ namespace Bunject.Computer
         traverse.Method("SwitchTab", index).GetValue();
       }
     }
-  }
+  }*/
 }

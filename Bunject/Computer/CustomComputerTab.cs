@@ -13,10 +13,11 @@ namespace Bunject.Computer
 {
   public abstract class CustomComputerTab : MonoBehaviour
   {
+    /* TODO: rework all computer tab stuff
     public static CustomComputerTab FindCustomInstance(ComputerTabController controller)
     {
       return controller.gameObject.GetComponent<CustomComputerTab>();
-    }
+    }*/
 
     // Reference to original ComputerTabController
     private Traverse traverse;
@@ -36,12 +37,14 @@ namespace Bunject.Computer
 
     protected virtual void Awake()
     {
+      /*
       var coreTabController = gameObject.GetComponent<ComputerTabController>();
 
       buttonController = gameObject.GetComponent<ButtonController>();
       buttonController.OnClick += OnClickWrapper;
 
       this.traverse = Traverse.Create(coreTabController);
+      */
     }
 
     private void OnClickWrapper()

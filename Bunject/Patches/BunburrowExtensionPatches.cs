@@ -39,7 +39,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static string Postfix(string __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow.Name;
       }
@@ -52,7 +53,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static int Postfix(int __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ComparisonIndex ?? __result;
       }
@@ -65,7 +67,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static string Postfix(string __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.Indicator;
       }
@@ -79,9 +82,10 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
-        return !bunburrow.IsVoidBunburrow();
+        return !bunb.IsVoidBunburrow();
       }
       // redirect to the other function, which needs no extending
       return __result;
@@ -94,7 +98,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
       // redirect to the other function, which needs no extending
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.IsVoid ?? __result;
       }

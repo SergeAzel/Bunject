@@ -32,7 +32,7 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
             if (instruction.Branches(out Label? _))
             {
               yield return instruction;
-              yield return new CodeInstruction(OpCodes.Ldloc_3);
+              yield return new CodeInstruction(OpCodes.Ldloc_S, 4);
               yield return CodeInstruction.Call(typeof(BunburrowSignController), "get_Bunburrow"); // Calling a getter.. I guess it worked
               yield return CodeInstruction.Call(typeof(HandleTalkButtonPressPatches), nameof(HandleTalkButtonPressPatches.ExtractBurrow));
               detectionState++;
