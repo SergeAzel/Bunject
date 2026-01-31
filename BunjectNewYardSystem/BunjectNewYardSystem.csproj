@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>Bunject.NewYardSystem</RootNamespace>
     <AssemblyName>Bunject.NewYardSystem</AssemblyName>
@@ -39,7 +39,7 @@
     <PackageReference Include="BepInEx.Core" Version="5.*">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34">
+    <PackageReference Include="UnityEngine.Modules" Version="6000.3.4">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

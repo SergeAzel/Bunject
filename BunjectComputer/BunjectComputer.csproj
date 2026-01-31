@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>Bunject.Computer</RootNamespace>
     <AssemblyName>Bunject.Computer</AssemblyName>
   </PropertyGroup>

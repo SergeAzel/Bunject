@@ -66,7 +66,7 @@ namespace Bunject
 
     public static void BeginLoadingScreen()
     {
-      var menu = GameObject.FindObjectOfType<MenuController>();
+      var menu = GameObject.FindFirstObjectByType<MenuController>();
       if (menu == null)
         return;
 
@@ -78,7 +78,7 @@ namespace Bunject
 
     public static void CancelLoadingScreen()
     {
-      var menu = GameObject.FindObjectOfType<MenuController>();
+      var menu = GameObject.FindFirstObjectByType<MenuController>();
       if (menu == null)
         return;
 
