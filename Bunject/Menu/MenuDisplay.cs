@@ -14,6 +14,13 @@ namespace Bunject.Menu
 
     private void OnGUI()
     {
+      float scaleX = 2;
+      float scaleY = 2;
+      Vector3 scale = new Vector3(scaleX, scaleY, 1.0f);
+
+      // Apply the scaling matrix to all subsequent GUI calls
+      GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, scale);
+
       menuSources = BunjectAPI.MenuOptions.ToList();
       if (menuSources.Count > 0)
       {
