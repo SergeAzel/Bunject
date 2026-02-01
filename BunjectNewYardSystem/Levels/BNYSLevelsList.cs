@@ -96,6 +96,16 @@ namespace Bunject.NewYardSystem.Levels
       levelObject.IsHell = levelConfig.IsHell;
 
       levelObject.Content = levelConfig.Content;
+
+      if (levelConfig.Hints is List<LevelHint> hints)
+        levelObject.Solutions = hints.Select(hint =>
+        {
+          var solution = new Solution();
+          var t = HarmonyLib.Traverse.Create(solution);
+          t.Field<Vector2Int>("position").Value = new Vector2Int(hint.Position[0], hint.Position[1]);
+          t.Field<Misc.Direction>("orientation").Value = hint.Orientation;
+          return solution;
+        }).ToList();
     }
   }
 }

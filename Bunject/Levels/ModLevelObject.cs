@@ -120,5 +120,11 @@ namespace Bunject.Levels
       get { return base.SideLevels; }
       set { Traverse.Field<DirectionsListOf<LevelObject>>("sideLevels").Value = value; }
     }
+
+    public new IReadOnlyList<Solution> Solutions
+    {
+      get { return base.Solutions; }
+      set { Traverse.Field<List<Solution>>("solutions").Value = new List<Solution>(value); }
+    }
   }
 }

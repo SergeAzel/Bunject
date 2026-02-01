@@ -1,4 +1,5 @@
 ﻿using Bunject.Levels;
+using Bunject.NewYardSystem.Utility;
 using Levels;
 using Newtonsoft.Json;
 using System;
@@ -23,6 +24,8 @@ namespace Bunject.NewYardSystem.Model
     public string Content { get; set; }
 
     public bool IsWebLevel { get; set; }
+
+    public List<LevelHint> Hints { get; set; }
   }
 
   public class LevelTools
@@ -31,5 +34,11 @@ namespace Bunject.NewYardSystem.Model
     public int Pickaxes { get; set; }
     public int Carrots { get; set; }
     public int Shovels { get; set; }
+  }
+  
+  public class LevelHint
+  {
+    public int[] Position { get; set; }
+    public Misc.Direction Orientation { get; set; } = Misc.Direction.Down;
   }
 }

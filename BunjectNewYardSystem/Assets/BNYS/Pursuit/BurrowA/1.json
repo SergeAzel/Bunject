@@ -7,5 +7,15 @@
         "Pickaxes": 1
     },
     "IsTemple": false,
-    "IsHell": false
+    "IsHell": false,
+	"Hints": [
+		{
+			"Position": [12, 4],
+			"Orientation": "Down"
+		},
+		{
+			"Position": [13, 4],
+			"Orientation": "Down"
+		}
+	]
 }
