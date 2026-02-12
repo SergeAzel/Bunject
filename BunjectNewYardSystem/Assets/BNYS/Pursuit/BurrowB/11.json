@@ -1,0 +1,14 @@
+{
+    "Name": "Among His Hedges",
+    "Style": "Pink",
+    "IsTemple": false,
+    "IsHell": false,
+    "LiveReloading": true,
+    "Tools": 
+    {
+        "Pickaxes": 5,
+        "Shovels": 5,
+        "Carrots": 5,
+        "Traps": 5
+    },
+}

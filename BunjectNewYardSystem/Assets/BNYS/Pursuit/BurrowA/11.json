@@ -1,0 +1,13 @@
+{
+    "Name": "In His Garden",
+    "Style": "Pink",
+    "IsTemple": false,
+    "IsHell": false,
+    "LiveReloading": true,
+    "Tools": 
+    {
+        "Pickaxes": 2,
+        "Carrots": 0,
+        "Traps": 0
+    },
+}

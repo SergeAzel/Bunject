@@ -1,6 +1,7 @@
 {
-    "Name": "Kevin Rests",
+    "Name": "Kevin's Challenge",
     "Style": "HellTemple",
     "IsTemple": false,
-    "IsHell": true 
+    "IsHell": true,
+    "LiveReloading": true
 }

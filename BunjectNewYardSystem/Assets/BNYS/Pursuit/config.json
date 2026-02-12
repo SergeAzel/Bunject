@@ -14,7 +14,7 @@
       "UpperBunnyCount": 3,
       "TempleBunnyCount": 1,
       "HellBunnyCount": 4,
-      "Depth": 10,
+      "Depth": 12,
       "Links": {
         "Left": "Burrow B",
         "Up": "Burrow A",
@@ -32,7 +32,7 @@
       "UpperBunnyCount": 3,
       "TempleBunnyCount": 1,
       "HellBunnyCount": 3,
-      "Depth": 10,
+      "Depth": 12,
       "Links": {
         "Left": "Burrow A",
         "Up": "Burrow B",
