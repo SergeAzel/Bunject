@@ -21,7 +21,8 @@
         "Right": "Burrow B",
         "Down": "Burrow A"
       },
-      "ElevatorDepths": [ 5 ]
+      "ElevatorDepths": [ 5 ],
+      "MapIndex": [ 0, 1 ]
     },
     {
       "Directory": "BurrowB",
@@ -39,7 +40,8 @@
         "Right": "Burrow A",
         "Down": "Burrow B"
       },
-      "ElevatorDepths": [ 9 ]
+      "ElevatorDepths": [ 9 ],
+      "MapIndex": [ 1, 1 ]
     }
   ],
   "SurfaceEntries": [

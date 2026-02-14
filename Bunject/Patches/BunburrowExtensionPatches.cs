@@ -4,10 +4,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Assertions.Must;
+using UnityEngine;
 
 namespace Bunject.Patches.BunburrowExtensionPatches
 {
@@ -104,6 +101,53 @@ namespace Bunject.Patches.BunburrowExtensionPatches
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.IsVoid ?? __result;
       }
       return __result;
+    }
+  }
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.GetBunburrowsInMapOrderList))]
+  internal class GetBunburrowsInMapOrderListPatch
+  {
+    // ALlow the map to see custom burrows
+    private static IEnumerable<Bunburrow> Postfix(IEnumerable<Bunburrow> values)
+    {
+      return CustomBunburrowExtension.GetRegularAndCustomBunbrrowEnumerator();
+    }
+  }
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.GetMapIndex))]
+  internal class GetMapIndexPatch
+  {
+    // Burrow to MapIndex lookup. 
+    private static bool Prefix(ref Vector2Int __result, Bunburrow bunburrow)
+    {
+      if ((int)bunburrow < BunburrowManager.CustomBunburrowThreshold)
+        return true;
+      var mod = bunburrow.GetModBunburrow();
+      __result = mod.GetMapIndex() ?? new Vector2Int(10, 10);
+      
+      return false;
+
+    }
+  }
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.TryGetBunburrowFromMapIndex))]
+  internal class TryGetBunburrowFromMapIndexPatch
+  {
+    // MapIndex to Burrow lookup, This could probably be cached somewhere.
+    private static bool Prefix(ref bool __result, Vector2Int mapIndex, out Bunburrow bunburrow)
+    {
+      var result = CustomBunburrowExtension.GetRegularAndCustomBunbrrowEnumerator()
+        .Where(x => x.IsCustomBunburrow())
+        .Select(x => x.GetModBunburrow())
+        .FirstOrDefault(x => x.GetMapIndex() == mapIndex);
+      if (result == null)
+      {
+        bunburrow = Bunburrow.Pink;
+        return true;
+      }
+      bunburrow = (Bunburrow)result.ID;
+      __result = true;
+      return false;
     }
   }
 }

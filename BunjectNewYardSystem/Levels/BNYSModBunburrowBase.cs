@@ -110,6 +110,11 @@ namespace Bunject.NewYardSystem.Levels
       return SurfaceLevel;
     }
 
+    public Vector2Int? GetMapIndex()
+    {
+      return new Vector2Int(BurrowModel.MapIndex[0], BurrowModel.MapIndex[1]);
+    }
+
     protected virtual BNYSLevelsList GenerateLevelsList()
     {
       var levelsList = ScriptableObject.CreateInstance<BNYSLevelsList>();

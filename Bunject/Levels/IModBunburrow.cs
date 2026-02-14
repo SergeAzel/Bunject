@@ -26,5 +26,7 @@ namespace Bunject.Levels
     LevelsList GetLevels();
 
     LevelObject GetSurfaceLevel();
+
+    Vector2Int? GetMapIndex();
   }
 }

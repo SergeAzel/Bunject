@@ -54,5 +54,10 @@ namespace Bunject.NewYardSystem.Levels
     {
       return null;
     }
+
+    public Vector2Int? GetMapIndex()
+    {
+      return null;
+    }
   }
 }

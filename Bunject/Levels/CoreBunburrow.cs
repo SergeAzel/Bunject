@@ -52,5 +52,10 @@ namespace Bunject.Levels
     {
       return AssetsManager.SurfaceRightLevel;
     }
+
+    public Vector2Int? GetMapIndex()
+    {
+      return null;
+    }
   }
 }
