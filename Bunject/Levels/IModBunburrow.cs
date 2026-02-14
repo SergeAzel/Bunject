@@ -26,5 +26,7 @@ namespace Bunject.Levels
     LevelsList GetLevels();
 
     LevelObject GetSurfaceLevel();
+
+    List<Vector2Int> GetReleasePath();
   }
 }

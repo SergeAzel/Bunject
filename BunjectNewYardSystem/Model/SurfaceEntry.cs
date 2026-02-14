@@ -11,6 +11,7 @@ namespace Bunject.NewYardSystem.Model
   public class SurfaceEntry
   {
     public Dictionary<string, SurfaceCoordinate> Coordinates { get; set; }
+    public Dictionary<string, List<int[]>> ReleasePath { get; set; }
     public SurfaceEntryGrid Grid { get; set; }
   }
 

@@ -50,4 +50,44 @@ namespace Bunject.Patches.GeneralProgressionPatches
       }
     }
   }
+
+  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetNonVoidBunniesSpreadSort))]
+  internal class GetNonVoidBunniesSpreadSortPatch
+  {
+    // Injecting custom bunnies into GetNonVoidBunniesSpreadSort
+    public static List<BunnyIdentity> Postfix(List<BunnyIdentity> values, GeneralProgression __instance)
+    {
+      foreach (var customBurrow in BunburrowManager.Bunburrows)
+      {
+        if (customBurrow.IsCustom)
+        {
+          var burrow = (Bunburrow) customBurrow.ID;
+          values.AddRange(__instance.GetCapturedBunniesFromBunburrow(burrow));
+        }
+      }
+      values.Sort((l,r) => l.InitialDepth < r.InitialDepth ? -1 : 1);
+
+      return values;
+    }
+  }
+
+  [HarmonyPatch(typeof(GeneralProgression), nameof(GeneralProgression.GetNonVoidBunniesCount))]
+  internal class GetNonVoidBunniesCountPatch
+  {
+    // Removing Custom bunnies from GetNonVoidBunniesCount
+    // This is only called from the vanilla "StartAllRelease" code, and it gets stuck with custom buns.
+    public static bool Prefix(ref int __result, GeneralProgression __instance)
+    {
+      int num = 0;
+      foreach (var bunnyIdentity in __instance.CapturedBunnies)
+      {
+        if (!bunnyIdentity.Bunburrow.IsCustomBunburrow() && bunnyIdentity.Bunburrow.IsNonVoidBunburrow()) // Check if open?
+        {
+          num++;
+        }
+      }
+      __result = num;
+      return false;
+    }
+  }
 }
