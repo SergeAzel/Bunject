@@ -1,12 +1,12 @@
 {
-    "Name": "In His Garden",
+    "Name": "At His Gates",
     "Style": "Pink",
     "IsTemple": false,
     "IsHell": false,
     "LiveReloading": true,
     "Tools": 
     {
-        "Pickaxes": 2,
+        "Pickaxes": 5,
         "Carrots": 0,
         "Traps": 0
     },

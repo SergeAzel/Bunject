@@ -1,14 +1,13 @@
 {
-    "Name": "Another Level Name",
+    "Name": "His Switchboards",
     "Style": "Pink",
     "IsTemple": false,
     "IsHell": false,
     "LiveReloading": true,
     "Tools": 
     {
-        "Pickaxes": 5,
-        "Shovels": 5,
-        "Carrots": 5,
-        "Traps": 5
+        "Pickaxes": 4,
+        "Shovels": 4,
+        "Traps": 4
     },
 }

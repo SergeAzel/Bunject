@@ -1,14 +1,13 @@
 {
-    "Name": "In His Gardens",
+    "Name": "His Sacred Vessel",
     "Style": "Pink",
     "IsTemple": false,
     "IsHell": false,
     "LiveReloading": true,
     "Tools": 
     {
-        "Pickaxes": 2,
-        "Shovels": 0,
-        "Carrots": 1,
+        "Pickaxes": 1,
+        "Shovels": 1,
         "Traps": 1
     },
 }
