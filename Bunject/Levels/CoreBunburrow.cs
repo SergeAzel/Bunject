@@ -52,5 +52,10 @@ namespace Bunject.Levels
     {
       return AssetsManager.SurfaceRightLevel;
     }
+
+    public List<Vector2Int> GetReleasePath()
+    {
+      return null;
+    }
   }
 }

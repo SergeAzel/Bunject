@@ -110,6 +110,17 @@ namespace Bunject.NewYardSystem.Levels
       return SurfaceLevel;
     }
 
+    public List<Vector2Int> GetReleasePath()
+    {
+      var releases = World.SurfaceEntries?.Where(se => se.ReleasePath != null)
+        .SelectMany(se => se.ReleasePath)
+        .Where(kvp => kvp.Key == LocalName)
+        .Select(kvp => kvp.Value)
+        .FirstOrDefault();
+
+      return releases?.Select(x => new Vector2Int(x[0], -x[1])).ToList();
+    }
+
     protected virtual BNYSLevelsList GenerateLevelsList()
     {
       var levelsList = ScriptableObject.CreateInstance<BNYSLevelsList>();
