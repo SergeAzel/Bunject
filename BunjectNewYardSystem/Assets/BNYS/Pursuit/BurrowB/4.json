@@ -3,5 +3,11 @@
   "Style": "Temple",
   "IsTemple": true,
   "IsHell": false,
-  "Teleport": [ 4, 6 ]
+  "Teleport": [ 4, 6 ],
+  "Hints": [
+    {
+      "Position": [ 7, 1 ],
+      "Orientation": "Left"
+    }
+  ]
 }

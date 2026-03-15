@@ -8,5 +8,11 @@
   },
   "IsTemple": false,
   "IsHell": false,
-  "Teleport": [ 12, 6 ]
+  "Teleport": [ 12, 6 ],
+  "Hints": [
+    {
+      "Position": [ 1, 7 ],
+      "Orientation": "Down"
+    }
+  ]
 }

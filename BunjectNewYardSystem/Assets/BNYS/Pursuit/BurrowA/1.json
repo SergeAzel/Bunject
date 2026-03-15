@@ -10,11 +10,7 @@
   "Teleport": [ 2, 2 ],
 	"Hints": [
 		{
-			"Position": [12, 4],
-			"Orientation": "Down"
-		},
-		{
-			"Position": [13, 4],
+			"Position": [13, 3],
 			"Orientation": "Down"
 		}
 	]
