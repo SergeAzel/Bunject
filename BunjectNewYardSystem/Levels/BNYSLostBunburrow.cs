@@ -54,5 +54,10 @@ namespace Bunject.NewYardSystem.Levels
     {
       return null;
     }
+
+    public List<Vector2Int> GetReleasePath()
+    {
+      return null;
+    }
   }
 }

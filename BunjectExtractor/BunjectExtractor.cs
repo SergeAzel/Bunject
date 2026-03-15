@@ -3,6 +3,7 @@ using Bunject;
 using Bunject.Internal;
 using Bunject.Levels;
 using Bunject.Monitoring;
+using Characters.Bunny.Data;
 using Levels;
 using System;
 using System.Collections.Generic;
@@ -34,16 +35,16 @@ namespace Bunject.Extractor
       BunjectAPI.RegisterPlugin(this);
     }
 
-    public void OnAssetsLoaded()
+    public LevelsList LoadEmergencyLevelsList(LevelsList original)
     {
+      return original;
     }
 
-    public void OnProgressionLoaded(GeneralProgression progression)
-    {
-    }
+    public void OnAssetsLoaded() { }
 
-    // Exports core level data on level being loaded
-    public LevelObject StartLevelTransition(LevelObject original, LevelIdentity identity)
+    public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture) { }
+
+    public LevelObject OnLevelLoad(LevelObject level, LevelIdentity identity)
     {
       // Serialize and output level
       if (!identity.Bunburrow.IsCustomBunburrow())
@@ -51,11 +52,22 @@ namespace Bunject.Extractor
         var targetFile = Path.Combine(rootDirectory, LevelIndicatorGenerator.GetShortLevelIndicator(identity) + ".level");
         if (!File.Exists(targetFile))
         {
-          File.WriteAllText(targetFile, original.Content);
+          File.WriteAllText(targetFile, level.Content);
         }
       }
 
-      return original;
+      return level;
     }
+
+    public string OnLevelTitle(string title, LevelIdentity identity, bool useWhite)
+    {
+      return title;
+    }
+
+    public void OnMainMenu() { }
+
+    public void OnProgressionLoaded(GeneralProgression progression) { }
+
+    public void OnShowCredits() { }
   }
 }

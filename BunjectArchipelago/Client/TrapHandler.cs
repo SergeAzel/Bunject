@@ -65,7 +65,7 @@ namespace Bunject.Archipelago.Client
 
     private bool IsSafeToTrap()
     {
-      return (GeneralInputManager.CanGoBackToSurface)
+      return (PauseItem.BackToSurface.IsAvailableInContext())
         && (!GameManager.PauseController.IsPaused);
     }
 

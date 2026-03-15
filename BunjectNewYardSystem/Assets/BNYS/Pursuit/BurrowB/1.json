@@ -1,9 +1,9 @@
 {
-    "Name": "Big Fishy",
-    "Tools":
-    {
-        "Traps": 1
-    },
-    "IsTemple": false,
-    "IsHell": false
+  "Name": "Big Fishy",
+  "Tools": {
+    "Traps": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 9, 4 ]
 }

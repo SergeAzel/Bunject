@@ -1,12 +1,12 @@
 {
-    "Name": "Circuit Breaker",
-    "Tools":
-    {
-        "Traps": 0,
-        "Pickaxes": 5,
-        "Carrots": 0,
-        "Shovels": 0
-    },
-    "IsTemple": false,
-    "IsHell": false
+  "Name": "Circuit Breaker",
+  "Tools": {
+    "Traps": 0,
+    "Pickaxes": 5,
+    "Carrots": 0,
+    "Shovels": 0
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 12, 6 ]
 }

@@ -1,9 +1,9 @@
 {
-    "Name": "Fiddly Little Buns",
-    "Tools":
-    {
-        "Pickaxes": 1
-    },
-    "IsTemple": false,
-    "IsHell": false 
+  "Name": "Fiddly Little Buns",
+  "Tools": {
+    "Pickaxes": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 6, 4 ]
 }

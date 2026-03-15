@@ -153,6 +153,8 @@ namespace Bunject.NewYardSystem
         progression.HandleBunburrowSignsDiscovery();
         progression.HandleBackToSurfaceUnlock();
         progression.HandleOphelinePortableComputerUnlock();
+        progression.HandleMapUnlock();
+        progression.HandleTeleportAnywhereUnlock();
       }
     }
 

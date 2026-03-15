@@ -126,5 +126,10 @@ namespace Bunject.Levels
       get { return base.Solutions; }
       set { Traverse.Field<List<Solution>>("solutions").Value = new List<Solution>(value); }
     }
+    public new Vector2Int TeleportPosition
+    {
+      get { return base.TeleportPosition; }
+      set { Traverse.Field<Vector2Int>("teleportPosition").Value = value; }
+    }
   }
 }

@@ -1,9 +1,10 @@
 {
-    "Name": "Cauldron",
-    "Style": "Hell",
-    "Tools": {
-        "Pickaxes": 1
-    },
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "Cauldron",
+  "Style": "Hell",
+  "Tools": {
+    "Pickaxes": 1
+  },
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 4, 6 ]
 }
