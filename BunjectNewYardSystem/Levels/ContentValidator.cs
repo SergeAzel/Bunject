@@ -25,7 +25,7 @@ namespace Bunject.NewYardSystem.Levels
      *   F - Fake bunny at start of game
      *   Y - SPOILERS
      */
-    private const string RESTRICTED_TILES = @"^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)}$";
+    private const string RESTRICTED_TILES = @"^(F|D[0-9]+|P[0-9]+|N[0-9]+|Oph|X|C|PU|A|Y(?:{.*})?)|T\{\.*[PS].*\}$";
     private static readonly Regex restrictedTileRegex = new Regex(RESTRICTED_TILES);
 
     public static List<LevelValidationError> ValidateLevelContent(string content)
