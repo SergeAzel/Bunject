@@ -120,5 +120,11 @@ namespace Bunject.Levels
       get { return base.SideLevels; }
       set { Traverse.Field<DirectionsListOf<LevelObject>>("sideLevels").Value = value; }
     }
+
+    public new Vector2Int TeleportPosition
+    {
+      get { return base.TeleportPosition; }
+      set { Traverse.Field<Vector2Int>("teleportPosition").Value = value; }
+    }
   }
 }
