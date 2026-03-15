@@ -13,8 +13,9 @@ namespace Bunject.Patches
     // Return a release path for custom burrows
     private static bool Prefix(ref List<Vector2Int> __result, Bunburrow bunburrow)
     { 
-      if ((int)bunburrow < BunburrowManager.CustomBunburrowThreshold)
+      if (!bunburrow.IsCustomBunburrow())
         return true;
+
       var mod = bunburrow.GetModBunburrow();
       __result = mod.GetReleasePath() ?? new List<Vector2Int>();
       return false;
