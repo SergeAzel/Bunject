@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Computer;
+using Bunject.Internal;
 using Bunject.Map;
 using Characters.Bunny.Data;
 using Computer;
@@ -24,14 +25,12 @@ namespace Bunject.Patches.OphelineComputerMapTabControllerPatches
   {
     internal static void Prefix()
     {
+      MapContext.Instance?.Dispose();
+
       var currentBurrow = GameManager.LevelStates.CurrentLevelState?.LevelIdentity.Bunburrow;
-      if (currentBurrow.HasValue)
+      if (currentBurrow.HasValue && currentBurrow.Value.IsCustomBunburrow())
       {
         new MapContext(currentBurrow.Value);
-      }
-      else
-      {
-        MapContext.Instance?.Dispose();
       }
     }
   }
