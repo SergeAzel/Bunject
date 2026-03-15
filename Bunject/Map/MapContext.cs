@@ -16,6 +16,11 @@ using UnityEngine.Analytics;
 
 namespace Bunject.Map
 {
+  /// <summary>
+  ///  Map Context is created every time the player opens the map
+  ///  It holds all the details that map rendering needs to render custom bunburrow maps
+  ///  Please forgive the Enumerable hacks, they are there so that the map renderer can make the correct location/level/map correlations.
+  /// </summary>
   internal class MapContext : IDisposable, IEnumerable<Bunburrows.Bunburrow>
   {
     public static MapContext Instance { get; private set; }
