@@ -1,11 +1,11 @@
 {
-    "Name": "Graveyard",
-    "Style": "Spooky",
-    "Tools": 
-    {
-        "Pickaxes": 1,
-        "Shovels": 1
-    },
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "Graveyard",
+  "Style": "Spooky",
+  "Tools": {
+    "Pickaxes": 1,
+    "Shovels": 1
+  },
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 7, 0 ]
 }

@@ -1,6 +1,7 @@
 {
-    "Name": "This Is How It Is",
-    "Style": "Hell",
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "This Is How It Is",
+  "Style": "Hell",
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 7, 2 ]
 }

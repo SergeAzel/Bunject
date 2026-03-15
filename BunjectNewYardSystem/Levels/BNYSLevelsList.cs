@@ -96,6 +96,7 @@ namespace Bunject.NewYardSystem.Levels
       levelObject.IsHell = levelConfig.IsHell;
 
       levelObject.Content = levelConfig.Content;
+      levelObject.TeleportPosition = levelConfig.ToTeleportPosition();
     }
   }
 }
