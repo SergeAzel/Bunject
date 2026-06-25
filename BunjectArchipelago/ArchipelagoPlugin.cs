@@ -208,13 +208,12 @@ namespace Bunject.Archipelago
       levelItemObjects[firstItem].SetActive(true);
     }
 
-    /*
-    public void GenerateTabs(ComputerTabManager manager)
+    public void GeneratePages(ComputerExtraButtonBehavior manager)
     {
       if (ArchipelagoClient != null)
       {
-        var computerTab = manager.CreateTab<ProgressComputerTab>();
+        //var computerTab = manager.CreateTab<ProgressComputerPage>();
       }
-    }*/
+    }
   }
 }

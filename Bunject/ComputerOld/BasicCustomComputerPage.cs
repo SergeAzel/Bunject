@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Bunject.Computer
 {
-  public abstract class BasicCustomComputerTab : CustomComputerTab
+  public abstract class BasicCustomComputerPage : CustomComputerTab
   {
     public abstract string GetSpecialText();
 

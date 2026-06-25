@@ -41,7 +41,7 @@ namespace Bunject
 
     internal static IEnumerable<IMenuSource> MenuOptions { get => Instance.bunjectors.OfType<IMenuSource>(); }
 
-    //internal static IEnumerable<IComputerTabSource> ComputerTabSources { get => Instance.bunjectors.OfType<IComputerTabSource>(); }
+    internal static IEnumerable<IComputerPageSource> ComputerTabSources { get => Instance.bunjectors.OfType<IComputerPageSource>(); }
 
     public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {

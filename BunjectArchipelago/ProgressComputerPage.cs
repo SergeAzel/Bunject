@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Bunject.Archipelago
 {
-  internal class ProgressComputerTab : BasicCustomComputerTab
+  internal class ProgressComputerPage : BasicCustomComputerPage
   {
-    public override string Title => "Arch";
+    public override string ButtonText => "Arch";
 
     private ArchipelagoClient client => ArchipelagoPlugin.Instance.ArchipelagoClient;
 

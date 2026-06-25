@@ -150,13 +150,12 @@ namespace Bunject.Internal
     #endregion
 
     #region IComputerTabSource
-    public void GenerateTabs(/*ComputerTabManager manager*/)
+    public void GeneratePages(ICustomPageGenerator pageGen)
     {
-      /*
       foreach (var bunjector in BunjectAPI.ComputerTabSources)
       {
-        bunjector.GenerateTabs(manager);
-      }*/
+        bunjector.GeneratePages(pageGen);
+      }
     }
     #endregion
   }

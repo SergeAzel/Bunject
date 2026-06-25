@@ -30,7 +30,7 @@ namespace Bunject.Computer
       traverse.Field<TextMeshProUGUI>("tabTitle").Value.UpdateFontData();
     }
 
-    public abstract string Title
+    public abstract string ButtonText
     {
       get;
     }

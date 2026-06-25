@@ -11,12 +11,12 @@ using UnityEngine.UIElements;
 
 namespace Bunject.NewYardSystem.Computer
 {
-  internal class CreditsTab : BasicCustomComputerTab
+  internal class CreditsTab : BasicCustomComputerPage
   {
     // Set on creation in BNYSPlugin.cs
     public CustomWorld World { get; set; }
 
-    public override string Title => "CRED";
+    public override string ButtonText => "CRED";
 
     private string content = null;
 

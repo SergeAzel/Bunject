@@ -51,5 +51,10 @@ namespace Bunject.Archipelago.Utils
     {
       return null;
     }
+
+    public List<Vector2Int> GetReleasePath()
+    {
+      return null;
+    }
   }
 }
