@@ -1,5 +1,7 @@
-﻿using Bunject.Levels;
+﻿using Bunject.Dialogue;
+using Bunject.Levels;
 using Bunject.NewYardSystem.Utility;
+using Dialogue;
 using Levels;
 using Newtonsoft.Json;
 using System;
@@ -60,6 +62,10 @@ namespace Bunject.NewYardSystem.Model
         return new Vector2Int(TeleportX.Value, TeleportY.Value);
       return new Vector2Int(-1, -1);
     }
+
+    public List<LevelDialogue> Dialogues { get; set; } = new List<LevelDialogue>();
+    public List<LevelNPCDialogue> OphelineDialogues { get; set; } = new List<LevelNPCDialogue>();
+    public List<LevelNPCDialogue> HerbeDialogues { get; set; } = new List<LevelNPCDialogue>();
   }
 
   public class LevelTools
@@ -96,5 +102,79 @@ namespace Bunject.NewYardSystem.Model
     public int PositionX { get; set; }
     public int PositionY { get; set; }
     public Misc.Direction Orientation { get; set; } = Misc.Direction.Down;
+  }
+  
+  public class LevelDialogue
+  {
+    public List<CustomDialogueLine> Lines { get; set; }
+
+    public bool RequiresBunnyToPassBeforePlaying { get; set; }
+
+    public bool RequiresNoBunnyCaptureThisLevel { get; set; }
+
+    public bool RequiresSpecificEntryDirection { get; set; }
+    public Misc.Direction SpecificEntryDirection { get; set; } = Misc.Direction.Down;
+
+    public bool RequiresBunnyAtSpecificRelativePosition { get; set; }
+    public List<int[]> SpecificBunnyRelativePositions { get; set; }
+
+    public bool ShouldForceTurnPaqueretteAtStart { get; set; }
+    public Misc.Direction ForceTurnPaqueretteDirection { get; set; }
+
+    // Need this ugly workaround so CustomDialogueObjects can be instantiated properly
+    public CustomDialogueObject ConvertToCustomDialogueObject()
+    {
+      CustomDialogueObject result = (CustomDialogueObject)ScriptableObject.CreateInstance(typeof(CustomDialogueObject));
+      if (this.Lines != null)
+      {
+        result.DialogueLines = this.Lines.ConvertAll(line => (DialogueLine)line);
+      }
+      result.RequiresBunnyToPassBeforePlaying = this.RequiresBunnyToPassBeforePlaying;
+      result.RequiresNoBunnyCaptureThisLevel = this.RequiresNoBunnyCaptureThisLevel;
+      result.RequiresSpecificEntryDirection = this.RequiresSpecificEntryDirection;
+      result.SpecificEntryDirection = this.SpecificEntryDirection;
+      result.RequiresBunnyAtSpecificRelativePosition = this.RequiresBunnyAtSpecificRelativePosition;
+      result.SpecificBunnyRelativePositions = new List<Vector2Int>();
+      if (this.SpecificBunnyRelativePositions != null && this.SpecificBunnyRelativePositions.Count > 0)
+      {
+        foreach (int[] specificBunnyRelativePosition in this.SpecificBunnyRelativePositions)
+        {
+          if (specificBunnyRelativePosition.Length > 1)
+          {
+            result.SpecificBunnyRelativePositions.Add(new Vector2Int(specificBunnyRelativePosition[0], specificBunnyRelativePosition[1]));
+          }
+        }
+      }
+      result.ShouldForceTurnPaqueretteAtStart = this.ShouldForceTurnPaqueretteAtStart;
+      result.ForceTurnPaqueretteDirection = this.ForceTurnPaqueretteDirection;
+      return result;
+    }
+  }
+
+  public class LevelNPCDialogue
+  {
+    public string Name { get; set; } = "";
+    public List<CustomDialogueLine> Lines { get; set; }
+
+    public int RequiredCaptures { get; set; } = 0;
+    public int RequiredBabies { get; set; } = 0;
+    public int RequiredHomeCaptures { get; set; } = 0;
+
+    public bool ShouldOnlyPlayOnce { get; set; } = false;
+
+    public NPCDialogueObject ConvertToNPCDialogueObject()
+    {
+      NPCDialogueObject result = (NPCDialogueObject)ScriptableObject.CreateInstance(typeof(NPCDialogueObject));
+      result.name = "BNYS::" + this.Name;
+      if (this.Lines != null)
+      {
+        result.DialogueLines = this.Lines.ConvertAll(line => (DialogueLine)line);
+      }
+      result.RequiredCaptures = this.RequiredCaptures;
+      result.RequiredBabies = this.RequiredBabies;
+      result.RequiredHomeCaptures = this.RequiredHomeCaptures;
+      result.ShouldOnlyPlayOnce = this.ShouldOnlyPlayOnce;
+      return result;
+    }
   }
 }

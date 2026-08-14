@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Levels;
 using HarmonyLib;
 using Levels;
 using Misc;
@@ -73,6 +74,69 @@ namespace Bunject.Patches.LevelBuilderPatches
               detectionStage = 4;
             }
             continue;
+        }
+
+        yield return instruction;
+      }
+    }
+  }
+  
+  // Make Herbe and Opheline always spawn in custom levels
+  [HarmonyPatch(typeof(LevelBuilder), "BuildNewLevel", typeof(LevelObject), typeof(BunburrowStyle), typeof(bool))]
+  internal class BuildNewLevelPatch_ModifyNPCSpawnConditions
+  {
+    static MethodInfo getMadeIntroBunnyFlee = typeof(GeneralProgression).GetProperty("MadeIntroBunnyFlee").GetGetMethod();
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+      int stage = 0;
+      foreach (var instruction in instructions)
+      {
+        switch (stage)
+        {
+          // finding opheline spawn conditions
+          // look for an ldarg.2 that comes after the fake bunny spawning code
+          case 0:
+            if (instruction.Calls(getMadeIntroBunnyFlee))
+            {
+              stage++;
+            }
+            break;
+
+          case 1:
+            if (instruction.opcode == OpCodes.Ldarg_2)
+            {
+              stage++;
+            }
+            break;
+          
+          // from here make opheline spawn if the currently loaded level is custom
+          case 2:
+            yield return instruction;
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Isinst, typeof(ModLevelObject));
+            yield return new CodeInstruction(OpCodes.Brtrue_S, instruction.operand);
+
+            stage++;
+            continue;
+          
+          // herbe spawn conditions
+          // look for another ldarg.2
+          case 3:
+            if (instruction.opcode == OpCodes.Ldarg_2)
+            {
+              stage++;
+            }
+            break;
+          
+          // make herbe spawn if the currently loaded level is custom
+          case 4:
+            yield return instruction;
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Isinst, typeof(ModLevelObject));
+            yield return new CodeInstruction(OpCodes.Brtrue_S, instruction.operand);
+
+            stage++;  
+            continue;        
         }
 
         yield return instruction;

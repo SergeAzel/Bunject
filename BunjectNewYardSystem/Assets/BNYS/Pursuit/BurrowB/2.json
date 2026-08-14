@@ -11,5 +11,37 @@
       "Position": [ 2, 4 ],
       "Orientation": "Down"
     }
+  ],
+  "Dialogues": [
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Aha! Got you!!"
+        }
+      ],
+      "RequiresBunnyToPassBeforePlaying": true,
+      "RequiresNoBunnyCaptureThisLevel": true,
+      "RequiresSpecificEntryDirection": true,
+      "SpecificEntryDirection": "Right",
+      "RequiresBunnyAtSpecificRelativePosition": true,
+      "SpecificBunnyRelativePositions": [ [ 3, 0 ] ]
+    },
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSad",
+          "Content": "...or not"
+        }
+      ],
+      "RequiresNoBunnyCaptureThisLevel": true,
+      "RequiresSpecificEntryDirection": true,
+      "SpecificEntryDirection": "Left",
+      "RequiresBunnyAtSpecificRelativePosition": true,
+      "SpecificBunnyRelativePositions": [
+        [ 0, -2 ],
+        [ 0, 2 ]
+      ]
+    }
   ]
 }
