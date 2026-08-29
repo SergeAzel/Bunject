@@ -155,6 +155,7 @@ namespace Bunject.NewYardSystem
         progression.HandleOphelinePortableComputerUnlock();
         progression.HandleMapUnlock();
         progression.HandleTeleportAnywhereUnlock();
+        progression.HandleSeenBootAnimation();
       }
     }
 
