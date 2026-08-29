@@ -41,27 +41,26 @@ namespace Bunject.Patches.ChoiceSelectorPatches
 
 		private static void Infix(ChoiceSelector @this)
 		{
-			var elevators = new List<ChoiceObject>();
-			var levels = new List<LevelIdentity>();
+			var elevators = new List<(LevelIdentity identity, ChoiceObject dialogue)>();
 			foreach (var elevator in GameManager.GeneralProgression.UnlockedElevators)
 			{
 				if (ElevatorManager.IsElevatorUnlock(elevator, out var l))
 				{
-					levels.Add(l);
-					elevators.Add(new ChoiceObject(elevator, elevator, false));
+					elevators.Add((l, new ChoiceObject(elevator, elevator, false)));
 				}
 			}
-			IReadOnlyList<ChoiceObject> readOnlyList = elevators;
+			elevators.Sort((x, y) => x.identity.CompareTo(y.identity));
+			IReadOnlyList<(LevelIdentity identity, ChoiceObject dialogue)> readOnlyList = elevators;
 			var traverse = Traverse.Create(@this);
 			var choicesLineControllers = traverse.Field<List<ChoiceLineController>>("choicesLineControllers").Value;
 			var contentRectTransform = traverse.Field<RectTransform>("contentRectTransform").Value;
 			for (int i = 0; i < readOnlyList.Count; i++)
 			{
-				LevelIdentity levelIdentity = levels[i];
+				LevelIdentity levelIdentity = readOnlyList[i].identity;
 				BunburrowStyle levelBunburrowStyle = LevelIndicatorGenerator.GetLevelBunburrowStyle(levelIdentity);
 				var component = UnityEngine.Object.Instantiate(AssetsManager.ChoiceLinePrefab, contentRectTransform).GetComponent<ChoiceLineController>();
 				choicesLineControllers.Add(component);
-				component.Init(readOnlyList[i], LevelIndicatorGenerator.GetShortLevelIndicator(levelIdentity));
+				component.Init(readOnlyList[i].dialogue, LevelIndicatorGenerator.GetShortLevelIndicator(levelIdentity));
 				component.UpdateStyle(Color.black, levelBunburrowStyle.SkyboxColor, levelBunburrowStyle.UIWhiteColor, levelBunburrowStyle.ButtonDefaultColor, levelBunburrowStyle.FlowerSprite);
 			}
 		}
