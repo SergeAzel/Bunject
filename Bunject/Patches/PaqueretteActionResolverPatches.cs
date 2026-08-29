@@ -49,4 +49,13 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
       targetBurrow = bunburrow;
     }
   }
+
+  [HarmonyPatch(typeof(UIController), nameof(UIController.EndDialogue))]
+  internal class EndDialoguePatches
+  {
+    private static void Postfix()
+    {
+      HandleTalkButtonPressPatches.targetBurrow = null;
+    }
+  }
 }

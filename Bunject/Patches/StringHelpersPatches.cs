@@ -1,43 +1,52 @@
-using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Bunburrows;
 using Bunject.Patches.PaqueretteActionResolverPatches;
 using Misc;
 using HarmonyLib;
-using UnityEngine;
 
 namespace Bunject.Patches.StringHelpersPatches
 {
+  [HarmonyPatch(typeof(StringHelpers), "ReplaceVariables")]
+  internal class ReplaceVariablesPatch
+  {
+    private static readonly Regex VariablePattern = new Regex("\\$[\\w_-]+");
 
-    [HarmonyPatch(typeof(StringHelpers), "ReplaceVariables")]
-    internal class ReplaceVariablesPatch
+    private static void Prefix(ref string text)
     {
-        static void Prefix(ref string text)
-        {
-            // Fix burrow sign dialogue to not be dependent on the burrow style
-            if (HandleTalkButtonPressPatches.targetBurrow != null)
-            {
-                Bunburrow bunburrow = (Bunburrow)HandleTalkButtonPressPatches.targetBurrow;
-                BunniesCount bunniesCount = GameManager.GeneralProgression.GetBunniesCountByBunburrow(bunburrow);
+      if (HandleTalkButtonPressPatches.targetBurrow == null)
+        return;
 
-                string result = new Regex("\\$[\\w_-]+").Replace(text, delegate(Match match)
-                {
-                    string thingToReplace = match.Value.Substring(1, match.Value.Length - 1);
-                    switch (thingToReplace)
-                    {
-                        case "bunburrowProgress":
-					        return bunniesCount.RegularBunniesCount.ToString();
-                        case "bunburrowExtraProgress":
-                            return Traverse.Create(typeof(StringHelpers)).Method("CreateAdditionalProgressLine", bunburrow).GetValue<string>();
-                        case "bunburrowTotal":
-                        	return bunniesCount.RegularBunniesTotal.ToString();
-                        default:
-                            return "$" + thingToReplace;
-                    }
-                });
-                text = result;
-            }
+      Bunburrow bunburrow = (Bunburrow)HandleTalkButtonPressPatches.targetBurrow;
+
+      bool haveCount = false;
+      BunniesCount count = default(BunniesCount);
+      BunniesCount GetCount()
+      {
+        if (!haveCount)
+        {
+          count = GameManager.GeneralProgression.GetBunniesCountByBunburrow(bunburrow);
+          haveCount = true;
         }
+        return count;
+      }
+
+      text = VariablePattern.Replace(text, match =>
+      {
+        string token = match.Value.Substring(1);
+        switch (token)
+        {
+          case "bunburrowProgress":
+            return GetCount().RegularBunniesCount.ToString();
+          case "bunburrowTotal":
+            return GetCount().RegularBunniesTotal.ToString();
+          case "bunburrowRequirement":
+            return GameManager.GeneralProgression.BunburrowsUnlockRequirements[bunburrow].ToString();
+          case "bunburrowExtraProgress":
+            return Traverse.Create(typeof(StringHelpers)).Method("CreateAdditionalProgressLine", bunburrow).GetValue<string>();
+          default:
+            return match.Value;
+        }
+      });
     }
+  }
 }
