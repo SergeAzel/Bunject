@@ -7,9 +7,27 @@ using UnityEngine;
 
 namespace Bunject.Utility
 {
+  // Keeping these in case I need them again later
   internal class DebugUtil
   {
-    public static void WholeThing(GameObject obj)
+    public static void Trace(string message)
+    {
+      Debug.Log($"[Bunject.Computer] {message}");
+    }
+
+    public static void DumpHierarchy(GameObject obj)
+    {
+      try
+      {
+        WholeThing(obj);
+      }
+      catch (Exception e)
+      {
+        Debug.LogException(e);
+      }
+    }
+
+    private static void WholeThing(GameObject obj)
     {
       Debug.Log($"Game Object: {obj.name}  << {obj.GetType().Name} >>");
 

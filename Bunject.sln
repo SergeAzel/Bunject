@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveFileCleanup", "SaveFileCleanup\SaveFileCleanup.csproj", "{6B731D4E-5683-4DD6-BBCA-B35D67097EEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunjectNewYardSystem", "BunjectNewYardSystem\BunjectNewYardSystem.csproj", "{72607052-293C-42FA-B044-AED2841C5102}"
+	ProjectSection(ProjectDependencies) = postProject
+		{300A3868-0337-B32B-8D08-9D9DDC09DB3D} = {300A3868-0337-B32B-8D08-9D9DDC09DB3D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunjectExtractor", "BunjectExtractor\BunjectExtractor.csproj", "{D5CA964C-FCB6-499B-831D-2C7C50792310}"
 EndProject

@@ -1,4 +1,5 @@
 ﻿using Bunject.Computer;
+using Bunject.Utility;
 using Characters.Bunny.Data;
 using Computer.Opheline;
 using Computer.Opheline.Tabs;
@@ -20,11 +21,11 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
   {
     internal static void Postfix(OphelineComputerCanvasController __instance)
     {
-      if (__instance.gameObject.GetComponent<CustomComputerTabsListBehavior>() == null)
+      if (__instance.gameObject.GetComponent<CustomComputerPagesListBehavior>() == null)
       {
         var tabs = Traverse.Create(__instance).Field<OphelineComputerTabsList>("ophelineComputerTabsList").Value;
-        var customTabs = __instance.gameObject.AddComponent<CustomComputerTabsListBehavior>();
-        customTabs.Initialize(tabs);
+        var customPages = __instance.gameObject.AddComponent<CustomComputerPagesListBehavior>();
+        customPages.Initialize(tabs);
       }
     }
   }
@@ -37,7 +38,7 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
       var codeMatcher = new CodeMatcher(instructions);
 
       codeMatcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, typeof(OphelineComputerTabsList).GetProperties().Single(p => p.GetIndexParameters().Length > 0).GetMethod))
-        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0), Transpilers.EmitDelegate<Func<OphelineComputerTabsList, OphelineComputerTab, OphelineComputerCanvasController, OphelineComputerTabController>>(IndexExtendedTabs))
+        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0), Transpilers.EmitDelegate<Func<OphelineComputerTabsList, OphelineComputerTab, OphelineComputerCanvasController, OphelineComputerTabController>>(IndexExtendedPages))
         .RemoveInstruction();
 
       var instructionlist = codeMatcher.InstructionEnumeration().ToList();
@@ -52,11 +53,10 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
       //Emtpy - populated with private method contents
     }
 
-    private static OphelineComputerTabController IndexExtendedTabs(OphelineComputerTabsList list, OphelineComputerTab tab, OphelineComputerCanvasController canvasController)
+    private static OphelineComputerTabController IndexExtendedPages(OphelineComputerTabsList list, OphelineComputerTab tab, OphelineComputerCanvasController canvasController)
     {
-      Debug.Log("We made it!");
-      var tabList = canvasController.gameObject.GetComponent<CustomComputerTabsListBehavior>();
-      return tabList.GetByIndex(tab);
+      var pageList = canvasController.gameObject.GetComponent<CustomComputerPagesListBehavior>();
+      return pageList.GetByIndex(tab);
     }
   }
 
@@ -68,7 +68,7 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
       var codeMatcher = new CodeMatcher(instructions);
 
       codeMatcher.MatchForward(false, new CodeMatch(OpCodes.Callvirt, typeof(OphelineComputerTabsList).GetMethod(nameof(OphelineComputerTabsList.GetEnumerator))))
-        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0), Transpilers.EmitDelegate<Func<OphelineComputerTabsList, OphelineComputerCanvasController, IEnumerator<OphelineComputerTabController>>>(GetExtendedTabs))
+        .InsertAndAdvance(new CodeInstruction(OpCodes.Ldarg_0), Transpilers.EmitDelegate<Func<OphelineComputerTabsList, OphelineComputerCanvasController, IEnumerator<OphelineComputerTabController>>>(GetExtendedPages))
         .RemoveInstruction();
 
       var instructionlist = codeMatcher.InstructionEnumeration().ToList();
@@ -76,11 +76,10 @@ namespace Bunject.Patches.OphelineComputerCanvasControllerPatches
       return instructionlist;
     }
 
-    private static IEnumerator<OphelineComputerTabController> GetExtendedTabs(OphelineComputerTabsList list, OphelineComputerCanvasController canvasController)
+    private static IEnumerator<OphelineComputerTabController> GetExtendedPages(OphelineComputerTabsList list, OphelineComputerCanvasController canvasController)
     {
-      Debug.Log("We made it Two!");
-      var tabList = canvasController.gameObject.GetComponent<CustomComputerTabsListBehavior>();
-      return tabList.GetTabControllers().GetEnumerator();
+      var pageList = canvasController.gameObject.GetComponent<CustomComputerPagesListBehavior>();
+      return pageList.GetPageControllers().GetEnumerator();
     }
   }
 }

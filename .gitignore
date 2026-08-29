@@ -10,6 +10,9 @@ Deploy/**
 # dlls
 *.dll
 
+# Generated per-machine launch profile (see BuildPath.props + GenerateGameLaunchSettings target)
+**/Properties/launchSettings.json
+
 # User-specific files
 *.rsuser
 *.suo

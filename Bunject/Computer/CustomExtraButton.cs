@@ -12,13 +12,16 @@ namespace Bunject.Computer
 {
   public class CustomExtraButton
   {
-    public CustomExtraButton(OphelineComputerOptionsTabController tabController, string buttonName, string buttonText, Action onClick)
+    public CustomExtraButton(OphelineComputerOptionsTabController optionsController, BasicCustomComputerPageController page, Action onClick)
     {
-      Debug.Log($"New Custom Extra Button Construction begins: {buttonName} - '{buttonText}'");
+      Page = page;
+      var buttonName = page.ButtonName;
+      var buttonText = page.ButtonText;
+
       ChildObject = new GameObject(buttonName);
 
       // Steal the back button for templating purposes
-      var template = Traverse.Create(tabController).Field<TextMeshProUGUI>("backTextComponent").Value.gameObject;
+      var template = Traverse.Create(optionsController).Field<TextMeshProUGUI>("backTextComponent").Value.gameObject;
       var templateStyle = template.GetComponent<MenuButtonStyleController>();
 
       ChildObject.transform.parent = template.transform.parent;
@@ -63,6 +66,8 @@ namespace Bunject.Computer
       toTraverse.Field<Color>(selectedColor).Value = fromTraverse.Field<Color>(selectedColor).Value;
       toTraverse.Field<Color>(disabledColor).Value = fromTraverse.Field<Color>(disabledColor).Value;
     }
+
+    public BasicCustomComputerPageController Page { get; private set; }
 
     public GameObject ChildObject { get; private set; }
 

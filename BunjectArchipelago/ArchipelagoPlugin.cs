@@ -24,7 +24,7 @@ using UnityEngine;
 namespace Bunject.Archipelago
 {
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor //, IComputerTabSource
+  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor, IComputerPageSource
   {
     static ArchipelagoPlugin()
     {
@@ -208,11 +208,11 @@ namespace Bunject.Archipelago
       levelItemObjects[firstItem].SetActive(true);
     }
 
-    public void GeneratePages(ComputerExtraButtonBehavior manager)
+    public void GeneratePages(ICustomPageGenerator pageMaker)
     {
       if (ArchipelagoClient != null)
       {
-        //var computerTab = manager.CreateTab<ProgressComputerPage>();
+        pageMaker.CreateComputerPage<ProgressComputerPage>();
       }
     }
   }

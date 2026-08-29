@@ -10,9 +10,13 @@ using System.Threading.Tasks;
 
 namespace Bunject.Archipelago
 {
-  internal class ProgressComputerPage : BasicCustomComputerPage
+  internal class ProgressComputerPage : BasicCustomComputerPageController
   {
+    public override string ButtonName => "ArchProgress";
     public override string ButtonText => "Arch";
+
+    protected override string HeaderText => GetSpecialText();
+    protected override string ContentText => GetContentText();
 
     private ArchipelagoClient client => ArchipelagoPlugin.Instance.ArchipelagoClient;
 
@@ -21,7 +25,7 @@ namespace Bunject.Archipelago
       return client != null;
     }
 
-    public override string GetContentText()
+    private string GetContentText()
     {
       if (client != null)
       {
@@ -66,7 +70,7 @@ namespace Bunject.Archipelago
       return "     ";
     }
 
-    public override string GetSpecialText()
+    private string GetSpecialText()
     {
       if (client != null)
       {

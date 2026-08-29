@@ -1,6 +1,6 @@
-﻿using Bunject.Patches.OphelineComputerCanvasControllerPatches;
 using Computer.Opheline;
 using Computer.Opheline.Tabs;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +10,23 @@ using UnityEngine;
 namespace Bunject.Computer
 {
   // Gets applied to OphelineComputerOptionsTabController (the Extras menu)
-  // Relies upon CustomComputerTabsListBehavior to have our custom tabs pre-collected
+  // Relies upon CustomComputerPagesListBehavior to have our custom pages pre-collected
   public class ComputerExtraButtonBehavior : MonoBehaviour
   {
     private void Awake()
     {
       var canvasController = GetComponentInParent<OphelineComputerCanvasController>();
-      var parent = GetComponentInParent<CustomComputerTabsListBehavior>();
+      var parent = GetComponentInParent<CustomComputerPagesListBehavior>();
       var controller = GetComponent<OphelineComputerOptionsTabController>();
 
-      Buttons = parent.CustomTabs.Select(ct => new CustomExtraButton(controller, ct.ButtonName, ct.ButtonText, () =>
+      Buttons = parent.CustomPages.Select(page => new CustomExtraButton(controller, page, () =>
       {
-        SwitchTab.Invoke(canvasController, parent.GetCustomControllerIndex(ct), false);
+        var index = parent.GetCustomControllerIndex(page);
+
+        Traverse.Create(canvasController).Method("SwitchTab", index, false).GetValue();
       })).ToList();
     }
 
-    public IEnumerable<CustomExtraButton> Buttons { get; private set; }
+    public IReadOnlyList<CustomExtraButton> Buttons { get; private set; }
   }
 }

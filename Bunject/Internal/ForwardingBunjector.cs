@@ -18,7 +18,7 @@ using static UnityEngine.UI.Image;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource //, IComputerTabSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource //, IComputerPageSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -149,12 +149,20 @@ namespace Bunject.Internal
     }
     #endregion
 
-    #region IComputerTabSource
+    #region IComputerPageSource
     public void GeneratePages(ICustomPageGenerator pageGen)
     {
-      foreach (var bunjector in BunjectAPI.ComputerTabSources)
+      foreach (var bunjector in BunjectAPI.ComputerPageSources)
       {
-        bunjector.GeneratePages(pageGen);
+        try
+        {
+          bunjector.GeneratePages(pageGen);
+        }
+        catch (Exception e)
+        {
+          UnityEngine.Debug.LogError($"[Bunject] Computer page source '{bunjector.GetType().FullName}' threw during GeneratePages and was skipped.");
+          UnityEngine.Debug.LogException(e);
+        }
       }
     }
     #endregion

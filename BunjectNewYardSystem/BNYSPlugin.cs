@@ -39,7 +39,7 @@ using static UnityEngine.ParticleSystem;
 namespace Bunject.NewYardSystem
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource //, IComputerTabSource
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource, IComputerPageSource
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
@@ -579,17 +579,17 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    /*
-    public void GenerateTabs(ComputerTabManager manager)
+    #endregion
+
+    #region IComputerPageSource implementation
+    public void GeneratePages(ICustomPageGenerator pageMaker)
     {
       if (CurrentCustomWorld != null)
       {
-        var creditsTab = manager.CreateTab<CreditsTab>();
-
-        creditsTab.World = CurrentCustomWorld;
+        var creditsPage = pageMaker.CreateComputerPage<CreditsPage>();
+        creditsPage.World = CurrentCustomWorld;
       }
-    }*/
-
+    }
     #endregion
   }
 }
