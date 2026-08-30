@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using Bunburrows;
 using Bunject.Internal;
+using Bunject.Levels;
 using Bunject.Patches.PaqueretteActionResolverPatches;
 using Misc;
 using HarmonyLib;
@@ -55,27 +58,28 @@ namespace Bunject.Patches.StringHelpersPatches
       if (!bunburrow.IsCustomBunburrow())
         return GameManager.GeneralProgression.BunburrowsUnlockRequirements[bunburrow].ToString();
 
-      var mod = bunburrow.GetModBunburrow();
+      var requirements = bunburrow.GetModBunburrow()?.Requirements ?? new BunburrowRequirements();
       var progression = GameManager.GeneralProgression;
-      var bunniesRequired = mod?.RequiredBunnyCount ?? 0;
-      var babiesRequired = mod?.RequiredBabyCount ?? 0;
 
-      var insufficientBunnies = bunniesRequired > 0 && progression.HistoryCapturedBunnies.Count < bunniesRequired;
-      var insufficientBabies = babiesRequired > 0 && progression.ExistingCouples.Count < babiesRequired;
+      var clauses = new List<string>();
+      if (progression.HistoryCapturedBunnies.Count < requirements.Bunnies)
+        clauses.Add(requirements.Bunnies.ToString() + EndColor);
+      if (progression.ExistingCouples.Count < requirements.Babies)
+        clauses.Add(requirements.Babies + EndColor + " baby");
+      if (progression.HomeCapturedBunnies.Count < requirements.HomeCaptures)
+        clauses.Add(requirements.HomeCaptures + EndColor + " home-captured");
+      if (clauses.Count == 0)
+        clauses.Add(requirements.Bunnies.ToString());
 
-      if (insufficientBabies)
+      var builder = new StringBuilder(clauses[0]);
+      for (int i = 1; i < clauses.Count; i++)
       {
-        if (insufficientBunnies)
-        {
-          return bunniesRequired + EndColor + " bunnies and " + BunburrowColor + babiesRequired + EndColor + " baby";
-        }
-        else
-        {
-          return babiesRequired + EndColor + " baby";
-        }
+        builder.Append(" bunnies");
+        builder.Append(i == clauses.Count - 1 ? " and " : ", ");
+        builder.Append(BunburrowColor);
+        builder.Append(clauses[i]);
       }
-
-      return bunniesRequired.ToString();
+      return builder.ToString();
     }
 
     private static string BunburrowColor = "<color=$bunburrowColor>";

@@ -22,9 +22,7 @@ namespace Bunject.Levels
     bool HasSign { get; }
 
     // Minimum counts required to access bunburrow from surface
-    int RequiredBunnyCount { get; }
-
-    int RequiredBabyCount { get; }
+    BunburrowRequirements Requirements { get; }
 
     Vector2Int? OverrideSignCoordinate();
 

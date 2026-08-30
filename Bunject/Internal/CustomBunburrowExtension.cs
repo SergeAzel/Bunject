@@ -29,13 +29,8 @@ namespace Bunject.Internal
     {
       if (bunburrow.IsCustomBunburrow())
       {
-        var mod = bunburrow.GetModBunburrow();
-        var progression = GameManager.GeneralProgression;
-        var bunniesRequired = mod?.RequiredBunnyCount ?? 0;
-        var babiesRequired = mod?.RequiredBabyCount ?? 0;
-
-        return (bunniesRequired <= 0 || progression.HistoryCapturedBunnies.Count >= bunniesRequired)
-            && (babiesRequired <= 0 || progression.ExistingCouples.Count >= babiesRequired);
+        var requirements = bunburrow.GetModBunburrow()?.Requirements;
+        return requirements == null || requirements.AreMet(GameManager.GeneralProgression);
       }
 
       return GameManager.GeneralProgression.BunburrowsUnlockStatus[bunburrow];

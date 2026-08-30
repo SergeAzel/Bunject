@@ -30,8 +30,7 @@ namespace Bunject.Levels
 
     public bool HasEntrance => true;
     public bool HasSign => true;
-    public int RequiredBunnyCount => 0;
-    public int RequiredBabyCount => 0;
+    public BunburrowRequirements Requirements => new BunburrowRequirements();
 
     public Vector2Int? OverrideSignCoordinate()
     {

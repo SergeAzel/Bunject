@@ -35,9 +35,7 @@ namespace Bunject.NewYardSystem.Levels
 
     public bool HasSign => false;
 
-    public int RequiredBunnyCount => 0;
-
-    public int RequiredBabyCount => 0;
+    public BunburrowRequirements Requirements => new BunburrowRequirements();
 
     public Vector2Int? OverrideSignCoordinate()
     {

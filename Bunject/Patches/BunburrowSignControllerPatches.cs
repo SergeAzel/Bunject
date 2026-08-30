@@ -1,16 +1,11 @@
 using Bunburrows;
 using Bunject.Internal;
+using Bunject.Levels;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Bunject.Patches.BunburrowSignControllerPatches
 {
-  // Vanilla UpdateContent only draws the "N required" digits when
-  // BunburrowsUnlockStatus[Bunburrow] is false, a state custom burrows can never reach
-  // (the five-slot BunburrowsListOf falls back to Pink = always unlocked). This mirrors
-  // that presentation for a locked custom burrow, showing the outstanding RequiredBunnyCount
-  // and then, once that is met, the outstanding RequiredBabyCount. There is no icon to tell
-  // the two apart - the sign dialogue carries that meaning.
   [HarmonyPatch(typeof(BunburrowSignController), nameof(BunburrowSignController.UpdateContent))]
   internal class UpdateContentPatch
   {
@@ -20,16 +15,16 @@ namespace Bunject.Patches.BunburrowSignControllerPatches
       if (!bunburrow.IsCustomBunburrow() || bunburrow.IsUnlocked())
         return;
 
-      var mod = bunburrow.GetModBunburrow();
+      var requirements = bunburrow.GetModBunburrow()?.Requirements ?? new BunburrowRequirements();
       var progression = GameManager.GeneralProgression;
-      var bunniesRequired = mod?.RequiredBunnyCount ?? 0;
-      var babiesRequired = mod?.RequiredBabyCount ?? 0;
 
       int displayed;
-      if (bunniesRequired > 0 && progression.HistoryCapturedBunnies.Count < bunniesRequired)
-        displayed = bunniesRequired;
-      else if (babiesRequired > 0 && progression.ExistingCouples.Count < babiesRequired)
-        displayed = babiesRequired;
+      if (progression.HistoryCapturedBunnies.Count < requirements.Bunnies)
+        displayed = requirements.Bunnies;
+      else if (progression.ExistingCouples.Count < requirements.Babies)
+        displayed = requirements.Babies;
+      else if (progression.HomeCapturedBunnies.Count < requirements.HomeCaptures)
+        displayed = requirements.HomeCaptures;
       else
         return;
 
