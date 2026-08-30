@@ -11,5 +11,27 @@
       "Position": [ 2, 5 ],
       "Orientation": "Right"
     }
+  ],
+  "Dialogues": [
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSurprised",
+          "Content": "Oooh!"
+        },
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Very big <color=$bunburrowColor>fishy</color>!"
+        }
+      ],
+      "RequiresBunnyToPassBeforePlaying": false,
+      "RequiresNoBunnyCaptureThisLevel": false,
+      "RequiresSpecificEntryDirection": false,
+      "SpecificEntryDirection": "Right",
+      "RequiresBunnyAtSpecificRelativePositions": false,
+      "SpecificBunnyRelativePositions": [  ],
+      "ShouldForceTurnPaqueretteAtStart": true,
+      "ForceTurnPaqueretteDirection": "Left"
+    }
   ]
 }

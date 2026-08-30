@@ -1,9 +1,9 @@
 W,W,W,W,W,W,W,W,W,W,W,W,W,W,W
 W,W,T,T,T,W,W,W,T,T,T,T,W,W,W
 W,T,T,T,T,T,W,T,T,T,T,T,T,W,W
-W,T,T,T,T,T,T,T,T,T,T,E,T,T,W
-W,W,T,T,T,T,T,T,T{K},S{K},T,T,T,T,W
-W,T,T,T,T,T,T,T,T,T{K},T,T,T,B,W
+W,T,T,T,T,T,T,T,T,T,T,E,D0,T,W
+W,W,T,T,T,T,T,T,T{K},S{K},T,T,D0,T,W
+W,T,T,T,T,T,T,T,T,T{K},T,T,D0,B,W
 W,T,T,T,T,T,W,T,T,T,T,T,T,W,W
 W,W,T,T,T,W,W,W,T,T,T,T,W,W,W
 W,W,W,W,W,W,W,W,W,W,W,W,W,W,W

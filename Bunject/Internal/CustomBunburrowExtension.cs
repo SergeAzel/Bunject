@@ -25,11 +25,6 @@ namespace Bunject.Internal
       return ((int)bunburrow > BunburrowManager.CustomBunburrowThreshold) && BunburrowManager.Bunburrows.Any(x => x.ID == (int)bunburrow);
     }
 
-    // Whether the burrow's entrance is currently open. Core burrows defer to the vanilla
-    // unlock table; custom burrows must satisfy every configured threshold - lifetime
-    // (history) bunny captures and baby (existing couple) count - mirroring the counters
-    // vanilla itself uses for gated unlocks. Both counters only ever grow, so a burrow
-    // that has opened never re-locks.
     public static bool IsUnlocked(this Bunburrows.Bunburrow bunburrow)
     {
       if (bunburrow.IsCustomBunburrow())

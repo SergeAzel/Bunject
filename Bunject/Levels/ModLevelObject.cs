@@ -1,4 +1,5 @@
 ﻿using Bunburrows;
+using Bunject.Dialogue;
 using Dialogue;
 using HarmonyLib;
 using Levels;
@@ -14,12 +15,12 @@ namespace Bunject.Levels
 {
   // Designed to both differentiate between "core" level objects, and mod-created ones
   // Additionally, includes convenience fields for referencing depth and burrow.
-  // Not including Dialogues yet, as we currently have no custom contol over these
+  // There is also limited support for NPCs.
   public class ModLevelObject : LevelObject
   {
     public ModLevelObject()
     {
-      Traverse.Field("dialogues").SetValue(new List<DialogueObject>());
+      this.Dialogues = new List<DialogueObject>();
       Traverse.Field("contextualDialogues").SetValue(new List<ContextualDialogueInfo>());
       SideLevels = new DirectionsListOf<LevelObject>(null, null, null, null);
     }
@@ -31,6 +32,18 @@ namespace Bunject.Levels
     }
 
     public int Depth
+    {
+      get;
+      set;
+    }
+
+    public List<NPCDialogueObject> OphelineDialogues
+    {
+      get;
+      set;
+    }
+
+    public List<NPCDialogueObject> HerbeDialogues
     {
       get;
       set;
@@ -119,6 +132,12 @@ namespace Bunject.Levels
     {
       get { return base.SideLevels; }
       set { Traverse.Field<DirectionsListOf<LevelObject>>("sideLevels").Value = value; }
+    }
+
+    public List<DialogueObject> Dialogues
+    {
+      get { return Traverse.Field<List<DialogueObject>>("dialogues").Value; }
+      set { Traverse.Field<List<DialogueObject>>("dialogues").Value = value; }
     }
 
     public new IReadOnlyList<Solution> Solutions

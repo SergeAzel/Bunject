@@ -135,6 +135,9 @@ namespace Bunject.Patches.GameManagerPatches
         yield return item;
       }
       yield return ElevatorManager.ExtractElevatorProgression();
+      
+      // Load character headshots for dialogues
+      Bunject.Dialogue.HeadshotManager.GetAllHeadshots();
     }
   }
 

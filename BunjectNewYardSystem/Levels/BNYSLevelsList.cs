@@ -1,6 +1,9 @@
-﻿using Bunject.Levels;
+﻿using Bunject.Dialogue;
+using Bunject.Levels;
 using Bunject.NewYardSystem.Model;
+using Dialogue;
 using Levels;
+using Misc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -108,6 +111,25 @@ namespace Bunject.NewYardSystem.Levels
         }).ToList();
 
       levelObject.TeleportPosition = levelConfig.ToTeleportPosition();
+      
+      levelObject.Dialogues = new List<DialogueObject>();
+      levelObject.OphelineDialogues = new List<NPCDialogueObject>();
+      levelObject.HerbeDialogues = new List<NPCDialogueObject>();
+      
+      if (levelConfig.Dialogues != null)
+      {
+        levelObject.Dialogues = levelConfig.Dialogues.ConvertAll(dialogue => (DialogueObject)dialogue.ConvertToCustomDialogueObject());
+      }
+      
+      if (levelConfig.OphelineDialogues != null)
+      {
+        levelObject.OphelineDialogues = levelConfig.OphelineDialogues.ConvertAll(dialogue => dialogue.ConvertToNPCDialogueObject());
+      }
+
+      if (levelConfig.HerbeDialogues != null)
+      {
+        levelObject.HerbeDialogues = levelConfig.HerbeDialogues.ConvertAll(dialogue => dialogue.ConvertToNPCDialogueObject());
+      }
     }
   }
 }
