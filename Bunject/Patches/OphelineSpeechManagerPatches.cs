@@ -18,7 +18,7 @@ namespace Bunject.Patches.OphelineSpeechManagerPatches
             if (currentLevel is ModLevelObject)
             {
                 ModLevelObject modLevel = (ModLevelObject)currentLevel;
-                if (modLevel.OphelineDialogues != null || modLevel.OphelineDialogues.Count == 0)
+                if (modLevel.OphelineDialogues != null && modLevel.OphelineDialogues.Count != 0)
                 {
                     foreach (NPCDialogueObject ophelineDialogue in modLevel.OphelineDialogues)
                     {
@@ -48,7 +48,7 @@ namespace Bunject.Patches.OphelineSpeechManagerPatches
             if (currentLevel is ModLevelObject)
             {
                 ModLevelObject modLevel = (ModLevelObject)currentLevel;
-                if (modLevel.OphelineDialogues != null || modLevel.OphelineDialogues.Count == 0)
+                if (modLevel.OphelineDialogues != null && modLevel.OphelineDialogues.Count != 0)
                 {
                     foreach (NPCDialogueObject ophelineDialogue in modLevel.OphelineDialogues)
                     {

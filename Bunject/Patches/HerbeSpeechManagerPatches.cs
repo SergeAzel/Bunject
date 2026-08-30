@@ -18,7 +18,7 @@ namespace Bunject.Patches.HerbeSpeechManagerPatches
             if (currentLevel is ModLevelObject)
             {
                 ModLevelObject modLevel = (ModLevelObject)currentLevel;
-                if (modLevel.HerbeDialogues != null || modLevel.HerbeDialogues.Count == 0)
+                if (modLevel.HerbeDialogues != null && modLevel.HerbeDialogues.Count != 0)
                 {
                     foreach (NPCDialogueObject herbeDialogue in modLevel.HerbeDialogues)
                     {
@@ -48,7 +48,7 @@ namespace Bunject.Patches.HerbeSpeechManagerPatches
             if (currentLevel is ModLevelObject)
             {
                 ModLevelObject modLevel = (ModLevelObject)currentLevel;
-                if (modLevel.HerbeDialogues != null || modLevel.HerbeDialogues.Count == 0)
+                if (modLevel.HerbeDialogues != null && modLevel.HerbeDialogues.Count != 0)
                 {
                     foreach (NPCDialogueObject herbeDialogue in modLevel.HerbeDialogues)
                     {

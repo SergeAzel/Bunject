@@ -71,8 +71,10 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
         if (paqueretteTile != null)
         {
           TileLevelData facedTile = paqueretteTile.GetAdjacentTile(GameManager.PaqueretteController.FacedDirection);
+          bool facingNpc = false;
           if (GameManager.OphelineController != null && GameManager.OphelineController.CurrentTile == facedTile)
           {
+            facingNpc = true;
             if (GameManager.OphelineController.NextDialogue != null)
             {
               GameManager.OphelineController.StartDialogue(false);
@@ -96,6 +98,7 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
 
           if (GameManager.HerbeController != null && GameManager.HerbeController.CurrentTile == facedTile)
           {
+            facingNpc = true;
             if (GameManager.HerbeController.NextDialogue != null)
             {
               GameManager.HerbeController.StartDialogue(false);
@@ -116,8 +119,10 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
               }
             }
           }
+
+          if (facingNpc)
+            return false;
         }
-        return false;
       }
       return true;
     }
