@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Bunburrows;
+using Bunject.Internal;
 using Bunject.Patches.PaqueretteActionResolverPatches;
 using Misc;
 using HarmonyLib;
@@ -40,7 +41,7 @@ namespace Bunject.Patches.StringHelpersPatches
           case "bunburrowTotal":
             return GetCount().RegularBunniesTotal.ToString();
           case "bunburrowRequirement":
-            return GameManager.GeneralProgression.BunburrowsUnlockRequirements[bunburrow].ToString();
+            return DescribeRequirement(bunburrow);
           case "bunburrowExtraProgress":
             return Traverse.Create(typeof(StringHelpers)).Method("CreateAdditionalProgressLine", bunburrow).GetValue<string>();
           default:
@@ -48,5 +49,36 @@ namespace Bunject.Patches.StringHelpersPatches
         }
       });
     }
+
+    private static string DescribeRequirement(Bunburrow bunburrow)
+    {
+      if (!bunburrow.IsCustomBunburrow())
+        return GameManager.GeneralProgression.BunburrowsUnlockRequirements[bunburrow].ToString();
+
+      var mod = bunburrow.GetModBunburrow();
+      var progression = GameManager.GeneralProgression;
+      var bunniesRequired = mod?.RequiredBunnyCount ?? 0;
+      var babiesRequired = mod?.RequiredBabyCount ?? 0;
+
+      var insufficientBunnies = bunniesRequired > 0 && progression.HistoryCapturedBunnies.Count < bunniesRequired;
+      var insufficientBabies = babiesRequired > 0 && progression.ExistingCouples.Count < babiesRequired;
+
+      if (insufficientBabies)
+      {
+        if (insufficientBunnies)
+        {
+          return bunniesRequired + EndColor + " bunnies and " + BunburrowColor + babiesRequired + EndColor + " baby";
+        }
+        else
+        {
+          return babiesRequired + EndColor + " baby";
+        }
+      }
+
+      return bunniesRequired.ToString();
+    }
+
+    private static string BunburrowColor = "<color=$bunburrowColor>";
+    private static string EndColor = "</color>";
   }
 }

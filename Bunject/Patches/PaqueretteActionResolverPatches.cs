@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using Bunject.Internal;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +32,17 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
           case 1:
             if (instruction.Branches(out Label? _))
             {
-              yield return instruction;
-              yield return new CodeInstruction(OpCodes.Ldloc_S, 4);
+              var lead = new CodeInstruction(OpCodes.Ldloc_S, 4);
+              lead.labels.AddRange(instruction.labels);
+              instruction.labels.Clear();
+
+              yield return lead;
               yield return CodeInstruction.Call(typeof(BunburrowSignController), "get_Bunburrow"); // Calling a getter.. I guess it worked
-              yield return CodeInstruction.Call(typeof(HandleTalkButtonPressPatches), nameof(HandleTalkButtonPressPatches.ExtractBurrow));
+              yield return CodeInstruction.Call(typeof(HandleTalkButtonPressPatches), nameof(ExtractBurrow));
+              yield return new CodeInstruction(OpCodes.Ldloc_S, 4);
+              yield return CodeInstruction.Call(typeof(BunburrowSignController), "get_Bunburrow");
+              yield return CodeInstruction.Call(typeof(HandleTalkButtonPressPatches), nameof(CombineUnlock));
+              yield return instruction;
               detectionState++;
               continue;
             }
@@ -47,6 +55,11 @@ namespace Bunject.Patches.PaqueretteActionResolverPatches
     private static void ExtractBurrow(Bunburrows.Bunburrow bunburrow)
     {
       targetBurrow = bunburrow;
+    }
+
+    private static bool CombineUnlock(bool vanillaUnlockStatus, Bunburrows.Bunburrow bunburrow)
+    {
+      return vanillaUnlockStatus && bunburrow.IsUnlocked();
     }
   }
 

@@ -20,10 +20,11 @@ namespace Bunject.Patches.BunburrowEntryTilePatches
     {
       var instance = Traverse.Create(__instance);
       var specialIndex = instance.Field<int>("specialIndex");
-      if (specialIndex.Value > 10) // past the normal bounds and limits of level builder 
+      var bunburrow = (Bunburrows.Bunburrow)specialIndex.Value;
+      if (bunburrow.IsCustomBunburrow()) // BNYS smuggles a custom burrow id through the special-index ctor
       {
-        instance.Field<Bunburrows.Bunburrow?>("Bunburrow").Value = (Bunburrows.Bunburrow)specialIndex.Value;
-        instance.Field("isUnlocked").SetValue(true);
+        instance.Field<Bunburrows.Bunburrow?>("Bunburrow").Value = bunburrow;
+        instance.Field("isUnlocked").SetValue(bunburrow.IsUnlocked());
         specialIndex.Value = -1;
       }
     }

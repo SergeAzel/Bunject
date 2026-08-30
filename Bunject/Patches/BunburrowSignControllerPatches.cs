@@ -1,33 +1,48 @@
-﻿using Bunburrows;
+using Bunburrows;
 using Bunject.Internal;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Bunject.Patches.BunburrowSignControllerPatches
-{ 
-  [HarmonyPatch(typeof(BunburrowSignController), nameof(BunburrowSignController.Init))]
-  internal class InitPatch
+{
+  // Vanilla UpdateContent only draws the "N required" digits when
+  // BunburrowsUnlockStatus[Bunburrow] is false, a state custom burrows can never reach
+  // (the five-slot BunburrowsListOf falls back to Pink = always unlocked). This mirrors
+  // that presentation for a locked custom burrow, showing the outstanding RequiredBunnyCount
+  // and then, once that is met, the outstanding RequiredBabyCount. There is no icon to tell
+  // the two apart - the sign dialogue carries that meaning.
+  [HarmonyPatch(typeof(BunburrowSignController), nameof(BunburrowSignController.UpdateContent))]
+  internal class UpdateContentPatch
   {
-    public static void Postfix(BunburrowSignController __instance)
+    private static void Postfix(BunburrowSignController __instance)
     {
-      var b = __instance.Bunburrow;
-      if (!b.IsCustomBunburrow() || __instance.Bunburrow.IsVoidBunburrow() || AssetsManager.LevelsLists[b.ToBunburrowName()].Length <= 0) return;
-      BunburrowStyle bunburrowStyle = AssetsManager.LevelsLists[b.ToBunburrowName()][1].BunburrowStyle;
-      var @this = Traverse.Create(__instance);
-      @this.Field<SpriteRenderer>("progressFirstDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("progressSecondDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("progressPercentSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("requirementFirstDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("requirementSecondDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("completeIconSpriteRenderer").Value.color = bunburrowStyle.SignCompleteIconColor;
-      @this.Field<SpriteRenderer>("homeIconSpriteRenderer").Value.color = bunburrowStyle.SignHomeIconColor;
-      @this.Field<SpriteRenderer>("sign").Value.material.SetInt(@this.Field<int>("ShouldGlitchHash").Value, 0);
-      __instance.UpdateContent();
+      var bunburrow = __instance.Bunburrow;
+      if (!bunburrow.IsCustomBunburrow() || bunburrow.IsUnlocked())
+        return;
+
+      var mod = bunburrow.GetModBunburrow();
+      var progression = GameManager.GeneralProgression;
+      var bunniesRequired = mod?.RequiredBunnyCount ?? 0;
+      var babiesRequired = mod?.RequiredBabyCount ?? 0;
+
+      int displayed;
+      if (bunniesRequired > 0 && progression.HistoryCapturedBunnies.Count < bunniesRequired)
+        displayed = bunniesRequired;
+      else if (babiesRequired > 0 && progression.ExistingCouples.Count < babiesRequired)
+        displayed = babiesRequired;
+      else
+        return;
+
+      displayed = Mathf.Clamp(displayed, 0, 99);
+
+      var traverse = Traverse.Create(__instance);
+      traverse.Field("progressPercentageParentObject").GetValue<GameObject>().SetActive(false);
+      traverse.Field("completeIcon").GetValue<GameObject>().SetActive(false);
+      traverse.Field("homeIcon").GetValue<GameObject>().SetActive(false);
+      traverse.Field("extraSparkles").GetValue<GameObject>().SetActive(false);
+      traverse.Field("bunnyRequirementParentObject").GetValue<GameObject>().SetActive(true);
+      traverse.Field("requirementFirstDigitSpriteRenderer").GetValue<SpriteRenderer>().sprite = AssetsManager.ItemCounterAssets[displayed / 10];
+      traverse.Field("requirementSecondDigitSpriteRenderer").GetValue<SpriteRenderer>().sprite = AssetsManager.ItemCounterAssets[displayed % 10];
     }
   }
 }

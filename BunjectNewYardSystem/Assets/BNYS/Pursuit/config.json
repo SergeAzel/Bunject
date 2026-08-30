@@ -29,6 +29,8 @@
       "Indicator": "H",
       "Style": "Sunken",
       "HasSurfaceEntry": true,
+      "RequiredBunnyCount": 2,
+      "RequiredBabyCount": 1,
       "UpperBunnyCount": 3,
       "TempleBunnyCount": 1,
       "HellBunnyCount": 3,

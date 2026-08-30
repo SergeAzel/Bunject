@@ -61,6 +61,8 @@ namespace Bunject.NewYardSystem.Levels
 
     public bool HasEntrance => BurrowModel.HasSurfaceEntry;
     public bool HasSign { get; private set; } = true;
+    public int RequiredBunnyCount => BurrowModel.RequiredBunnyCount;
+    public int RequiredBabyCount => BurrowModel.RequiredBabyCount;
 
     private Vector2Int? customSignCoordinate;
     public Vector2Int? OverrideSignCoordinate()

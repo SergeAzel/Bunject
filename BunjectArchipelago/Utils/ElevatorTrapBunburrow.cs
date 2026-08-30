@@ -31,6 +31,10 @@ namespace Bunject.Archipelago.Utils
 
     public bool HasSign => false;
 
+    public int RequiredBunnyCount => 0;
+
+    public int RequiredBabyCount => 0;
+
 
     LevelsList levels = null;
     public LevelsList GetLevels()
