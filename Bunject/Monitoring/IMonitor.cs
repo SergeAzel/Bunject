@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tiling.Behaviour;
+using UnityEngine.Tilemaps;
 
 namespace Bunject.Monitoring
 {
@@ -23,5 +25,9 @@ namespace Bunject.Monitoring
     void OnMainMenu();
 
     void OnShowCredits();
+
+    void OnPowerTile(PowerUnlockTile tile, LevelIdentity identity, Action dismiss);
+
+    bool TryResolvePowerTileSprite(PowerUnlockTile tile, LevelIdentity identity, out TileBase sprite);
   }
 }

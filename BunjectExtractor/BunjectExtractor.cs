@@ -69,5 +69,13 @@ namespace Bunject.Extractor
     public void OnProgressionLoaded(GeneralProgression progression) { }
 
     public void OnShowCredits() { }
+
+    public void OnPowerTile(global::Tiling.Behaviour.PowerUnlockTile tile, LevelIdentity identity, Action dismiss) { }
+
+    public bool TryResolvePowerTileSprite(global::Tiling.Behaviour.PowerUnlockTile tile, LevelIdentity identity, out UnityEngine.Tilemaps.TileBase sprite)
+    {
+      sprite = null;
+      return false;
+    }
   }
 }

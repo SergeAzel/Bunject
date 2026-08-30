@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
 using Bunject.Computer;
+using Bunject.Dialogue;
 using Bunject.Internal;
 using Bunject.Levels;
 using Bunject.Menu;
@@ -26,6 +27,7 @@ using Levels;
 using Misc;
 using Newtonsoft.Json;
 using System;
+using Tiling.Behaviour;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -34,6 +36,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using static UnityEngine.ParticleSystem;
 
 namespace Bunject.NewYardSystem
@@ -55,9 +58,9 @@ namespace Bunject.NewYardSystem
 
     public new ManualLogSource Logger => base.Logger;
 
-
     private CustomWorld CurrentCustomWorld = null;
 
+    private CustomWorld WorldPendingDeletion = null;
 
     public void Awake()
     {
@@ -154,8 +157,10 @@ namespace Bunject.NewYardSystem
         progression.HandleBackToSurfaceUnlock();
         progression.HandleOphelinePortableComputerUnlock();
         progression.HandleMapUnlock();
-        progression.HandleTeleportAnywhereUnlock();
         progression.HandleSeenBootAnimation();
+
+        if (CurrentCustomWorld.TeleportAnywhereUnlocked)
+          progression.HandleTeleportAnywhereUnlock();
       }
     }
 
@@ -170,6 +175,55 @@ namespace Bunject.NewYardSystem
     }
 
     public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture) { }
+
+    public void OnPowerTile(PowerUnlockTile tile, LevelIdentity identity, Action dismiss)
+    {
+      if (!identity.Bunburrow.IsCustomBunburrow())
+        return;
+
+      if (GameManager.GeneralProgression.HasUnlockedTeleportAnywhere)
+      {
+        dismiss();
+        return;
+      }
+
+      GameManager.UIController.DisplayDialogue(BuildTeleportUnlockDialogue(), null);
+
+      Action<bool> onDialogueEnd = null;
+      onDialogueEnd = _ =>
+      {
+        GameManager.UIController.OnDialogueEnd -= onDialogueEnd;
+        dismiss(); // Dismisses the powerup sprite
+      };
+      GameManager.UIController.OnDialogueEnd += onDialogueEnd;
+    }
+
+    public bool TryResolvePowerTileSprite(PowerUnlockTile tile, LevelIdentity identity, out TileBase sprite)
+    {
+      if (!identity.Bunburrow.IsCustomBunburrow())
+      {
+        sprite = null;
+        return false;
+      }
+
+      sprite = GameManager.GeneralProgression.HasUnlockedTeleportAnywhere
+        ? null
+        : AssetsManager.TeleportAnywherePowerUnlockAnimatedTile;
+      return true;
+    }
+
+    private static CustomDialogueObject BuildTeleportUnlockDialogue()
+    {
+      var dialogue = ScriptableObject.CreateInstance<CustomDialogueObject>();
+      dialogue.name = "BNYS::TeleportAnywhereUnlock";
+      dialogue.DialogueLines = new List<DialogueLine>
+      {
+        new CustomDialogueLine { Headshot = "PaqueretteHappy", Content = "Teleport Powers Unlocked!" }
+      };
+
+      Traverse.Create(dialogue).Field("unlocksTeleportAnywhere").SetValue(true);
+      return dialogue;
+    }
 
     public void OnMainMenu()
     {
@@ -517,6 +571,12 @@ namespace Bunject.NewYardSystem
 
     public void CreateButtonFor(CustomWorld world)
     {
+      if (WorldPendingDeletion == world)
+      {
+        CreateDeleteConfirmationFor(world);
+        return;
+      }
+
       GUILayout.BeginHorizontal();
       GUILayout.Label(world.Title, GUILayout.ExpandWidth(true));
 
@@ -527,7 +587,26 @@ namespace Bunject.NewYardSystem
 
       if (GUILayout.Button("Delete", GUILayout.Width(100)))
       {
+        WorldPendingDeletion = world;
+      }
+
+      GUILayout.EndHorizontal();
+    }
+
+    private void CreateDeleteConfirmationFor(CustomWorld world)
+    {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label($"Delete save?", GUILayout.ExpandWidth(true));
+
+      if (GUILayout.Button("Yes", GUILayout.Width(100)))
+      {
         DeleteWorldSave(world);
+        WorldPendingDeletion = null;
+      }
+
+      if (GUILayout.Button("No", GUILayout.Width(100)))
+      {
+        WorldPendingDeletion = null;
       }
 
       GUILayout.EndHorizontal();

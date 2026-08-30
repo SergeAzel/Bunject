@@ -2,7 +2,7 @@ R,R,R,R,R,R,R,R,R,R,R,R,R,R,R
 R,R,T,T,T,R{0},T,T,T,T,Oph,T,T,R,R
 R,T,W,W,T,T,T,W,W,T,T,T,R{0},T,R
 R,T,W{LR},W{LR},T,T,T,W{LR},W{LR},T,T,T,T,T,R
-T,T,T,T,T,T,T,T,T,T,T,R{6},T,B{K},R
+T,T,T,T,T,PU,T,T,T,T,T,R{6},T,B{K},R
 R,T,T,W,W,T,T,T,W,W,T,T,T,T,R
 R,T,T,W{LR},W{LR},T,T,T,W{LR},W{LR},T,T,R{0},T,R
 R,R,T,T,T,T,R{0},T,T,T,T,T,T,R,R

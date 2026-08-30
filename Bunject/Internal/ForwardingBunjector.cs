@@ -113,6 +113,25 @@ namespace Bunject.Internal
         bunjector.OnShowCredits();
       }
     }
+
+    public void OnPowerTile(PowerUnlockTile tile, LevelIdentity identity, Action dismiss)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnPowerTile(tile, identity, dismiss);
+      }
+    }
+
+    public bool TryResolvePowerTileSprite(PowerUnlockTile tile, LevelIdentity identity, out UnityEngine.Tilemaps.TileBase sprite)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        if (bunjector.TryResolvePowerTileSprite(tile, identity, out sprite))
+          return true;
+      }
+      sprite = null;
+      return false;
+    }
     #endregion
 
     #region ITileSource Implementation

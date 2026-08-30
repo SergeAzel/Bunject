@@ -15,6 +15,13 @@ namespace Bunject.NewYardSystem.Model
     public string ProxyURL { get; set; }
     public bool Enabled { get; set; } = true;
     public bool LiveReloading { get; set; } = false;
+
+    /// <summary>
+    /// When true, entering this world grants the vanilla "Teleport Anywhere" power
+    /// (GeneralProgression.HasUnlockedTeleportAnywhere) up front, so its levels are
+    /// immediately reachable from the computer map without first stepping on a PU pad.
+    /// </summary>
+    public bool TeleportAnywhereUnlocked { get; set; } = false;
     public string Title { get; set; }
     public string Prefix { get; set; }
 

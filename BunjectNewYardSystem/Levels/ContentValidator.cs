@@ -15,7 +15,6 @@ namespace Bunject.NewYardSystem.Levels
   {
     /* Tiles restricted from use in BNYS custom levels:
      *   A - Hole at the bottom of C-27
-     *   PU - Power Up in room C-13
      *   N# - Burrow Entrance
      *   P# - C-27 Pillar
      *   C - Cage in shop?
@@ -23,7 +22,7 @@ namespace Bunject.NewYardSystem.Levels
      *   F - Fake bunny at start of game
      *   Y - SPOILERS
      */
-    private const string RESTRICTED_TILES = @"^(F|P[0-9]+|N[0-9]+|X|C|PU|A|Y(?:{.*})?)|T\{\.*[PS].*\}$";
+    private const string RESTRICTED_TILES = @"^(F|P[0-9]+|N[0-9]+|X|C|A|Y(?:{.*})?)|T\{\.*[PS].*\}$";
     private static readonly Regex restrictedTileRegex = new Regex(RESTRICTED_TILES);
 
     public static List<LevelValidationError> ValidateLevelContent(string content)
