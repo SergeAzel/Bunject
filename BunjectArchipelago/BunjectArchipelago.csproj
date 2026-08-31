@@ -31,7 +31,7 @@
     <Deterministic>True</Deterministic>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.0" />
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.7.0" GeneratePathProperty="true" />
     <PackageReference Include="Archipelago.MultiClient.Net.Analyzers" Version="2.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -57,6 +57,13 @@
       <HintPath>$(PaquerettePath)\Paquerette Down the Bunburrows_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(PkgArchipelago_MultiClient_Net)\lib\netstandard2.0\Archipelago.MultiClient.Net.dll">
+      <Link>Archipelago.MultiClient.Net.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

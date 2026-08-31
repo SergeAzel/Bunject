@@ -37,8 +37,6 @@ namespace Bunject.Archipelago
     public const string PluginName = "BunjectArchipelago";
     public const string PluginVersion = "1.2.3";
 
-    public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
-    public const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";
     public static ManualLogSource BepinLogger;
 
     public static string RootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));

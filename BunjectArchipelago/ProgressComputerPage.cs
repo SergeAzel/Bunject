@@ -82,11 +82,11 @@ namespace Bunject.Archipelago
             return bunny + " Reach E-12!";
           case Client.VictoryCondition.GoldenBunny:
             return bunny + " Find the " + StartGold() + "Golden Bunny" + EndColor() + "!";
-          case Client.VictoryCondition.GoldenFluffle:
-            if (client.Options.golden_fluffles < 10)
-              return bunny + " Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+          case Client.VictoryCondition.GoldenFluff:
+            if (client.Options.golden_fluff < 10)
+              return bunny + " Golden Fluff: " + StartGold() + client.GoldenFluffCount + EndColor() + " of " + StartGold() + client.Options.golden_fluff + EndColor();
             else  // Not enough room for 2-digit counts with the bun icon
-              return "Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+              return "Golden Fluff: " + StartGold() + client.GoldenFluffCount + EndColor() + " of " + StartGold() + client.Options.golden_fluff + EndColor();
           case Client.VictoryCondition.FullClear:
             return bunny + " Collect All Bunnies!";
         }

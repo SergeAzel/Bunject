@@ -10,7 +10,7 @@ namespace Bunject.Archipelago.Client
   {
     Credits = 0,
     GoldenBunny = 1,
-    GoldenFluffle = 2,
+    GoldenFluff = 2,
     FullClear = 3
   }
 
@@ -28,18 +28,21 @@ namespace Bunject.Archipelago.Client
 
       foreach (var pair in keyValuePairs)
       {
-        ArchipelagoPlugin.BepinLogger.LogInfo($"Option: '{pair.Key}': '{(Int64)pair.Value}'");
+        ArchipelagoPlugin.BepinLogger.LogInfo($"Option: '{pair.Key}': '{pair.Value}'");
 
         switch (pair.Key)
         {
+          case nameof(world_version):
+            options.world_version = Version.TryParse(pair.Value as string, out var wv) ? wv : null;
+            break;
           case nameof(home_captures):
             options.home_captures = (Int64)pair.Value == 1;
             break;
           case nameof(victory_condition):
             options.victory_condition = (VictoryCondition)(Int64)pair.Value;
             break;
-          case nameof(golden_fluffles):
-            options.golden_fluffles = (int)(Int64)pair.Value;
+          case nameof(golden_fluff):
+            options.golden_fluff = (int)(Int64)pair.Value;
             break;
           case nameof(unlock_computer):
             options.unlock_computer = (Int64)pair.Value == 1;
@@ -66,11 +69,20 @@ namespace Bunject.Archipelago.Client
     }
 
 
+    public static readonly Version SupportedWorldVersion = new Version(0, 2, 0);
+
+    public Version world_version { get; private set; }
+
+    public bool IsWorldVersionCompatible =>
+      world_version != null
+      && world_version.Major == SupportedWorldVersion.Major
+      && world_version.Minor == SupportedWorldVersion.Minor;
+
     public bool home_captures { get; private set; }
     
     public VictoryCondition victory_condition { get; private set; }
 
-    public int golden_fluffles { get; private set; }
+    public int golden_fluff { get; private set; }
 
     public bool unlock_computer { get; private set; }
 
