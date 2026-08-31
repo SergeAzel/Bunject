@@ -68,7 +68,6 @@ jobs:
         run: |
           mkdir Release
           Copy-Item -Path ".\\Bunject\\Deploy\\Bunject.dll" -Destination ".\\Release\\"
-          Copy-Item -Path ".\\BunjectComputer\\Deploy\\Bunject.Computer.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Bunject.Archipelago.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectArchipelago\\Deploy\\Archipelago.MultiClient.Net.dll" -Destination ".\\Release\\"
           Copy-Item -Path ".\\BunjectNewYardSystem\\Deploy\\Bunject.NewYardSystem.dll" -Destination ".\\Release\\"
@@ -146,10 +145,6 @@ jobs:
       - name: Upload Thunderstore Package - Bunject
         run: |
           tcli publish --file "Deploy\\Bunject.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "Bunject\\thunderstore.toml"
-
-      - name: Upload Thunderstore Package - Bunject.Computer
-        run: |
-          tcli publish --file "Deploy\\Bunject.Computer.zip" --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path "BunjectComputer\\thunderstore.toml"
 
       - name: Upload Thunderstore Package - BNYSmod
         run: |
