@@ -1,11 +1,17 @@
 {
-    "Name": "Hay Bales",
-    "DisableCaching": true,
-    "Tools": 
-    {
-        "Traps": 1,
-        "Pickaxes": 1
-    },
-    "IsTemple": false,
-    "IsHell": false
+  "Name": "Hay Bales",
+  "DisableCaching": false,
+  "Tools": {
+    "Traps": 1,
+    "Pickaxes": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 2, 2 ],
+	"Hints": [
+		{
+			"Position": [13, 3],
+			"Orientation": "Down"
+		}
+	]
 }

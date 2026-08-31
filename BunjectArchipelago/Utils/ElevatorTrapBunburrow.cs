@@ -31,6 +31,8 @@ namespace Bunject.Archipelago.Utils
 
     public bool HasSign => false;
 
+    public BunburrowRequirements Requirements => new BunburrowRequirements();
+
 
     LevelsList levels = null;
     public LevelsList GetLevels()
@@ -48,6 +50,11 @@ namespace Bunject.Archipelago.Utils
     }
 
     public Vector2Int? OverrideSignCoordinate()
+    {
+      return null;
+    }
+
+    public List<Vector2Int> GetReleasePath()
     {
       return null;
     }

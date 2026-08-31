@@ -26,7 +26,6 @@ namespace Bunject.Archipelago.Client
     private readonly Queue<Trap> trapQueue = new();
     private GameObject trapGameObject;
     private IModBunburrow modBunburrow;
-    private ModLevelsList elevatorLevelsList;
     private IDataStorageHelper dataStorageHelper;
     private bool enabled = false;
 
@@ -66,7 +65,7 @@ namespace Bunject.Archipelago.Client
 
     private bool IsSafeToTrap()
     {
-      return (GeneralInputManager.CanGoBackToSurface)
+      return (PauseItem.BackToSurface.IsAvailableInContext())
         && (!GameManager.PauseController.IsPaused);
     }
 

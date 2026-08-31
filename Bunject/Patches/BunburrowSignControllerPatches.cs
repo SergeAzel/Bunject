@@ -1,33 +1,43 @@
-﻿using Bunburrows;
+using Bunburrows;
 using Bunject.Internal;
+using Bunject.Levels;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Bunject.Patches.BunburrowSignControllerPatches
-{ 
-  [HarmonyPatch(typeof(BunburrowSignController), nameof(BunburrowSignController.Init))]
-  internal class InitPatch
+{
+  [HarmonyPatch(typeof(BunburrowSignController), nameof(BunburrowSignController.UpdateContent))]
+  internal class UpdateContentPatch
   {
-    public static void Postfix(BunburrowSignController __instance)
+    private static void Postfix(BunburrowSignController __instance)
     {
-      var b = __instance.Bunburrow;
-      if (!b.IsCustomBunburrow() || __instance.Bunburrow.IsVoidBunburrow() || AssetsManager.LevelsLists[b.ToBunburrowName()].Length <= 0) return;
-      BunburrowStyle bunburrowStyle = AssetsManager.LevelsLists[b.ToBunburrowName()][1].BunburrowStyle;
-      var @this = Traverse.Create(__instance);
-      @this.Field<SpriteRenderer>("progressFirstDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("progressSecondDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("progressPercentSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("requirementFirstDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("requirementSecondDigitSpriteRenderer").Value.color = bunburrowStyle.SkyboxColor;
-      @this.Field<SpriteRenderer>("completeIconSpriteRenderer").Value.color = bunburrowStyle.SignCompleteIconColor;
-      @this.Field<SpriteRenderer>("homeIconSpriteRenderer").Value.color = bunburrowStyle.SignHomeIconColor;
-      @this.Field<SpriteRenderer>("sign").Value.material.SetInt(@this.Field<int>("ShouldGlitchHash").Value, 0);
-      __instance.UpdateContent();
+      var bunburrow = __instance.Bunburrow;
+      if (!bunburrow.IsCustomBunburrow() || bunburrow.IsUnlocked())
+        return;
+
+      var requirements = bunburrow.GetModBunburrow()?.Requirements ?? new BunburrowRequirements();
+      var progression = GameManager.GeneralProgression;
+
+      int displayed;
+      if (progression.HistoryCapturedBunnies.Count < requirements.Bunnies)
+        displayed = requirements.Bunnies;
+      else if (progression.ExistingCouples.Count < requirements.Babies)
+        displayed = requirements.Babies;
+      else if (progression.HomeCapturedBunnies.Count < requirements.HomeCaptures)
+        displayed = requirements.HomeCaptures;
+      else
+        return;
+
+      displayed = Mathf.Clamp(displayed, 0, 99);
+
+      var traverse = Traverse.Create(__instance);
+      traverse.Field("progressPercentageParentObject").GetValue<GameObject>().SetActive(false);
+      traverse.Field("completeIcon").GetValue<GameObject>().SetActive(false);
+      traverse.Field("homeIcon").GetValue<GameObject>().SetActive(false);
+      traverse.Field("extraSparkles").GetValue<GameObject>().SetActive(false);
+      traverse.Field("bunnyRequirementParentObject").GetValue<GameObject>().SetActive(true);
+      traverse.Field("requirementFirstDigitSpriteRenderer").GetValue<SpriteRenderer>().sprite = AssetsManager.ItemCounterAssets[displayed / 10];
+      traverse.Field("requirementSecondDigitSpriteRenderer").GetValue<SpriteRenderer>().sprite = AssetsManager.ItemCounterAssets[displayed % 10];
     }
   }
 }

@@ -18,7 +18,7 @@ using static UnityEngine.UI.Image;
 
 namespace Bunject.Internal
 {
-  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource, IComputerTabSource
+  internal class ForwardingBunjector : IBunjectorPlugin, ITileSource, IMonitor, IMenuSource //, IComputerPageSource
   {
     #region IBunjectorPlugin Implementation
     public void OnAssetsLoaded()
@@ -113,6 +113,25 @@ namespace Bunject.Internal
         bunjector.OnShowCredits();
       }
     }
+
+    public void OnPowerTile(PowerUnlockTile tile, LevelIdentity identity, Action dismiss)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        bunjector.OnPowerTile(tile, identity, dismiss);
+      }
+    }
+
+    public bool TryResolvePowerTileSprite(PowerUnlockTile tile, LevelIdentity identity, out UnityEngine.Tilemaps.TileBase sprite)
+    {
+      foreach (var bunjector in BunjectAPI.Monitors)
+      {
+        if (bunjector.TryResolvePowerTileSprite(tile, identity, out sprite))
+          return true;
+      }
+      sprite = null;
+      return false;
+    }
     #endregion
 
     #region ITileSource Implementation
@@ -149,12 +168,20 @@ namespace Bunject.Internal
     }
     #endregion
 
-    #region IComputerTabSource
-    public void GenerateTabs(ComputerTabManager manager)
+    #region IComputerPageSource
+    public void GeneratePages(ICustomPageGenerator pageGen)
     {
-      foreach (var bunjector in BunjectAPI.ComputerTabSources)
+      foreach (var bunjector in BunjectAPI.ComputerPageSources)
       {
-        bunjector.GenerateTabs(manager);
+        try
+        {
+          bunjector.GeneratePages(pageGen);
+        }
+        catch (Exception e)
+        {
+          UnityEngine.Debug.LogError($"[Bunject] Computer page source '{bunjector.GetType().FullName}' threw during GeneratePages and was skipped.");
+          UnityEngine.Debug.LogException(e);
+        }
       }
     }
     #endregion

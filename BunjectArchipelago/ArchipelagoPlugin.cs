@@ -24,7 +24,7 @@ using UnityEngine;
 namespace Bunject.Archipelago
 {
   [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor, IComputerTabSource
+  public class ArchipelagoPlugin : BaseUnityPlugin, IMonitor, IComputerPageSource
   {
     static ArchipelagoPlugin()
     {
@@ -35,10 +35,8 @@ namespace Bunject.Archipelago
 
     public const string PluginGUID = "sergedev.bunject.archipelago";
     public const string PluginName = "BunjectArchipelago";
-    public const string PluginVersion = "1.2.3";
+    public const string PluginVersion = "1.3.0";
 
-    public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
-    public const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";
     public static ManualLogSource BepinLogger;
 
     public static string RootDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -112,6 +110,14 @@ namespace Bunject.Archipelago
       {
         ArchipelagoClient.OnShowCredits();
       }
+    }
+
+    public void OnPowerTile(global::Tiling.Behaviour.PowerUnlockTile tile, LevelIdentity identity, Action dismiss) { }
+
+    public bool TryResolvePowerTileSprite(global::Tiling.Behaviour.PowerUnlockTile tile, LevelIdentity identity, out UnityEngine.Tilemaps.TileBase sprite)
+    {
+      sprite = null;
+      return false;
     }
 
     protected void Awake()
@@ -208,11 +214,11 @@ namespace Bunject.Archipelago
       levelItemObjects[firstItem].SetActive(true);
     }
 
-    public void GenerateTabs(ComputerTabManager manager)
+    public void GeneratePages(ICustomPageGenerator pageMaker)
     {
       if (ArchipelagoClient != null)
       {
-        var computerTab = manager.CreateTab<ProgressComputerTab>();
+        pageMaker.CreateComputerPage<ProgressComputerPage>();
       }
     }
   }

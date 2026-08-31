@@ -1,6 +1,29 @@
 {
-    "Name": "Seeing",
-    "Style": "Temple",
-    "IsTemple": true,
-    "IsHell": false 
+  "Name": "Seeing",
+  "Style": "Temple",
+  "IsTemple": true,
+  "IsHell": false,
+  "Teleport": [ 4, 6 ],
+  "Hints": [
+    {
+      "Position": [ 7, 1 ],
+      "Orientation": "Left"
+    }
+  ],
+  "HerbeDialogues": [
+    {
+      "Name": "HerbeThisIsSoTrippy",
+      "Lines":
+      [
+        {
+          "Content": "Whoa",
+          "Headshot": "HerbeSmoked"
+        },
+        {
+          "Content": "This is so trippy",
+          "Headshot": "HerbeSmoked"
+        }
+      ]
+    }
+  ]
 }

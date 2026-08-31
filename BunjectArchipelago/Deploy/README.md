@@ -1,3 +1,5 @@
+**Built for Paquerette Down the Bunburrows game version 1.1.4.**
+
 APWorld can be found in: https://github.com/SergeAzel/Archipelago_PDTB/
 
 Oh no, Paquerette has lost her tools to the multiworld!

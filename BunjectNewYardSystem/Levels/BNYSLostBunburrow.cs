@@ -35,6 +35,8 @@ namespace Bunject.NewYardSystem.Levels
 
     public bool HasSign => false;
 
+    public BunburrowRequirements Requirements => new BunburrowRequirements();
+
     public Vector2Int? OverrideSignCoordinate()
     {
       return null;
@@ -51,6 +53,11 @@ namespace Bunject.NewYardSystem.Levels
     }
 
     public LevelObject GetSurfaceLevel()
+    {
+      return null;
+    }
+
+    public List<Vector2Int> GetReleasePath()
     {
       return null;
     }

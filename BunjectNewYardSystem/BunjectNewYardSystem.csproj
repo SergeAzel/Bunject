@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\BuildPath.props" />
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>Bunject.NewYardSystem</RootNamespace>
     <AssemblyName>Bunject.NewYardSystem</AssemblyName>
@@ -39,13 +39,22 @@
     <PackageReference Include="BepInEx.Core" Version="5.*">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="UnityEngine.Modules" Version="2021.3.34">
+    <PackageReference Include="UnityEngine.Modules" Version="6000.3.4">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>none</DebugType>
   </PropertyGroup>
+  <!-- Generate properties that will let "Running" launch the game based on BuildPath.props -->
+  <Target Name="GenerateGameLaunchSettings" BeforeTargets="BeforeBuild;Rebuild">
+    <PropertyGroup>
+      <_GameExeJson>$([System.String]::Copy('$(PaquerettePath)\Paquerette Down the Bunburrows.exe').Replace('\', '\\'))</_GameExeJson>
+      <_GameDirJson>$([System.String]::Copy('$(PaquerettePath)').Replace('\', '\\'))</_GameDirJson>
+      <_LaunchSettingsJson>{ "profiles": { "Paquerette (Game)": { "commandName": "Executable", "executablePath": "$(_GameExeJson)", "workingDirectory": "$(_GameDirJson)" } } }</_LaunchSettingsJson>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\Properties\launchSettings.json" Lines="$(_LaunchSettingsJson)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+  </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(MSBuildProjectDirectory)\Assets\BNYS&quot; &quot;$(PaquerettePluginPath)\BNYS&quot; /E /C /I /Y&#xD;&#xA;xcopy &quot;$(TargetDir)*.dll&quot; &quot;$(PaquerettePluginPath)&quot; /y /f&#xD;&#xA;xcopy &quot;$(TargetDir)Bunject.NewYardSystem.dll&quot; &quot;Deploy\*&quot; /y /f" />
   </Target>

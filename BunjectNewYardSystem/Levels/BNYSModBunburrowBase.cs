@@ -61,6 +61,7 @@ namespace Bunject.NewYardSystem.Levels
 
     public bool HasEntrance => BurrowModel.HasSurfaceEntry;
     public bool HasSign { get; private set; } = true;
+    public BunburrowRequirements Requirements => BurrowModel.Requirements;
 
     private Vector2Int? customSignCoordinate;
     public Vector2Int? OverrideSignCoordinate()
@@ -108,6 +109,17 @@ namespace Bunject.NewYardSystem.Levels
     public LevelObject GetSurfaceLevel()
     {
       return SurfaceLevel;
+    }
+
+    public List<Vector2Int> GetReleasePath()
+    {
+      var releases = World.SurfaceEntries?.Where(se => se.ReleasePath != null)
+        .SelectMany(se => se.ReleasePath)
+        .Where(kvp => kvp.Key == LocalName)
+        .Select(kvp => kvp.Value)
+        .FirstOrDefault();
+
+      return releases?.Select(x => new Vector2Int(x[0], -x[1])).ToList();
     }
 
     protected virtual BNYSLevelsList GenerateLevelsList()

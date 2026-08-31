@@ -1,6 +1,188 @@
 {
-    "Name": "Kevin Rests",
-    "Style": "HellTemple",
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "Kevin Rests",
+  "Style": "HellTemple",
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 6, 4 ],
+  "Hints": [
+    {
+      "Position": [ 2, 1 ],
+      "Orientation": "Left"
+    }
+  ],
+  "OphelineDialogues":
+  [
+    {
+      "Name": "KevinDiscovered",
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSurprised",
+          "Content": "<color=$ophelineColor>Ophéline</color>?"
+        },
+        {
+          "Headshot": "PaqueretteSurprised",
+          "Content": "What are you doing here?"
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "Oh hey <color=$pinkColor>Pâquerette</color>!"
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "So this is where <color=$bunburrowColor>Kevin</color> has been hiding after all those years..."
+        },
+        {
+          "Headshot": "PaqueretteSurprised",
+          "Content": "Who's <color=$bunburrowColor>Kevin</color>?"
+        },
+        {
+          "Headshot": "OphelineSmirk",
+          "Content": "Well..."
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "A few years back <color=$bunburrowColor>Kevin</color> lurked in the deepest reaches of the <color=$ghostlyColor>Spooky Bunburrow</color>..."
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "He was unlike the others and refused the <color=$bunburrowColor>Pilgrimage</color>..."
+        },
+        {
+          "Headshot": "OphelineSigh",
+          "Content": "Until one day, he mysteriously <color=$bunburrowColor>vanished</color>."
+        },
+        {
+          "Headshot": "OphelineSigh",
+          "Content": "Another bunny pillar was put in his place to cover up his disappearance but~"
+        },
+        {
+          "Headshot": "OphelineSmirk",
+          "Content": "There were still many, like me, who never forgot about <color=$bunburrowColor>Kevin</color>."
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "And here, at last, we have found <color=$bunburrowColor>Kevin</color> in his lair."
+        },
+        {
+          "Headshot": "PaqueretteHappy",
+          "Content": "That's so cool!"
+        }
+      ],
+      "RequiredCaptures": 0,
+      "RequiredBabies": 0,
+      "RequiredHomeCaptures": 0,
+      "ShouldOnlyPlayOnce": true
+    },
+    {
+      "Name": "BundredPercent",
+      "Lines": [
+        {
+          "Headshot": "OphelineSwirly",
+          "Content": "You caught EVERYTHING?!"
+        },
+        {
+          "Headshot": "OphelineSwirly",
+          "Content": "Wow. Just wow."
+        },
+        {
+          "Headshot": "Bunbot",
+          "Content": "HEY"
+        },
+        {
+          "Headshot": "Bunbot",
+          "Content": "I-WANNA-CAPTURE-BUNNIES-TOO"
+        },
+        {
+          "Headshot": "OphelineFlushed",
+          "Content": "What are you even doing here???"
+        },
+        {
+          "Headshot": "Bunbot",
+          "Content": "NEVERMIND"
+        },
+        {
+          "Headshot": "Bunbot",
+          "Content": "PRETEND-I-WAS-NEVER-HERE"
+        },
+        {
+          "Headshot": "OphelineSwirly",
+          "Content": "..."
+        },
+        {
+          "Headshot": "OphelineSigh",
+          "Content": "Weird."
+        }
+      ],
+      "RequiredCaptures": 15,
+      "RequiredBabies": 21,
+      "RequiredHomeCaptures": 15,
+      "ShouldOnlyPlayOnce": true
+    },
+    {
+      "Name": "BundredPercentIdle",
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSad",
+          "Content": "Now that I got everything what will I do now?"
+        },
+        {
+          "Headshot": "OphelineSmirk",
+          "Content": "So..."
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "You can either try out other custom worlds..."
+        },
+        {
+          "Headshot": "OphelineIdle",
+          "Content": "Or you can go and make your own!"
+        },
+        {
+          "Headshot": "OphelineSmirk",
+          "Content": "Your choice."
+        },
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Can you tell me more about~"
+        },
+        {
+          "Headshot": "OphelineSigh",
+          "Content": "No."
+        },
+        {
+          "Headshot": "PaqueretteSad",
+          "Content": "Meanie"
+        }
+      ],
+      "RequiredCaptures": 15,
+      "RequiredBabies": 21,
+      "RequiredHomeCaptures": 15,
+      "ShouldOnlyPlayOnce": false
+    },
+    {
+      "Name": "KevinLairIdle",
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Can you tell me the story again pretty please??"
+        },
+        {
+          "Headshot": "OphelineSwirly",
+          "Content": "Please no"
+        },
+        {
+          "Headshot": "OphelineSigh",
+          "Content": "I'm so tired"
+        },
+        {
+          "Headshot": "PaqueretteSad",
+          "Content": "Awww :("
+        }
+      ],
+      "RequiredCaptures": 0,
+      "RequiredBabies": 0,
+      "RequiredHomeCaptures": 0,
+      "ShouldOnlyPlayOnce": false
+    }
+  ]
 }

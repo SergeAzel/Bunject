@@ -1,9 +1,15 @@
 {
-    "Name": "Fiddly Little Buns",
-    "Tools":
+  "Name": "Fiddly Little Buns",
+  "Tools": {
+    "Pickaxes": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 6, 4 ],
+  "Hints": [
     {
-        "Pickaxes": 1
-    },
-    "IsTemple": false,
-    "IsHell": false 
+      "Position": [ 2, 2 ],
+      "Orientation": "Left"
+    }
+  ]
 }

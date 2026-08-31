@@ -10,9 +10,13 @@ using System.Threading.Tasks;
 
 namespace Bunject.Archipelago
 {
-  internal class ProgressComputerTab : BasicCustomComputerTab
+  internal class ProgressComputerPage : BasicCustomComputerPageController
   {
-    public override string Title => "Arch";
+    public override string ButtonName => "ArchProgress";
+    public override string ButtonText => "Arch";
+
+    protected override string HeaderText => GetSpecialText();
+    protected override string ContentText => GetContentText();
 
     private ArchipelagoClient client => ArchipelagoPlugin.Instance.ArchipelagoClient;
 
@@ -21,7 +25,7 @@ namespace Bunject.Archipelago
       return client != null;
     }
 
-    public override string GetContentText()
+    private string GetContentText()
     {
       if (client != null)
       {
@@ -66,7 +70,7 @@ namespace Bunject.Archipelago
       return "     ";
     }
 
-    public override string GetSpecialText()
+    private string GetSpecialText()
     {
       if (client != null)
       {
@@ -78,11 +82,11 @@ namespace Bunject.Archipelago
             return bunny + " Reach E-12!";
           case Client.VictoryCondition.GoldenBunny:
             return bunny + " Find the " + StartGold() + "Golden Bunny" + EndColor() + "!";
-          case Client.VictoryCondition.GoldenFluffle:
-            if (client.Options.golden_fluffles < 10)
-              return bunny + " Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+          case Client.VictoryCondition.GoldenFluff:
+            if (client.Options.golden_fluff < 10)
+              return bunny + " Golden Fluff: " + StartGold() + client.GoldenFluffCount + EndColor() + " of " + StartGold() + client.Options.golden_fluff + EndColor();
             else  // Not enough room for 2-digit counts with the bun icon
-              return "Golden Fluffles: " + StartGold() + client.GoldenFluffleCount + EndColor() + " of " + StartGold() + client.Options.golden_fluffles + EndColor();
+              return "Golden Fluff: " + StartGold() + client.GoldenFluffCount + EndColor() + " of " + StartGold() + client.Options.golden_fluff + EndColor();
           case Client.VictoryCondition.FullClear:
             return bunny + " Collect All Bunnies!";
         }

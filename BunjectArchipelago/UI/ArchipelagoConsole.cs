@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using Bunject.Archipelago;
@@ -22,7 +23,9 @@ public class ArchipelagoConsole : MonoBehaviour
 
   private static GUIStyle textStyle = new();
   private static string scrollText = "";
-  private static float lastUpdateTime = Time.time;
+  private static readonly object logLock = new();
+  private static volatile bool needsWindowUpdate = false;
+  private static DateTime lastUpdateTime = DateTime.UtcNow;
   private const int MaxLogLines = 80;
   private const float HideTimeout = 15f;
 
@@ -39,7 +42,10 @@ public class ArchipelagoConsole : MonoBehaviour
 
   public static void ResetConsole()
   {
-    logLines.Clear();
+    lock (logLock)
+    {
+      logLines.Clear();
+    }
   }
 
   public static void LogMessage(string message)
@@ -47,20 +53,29 @@ public class ArchipelagoConsole : MonoBehaviour
     ArchipelagoPlugin.BepinLogger.LogMessage(message);
     if (message.IsNullOrWhiteSpace()) return;
 
-    if (logLines.Count == MaxLogLines)
+    lock (logLock)
     {
-      logLines.RemoveAt(0);
+      if (logLines.Count >= MaxLogLines)
+      {
+        logLines.RemoveAt(0);
+      }
+      logLines.Add(message);
     }
-    logLines.Add(message);
-    lastUpdateTime = Time.time;
-    UpdateWindow();
+    lastUpdateTime = DateTime.UtcNow;
+    needsWindowUpdate = true;
   }
 
   public void OnGUI()
   {
+    if (needsWindowUpdate)
+    {
+      needsWindowUpdate = false;
+      UpdateWindow();
+    }
+
     if (logLines.Count == 0) return;
 
-    if (!Hidden || Time.time - lastUpdateTime < HideTimeout)
+    if (!Hidden || (DateTime.UtcNow - lastUpdateTime).TotalSeconds < HideTimeout)
     {
       scrollView = GUI.BeginScrollView(window, scrollView, scroll);
       GUI.Box(text, "");
@@ -89,22 +104,25 @@ public class ArchipelagoConsole : MonoBehaviour
   {
     scrollText = "";
 
-    if (Hidden)
+    lock (logLock)
     {
-      if (logLines.Count > 0)
+      if (Hidden)
       {
-        scrollText = logLines[logLines.Count - 1];
-      }
-    }
-    else
-    {
-      for (var i = 0; i < logLines.Count; i++)
-      {
-        scrollText += "> ";
-        scrollText += logLines.ElementAt(i);
-        if (i < logLines.Count - 1)
+        if (logLines.Count > 0)
         {
-          scrollText += "\n\n";
+          scrollText = logLines[logLines.Count - 1];
+        }
+      }
+      else
+      {
+        for (var i = 0; i < logLines.Count; i++)
+        {
+          scrollText += "> ";
+          scrollText += logLines.ElementAt(i);
+          if (i < logLines.Count - 1)
+          {
+            scrollText += "\n\n";
+          }
         }
       }
     }

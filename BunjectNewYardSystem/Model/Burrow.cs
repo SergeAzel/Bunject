@@ -24,6 +24,8 @@ namespace Bunject.NewYardSystem.Model
     public int HellBunnyCount { get; set; }
     public int Depth { get; set; }
 
+    public BunburrowRequirements Requirements { get; set; } = new BunburrowRequirements();
+
     public BurrowLinks Links { get; set; } = new BurrowLinks();
     public List<int> ElevatorDepths { get; set; } = new List<int>();
 

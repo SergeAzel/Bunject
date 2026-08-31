@@ -1,3 +1,5 @@
+**Built for Paquerette Down the Bunburrows game version 1.1.4.**
+
 Bunject is a library that injects and wraps around significant portions of the PtdB behavior, to standardize injection of custom behavior. 
 
 Primarily used by BNYS.

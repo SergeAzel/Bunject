@@ -1,6 +1,13 @@
 {
-    "Name": "Singularity",
-    "Style": "HellTemple",
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "Singularity",
+  "Style": "HellTemple",
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 7, 1 ],
+  "Hints": [
+    {
+      "Position": [ 6, 3 ],
+      "Orientation": "Up"
+    }
+  ]
 }

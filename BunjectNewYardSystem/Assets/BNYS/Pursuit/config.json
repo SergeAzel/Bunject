@@ -29,6 +29,7 @@
       "Indicator": "H",
       "Style": "Sunken",
       "HasSurfaceEntry": true,
+      "Requirements": { "Bunnies": 3, "Babies": 2, "HomeCaptures": 2 },
       "UpperBunnyCount": 3,
       "TempleBunnyCount": 1,
       "HellBunnyCount": 3,
@@ -47,6 +48,10 @@
       "Coordinates": {
         "Burrow A": [ 5, 3 ],
         "Burrow B": { "Hole": [ 9, 3 ] }
+      },
+      "ReleasePath":{
+        "Burrow A": [[ 7, 6 ], [ 7, 2 ], [ 3, 2 ], [ 3, 4 ], [ 5, 4 ], [ 5, 3 ]],
+        "Burrow B": [[ 9, 6 ], [ 9, 3 ]]
       }
     }
   ]

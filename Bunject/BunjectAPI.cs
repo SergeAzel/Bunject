@@ -41,7 +41,7 @@ namespace Bunject
 
     internal static IEnumerable<IMenuSource> MenuOptions { get => Instance.bunjectors.OfType<IMenuSource>(); }
 
-    internal static IEnumerable<IComputerTabSource> ComputerTabSources { get => Instance.bunjectors.OfType<IComputerTabSource>(); }
+    internal static IEnumerable<IComputerPageSource> ComputerPageSources { get => Instance.bunjectors.OfType<IComputerPageSource>(); }
 
     public static void RegisterPlugin(IBunjectorPlugin bunjector)
     {
@@ -66,7 +66,7 @@ namespace Bunject
 
     public static void BeginLoadingScreen()
     {
-      var menu = GameObject.FindObjectOfType<MenuController>();
+      var menu = GameObject.FindFirstObjectByType<MenuController>();
       if (menu == null)
         return;
 
@@ -78,7 +78,7 @@ namespace Bunject
 
     public static void CancelLoadingScreen()
     {
-      var menu = GameObject.FindObjectOfType<MenuController>();
+      var menu = GameObject.FindFirstObjectByType<MenuController>();
       if (menu == null)
         return;
 

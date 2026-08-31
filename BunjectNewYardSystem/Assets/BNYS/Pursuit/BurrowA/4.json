@@ -1,6 +1,13 @@
 {
-    "Name": "Double",
-    "Style": "Temple",
-    "IsTemple": true,
-    "IsHell": false
+  "Name": "Double",
+  "Style": "Temple",
+  "IsTemple": true,
+  "IsHell": false,
+  "Teleport": [ 11, 2 ],
+  "Hints": [
+    {
+      "Position": [ 7, 1 ],
+      "Orientation": "Left"
+    }
+  ]
 }

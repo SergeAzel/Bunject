@@ -16,19 +16,20 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   {
     private static string Postfix(string __result, bool useWhite)
     {
+      var result = __result;
       var identity = GameManager.LevelStates.CurrentLevelState.LevelIdentity;
       if (identity.Bunburrow.IsCustomBunburrow())
       {
-        var res = LevelIndicatorGenerator.GetShortLevelIndicator()
+        var shortIndicator = LevelIndicatorGenerator.GetShortLevelIndicator()
           + Traverse.Create(typeof(LevelIndicatorGenerator)).Method("GenerateBunniesStringForLevelIndicator", useWhite).GetValue<string>()
           + " ";
         var name = GameManager.CurrentLevel.BaseData.CustomNameKey;
-        __result = res + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
+        result = shortIndicator + (identity.Bunburrow.IsVoidBunburrow() && string.IsNullOrWhiteSpace(name)
           ? LevelIndicatorGenerator.GenerateVoidLevelName()
           : name);
       }
 
-      return BunjectAPI.Forward.OnLevelTitle(__result, identity, useWhite);
+      return BunjectAPI.Forward.OnLevelTitle(result, identity, useWhite);
     }
   }
 
@@ -38,9 +39,10 @@ namespace Bunject.Patches.LevelIndicatorGeneratorPatches
   {
     public static BunburrowStyle Postfix(BunburrowStyle __result, LevelIdentity levelIdentity)
     {
-      if (levelIdentity.Bunburrow.IsCustomBunburrow())
+      var levelIdent = levelIdentity;
+      if (levelIdent.Bunburrow.IsCustomBunburrow())
       {
-        return AssetsManager.LevelsLists[levelIdentity.Bunburrow.ToBunburrowName()][levelIdentity.Depth].BunburrowStyle;
+        return AssetsManager.LevelsLists[levelIdent.Bunburrow.ToBunburrowName()][levelIdent.Depth].BunburrowStyle;
       }
       return __result;
     }

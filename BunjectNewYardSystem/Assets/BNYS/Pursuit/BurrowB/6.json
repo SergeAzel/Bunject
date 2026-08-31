@@ -1,6 +1,13 @@
 {
-    "Name": "Railyard",
-    "Style": "Hell",
-    "IsTemple": false,
-    "IsHell": true 
+  "Name": "Railyard",
+  "Style": "Hell",
+  "IsTemple": false,
+  "IsHell": true,
+  "Teleport": [ 12, 5 ],
+  "Hints": [
+    {
+      "Position": [ 13, 3 ],
+      "Orientation": "Right"
+    }
+  ]
 }

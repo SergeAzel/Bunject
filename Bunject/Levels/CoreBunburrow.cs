@@ -30,6 +30,7 @@ namespace Bunject.Levels
 
     public bool HasEntrance => true;
     public bool HasSign => true;
+    public BunburrowRequirements Requirements => new BunburrowRequirements();
 
     public Vector2Int? OverrideSignCoordinate()
     {
@@ -51,6 +52,11 @@ namespace Bunject.Levels
     public LevelObject GetSurfaceLevel()
     {
       return AssetsManager.SurfaceRightLevel;
+    }
+
+    public List<Vector2Int> GetReleasePath()
+    {
+      return null;
     }
   }
 }

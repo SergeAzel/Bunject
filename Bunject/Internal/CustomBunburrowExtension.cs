@@ -25,6 +25,17 @@ namespace Bunject.Internal
       return ((int)bunburrow > BunburrowManager.CustomBunburrowThreshold) && BunburrowManager.Bunburrows.Any(x => x.ID == (int)bunburrow);
     }
 
+    public static bool IsUnlocked(this Bunburrows.Bunburrow bunburrow)
+    {
+      if (bunburrow.IsCustomBunburrow())
+      {
+        var requirements = bunburrow.GetModBunburrow()?.Requirements;
+        return requirements == null || requirements.AreMet(GameManager.GeneralProgression);
+      }
+
+      return GameManager.GeneralProgression.BunburrowsUnlockStatus[bunburrow];
+    }
+
     public static IModBunburrow GetModBunburrow(this Bunburrows.Bunburrow bunburrow)
     {
       return BunburrowManager.Bunburrows.FirstOrDefault(x => x.ID == (int)bunburrow)?.ModBunburrow;

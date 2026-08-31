@@ -21,10 +21,15 @@ namespace Bunject.Levels
 
     bool HasSign { get; }
 
+    // Minimum counts required to access bunburrow from surface
+    BunburrowRequirements Requirements { get; }
+
     Vector2Int? OverrideSignCoordinate();
 
     LevelsList GetLevels();
 
     LevelObject GetSurfaceLevel();
+
+    List<Vector2Int> GetReleasePath();
   }
 }

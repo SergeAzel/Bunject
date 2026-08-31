@@ -1,9 +1,47 @@
 {
-    "Name": "Konigsberg",
-    "Tools":
+  "Name": "Konigsberg",
+  "Tools": {
+    "Traps": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 11, 3 ],
+  "Hints": [
     {
-        "Traps": 1
+      "Position": [ 2, 4 ],
+      "Orientation": "Down"
+    }
+  ],
+  "Dialogues": [
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Aha! Got you!!"
+        }
+      ],
+      "RequiresBunnyToPassBeforePlaying": true,
+      "RequiresNoBunnyCaptureThisLevel": true,
+      "RequiresSpecificEntryDirection": true,
+      "SpecificEntryDirection": "Right",
+      "RequiresBunnyAtSpecificRelativePosition": true,
+      "SpecificBunnyRelativePositions": [ [ 3, 0 ] ]
     },
-    "IsTemple": false,
-    "IsHell": false
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSad",
+          "Content": "...or not"
+        }
+      ],
+      "RequiresNoBunnyCaptureThisLevel": true,
+      "RequiresSpecificEntryDirection": true,
+      "SpecificEntryDirection": "Left",
+      "RequiresBunnyAtSpecificRelativePosition": true,
+      "SpecificBunnyRelativePositions": [
+        [ 0, -2 ],
+        [ 0, 2 ]
+      ]
+    }
+  ]
 }

@@ -1,5 +1,6 @@
 ﻿using Bunburrows;
 using Bunject.Internal;
+using Bunject.Map;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.Assertions.Must;
 
 namespace Bunject.Patches.BunburrowExtensionPatches
@@ -39,7 +41,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static string Postfix(string __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow.Name;
       }
@@ -52,7 +55,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static int Postfix(int __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ComparisonIndex ?? __result;
       }
@@ -65,7 +69,8 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static string Postfix(string __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.Indicator;
       }
@@ -79,9 +84,10 @@ namespace Bunject.Patches.BunburrowExtensionPatches
   {
     private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
-        return !bunburrow.IsVoidBunburrow();
+        return !bunb.IsVoidBunburrow();
       }
       // redirect to the other function, which needs no extending
       return __result;
@@ -94,11 +100,58 @@ namespace Bunject.Patches.BunburrowExtensionPatches
     private static bool Postfix(bool __result, Bunburrow bunburrow)
     {
       // redirect to the other function, which needs no extending
-      if (bunburrow.IsCustomBunburrow())
+      var bunb = bunburrow;
+      if (bunb.IsCustomBunburrow())
       {
         return BunburrowManager.Bunburrows.FirstOrDefault(bb => bb.ID == (int)bunburrow)?.ModBunburrow?.IsVoid ?? __result;
       }
       return __result;
+    }
+  }
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.GetBunburrowsInMapOrderList))]
+  internal class GetBunburrowsInMapOrderListPatch
+  {
+    private static void Postfix(ref IEnumerable<Bunburrows.Bunburrow> __result)
+    {
+      if (MapContext.Instance != null)
+      {
+        __result = MapContext.Instance;
+      }
+    }
+  }
+
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.GetMapIndex))]
+  internal class GetMapIndexPatch
+  {
+    private static void Postfix(ref Vector2Int __result)
+    {
+      if (MapContext.Instance != null)
+      {
+        __result = MapContext.Instance.CurrentCoordinates;
+      }
+    }
+  }
+
+  [HarmonyPatch(typeof(BunburrowExtension), nameof(BunburrowExtension.TryGetBunburrowFromMapIndex))]
+  internal class TryGetBunburrowFromMapIndexPatch
+  {
+    private static void Postfix(ref bool __result, Vector2Int mapIndex, ref Bunburrows.Bunburrow bunburrow)
+    {
+      if (MapContext.Instance != null)
+      {
+        var foundBunburrow = MapContext.Instance.Coordinates.FirstOrDefault(c => c.MapIndex == mapIndex);
+        if (foundBunburrow != null)
+        {
+          bunburrow = foundBunburrow.Bunburrow;
+          __result = true;
+        }
+        else
+        {
+          __result = false;
+        }
+      }
     }
   }
 }

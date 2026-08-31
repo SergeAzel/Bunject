@@ -11,6 +11,8 @@ using UnityEngine;
 
 namespace Bunject.Archipelago.Patches.ComputerMapInfoControllerPatches
 {
+  /*
+  TODO lock map visuals for levels that dont have tools unlocked yet
   [HarmonyPatch(typeof(ComputerMapInfoController), nameof(DisplayLevelInfo))]
   internal static class DisplayLevelInfo
   {
@@ -24,5 +26,5 @@ namespace Bunject.Archipelago.Patches.ComputerMapInfoControllerPatches
         ArchipelagoPlugin.Instance.LockComputerVisuals(levelItemTexts, levelItemObjects);
       }
     }
-  }
+  }*/
 }

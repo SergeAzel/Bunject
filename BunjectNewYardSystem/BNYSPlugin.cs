@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Bunburrows;
 using Bunject;
 using Bunject.Computer;
+using Bunject.Dialogue;
 using Bunject.Internal;
 using Bunject.Levels;
 using Bunject.Menu;
@@ -26,24 +27,26 @@ using Levels;
 using Misc;
 using Newtonsoft.Json;
 using System;
+using Tiling.Behaviour;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Security.Policy;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using static UnityEngine.ParticleSystem;
 
 namespace Bunject.NewYardSystem
 {
   [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource, IComputerTabSource
+  public class BNYSPlugin : BaseUnityPlugin, IBunjectorPlugin, IMonitor, IMenuSource, IComputerPageSource
   {
     public const string pluginGuid = "sergedev.bunject.newyardsystem";
     public const string pluginName = "BNYS";
-    public const string pluginVersion = "1.2.3";
+    public const string pluginVersion = "1.3.0";
 
     public static string pluginsDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\"));
     public static string rootDirectory = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -55,9 +58,9 @@ namespace Bunject.NewYardSystem
 
     public new ManualLogSource Logger => base.Logger;
 
-
     private CustomWorld CurrentCustomWorld = null;
 
+    private CustomWorld WorldPendingDeletion = null;
 
     public void Awake()
     {
@@ -153,6 +156,11 @@ namespace Bunject.NewYardSystem
         progression.HandleBunburrowSignsDiscovery();
         progression.HandleBackToSurfaceUnlock();
         progression.HandleOphelinePortableComputerUnlock();
+        progression.HandleMapUnlock();
+        progression.HandleSeenBootAnimation();
+
+        if (CurrentCustomWorld.TeleportAnywhereUnlocked)
+          progression.HandleTeleportAnywhereUnlock();
       }
     }
 
@@ -168,6 +176,55 @@ namespace Bunject.NewYardSystem
 
     public void OnBunnyCapture(BunnyIdentity bunnyIdentity, bool wasHomeCapture) { }
 
+    public void OnPowerTile(PowerUnlockTile tile, LevelIdentity identity, Action dismiss)
+    {
+      if (!identity.Bunburrow.IsCustomBunburrow())
+        return;
+
+      if (GameManager.GeneralProgression.HasUnlockedTeleportAnywhere)
+      {
+        dismiss();
+        return;
+      }
+
+      GameManager.UIController.DisplayDialogue(BuildTeleportUnlockDialogue(), null);
+
+      Action<bool> onDialogueEnd = null;
+      onDialogueEnd = _ =>
+      {
+        GameManager.UIController.OnDialogueEnd -= onDialogueEnd;
+        dismiss(); // Dismisses the powerup sprite
+      };
+      GameManager.UIController.OnDialogueEnd += onDialogueEnd;
+    }
+
+    public bool TryResolvePowerTileSprite(PowerUnlockTile tile, LevelIdentity identity, out TileBase sprite)
+    {
+      if (!identity.Bunburrow.IsCustomBunburrow())
+      {
+        sprite = null;
+        return false;
+      }
+
+      sprite = GameManager.GeneralProgression.HasUnlockedTeleportAnywhere
+        ? null
+        : AssetsManager.TeleportAnywherePowerUnlockAnimatedTile;
+      return true;
+    }
+
+    private static CustomDialogueObject BuildTeleportUnlockDialogue()
+    {
+      var dialogue = ScriptableObject.CreateInstance<CustomDialogueObject>();
+      dialogue.name = "BNYS::TeleportAnywhereUnlock";
+      dialogue.DialogueLines = new List<DialogueLine>
+      {
+        new CustomDialogueLine { Headshot = "PaqueretteHappy", Content = "Teleport Powers Unlocked!" }
+      };
+
+      Traverse.Create(dialogue).Field("unlocksTeleportAnywhere").SetValue(true);
+      return dialogue;
+    }
+
     public void OnMainMenu()
     {
       if (CurrentCustomWorld != null)
@@ -175,7 +232,15 @@ namespace Bunject.NewYardSystem
         // Undo all major changes
         BunjectAPI.ClearRegisters();
 
-        ExtendedSurfaceLevelGenerator.LinkSurface(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel);
+        var assetManager = Traverse.Create(typeof(AssetsManager));
+        var middleBase = assetManager.Field<LevelObject>("surfaceMiddleLevelBase").Value;
+        var middleExpanded = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded").Value;
+        var middleNoHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2NoHerbe").Value;
+        var middleHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2Herbe").Value;
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleBase, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleExpanded, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleNoHerbe, AssetsManager.SurfaceRightLevel);
+        ExtendedSurfaceLevelGenerator.LinkSurface(middleHerbe, AssetsManager.SurfaceRightLevel);
 
         CurrentCustomWorld = null;
       }
@@ -397,14 +462,19 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    private void GenerateSurfaceLevels(LevelObject coreSurfaceRight, CustomWorld world)
+    private void GenerateSurfaceLevels(CustomWorld world)
     {
-      var previous = coreSurfaceRight;
+      var assetManager = Traverse.Create(typeof(AssetsManager));
+      var middleBase = assetManager.Field<LevelObject>("surfaceMiddleLevelBase").Value;
+      var middleExpanded = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded").Value;
+      var middleNoHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2NoHerbe").Value;
+      var middleHerbe = assetManager.Field<LevelObject>("surfaceMiddleLevelExpanded2Herbe").Value;
+
+      var previous = middleBase;
 
       try
       {
         ExtendedSurfaceLevelGenerator.CreateSurfaceLevels(world, BNYSModBurrows.Where(b => b.World == world).ToList(), previous);
-        previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
       }
       catch (Exception e)
       {
@@ -412,6 +482,14 @@ namespace Bunject.NewYardSystem
         Logger.LogError(e.Message);
         Logger.LogError(e);
       }
+
+      previous = world.GeneratedSurfaceLevels.LastOrDefault() ?? previous;
+      var first = world.GeneratedSurfaceLevels.FirstOrDefault() ?? previous;
+
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleBase, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleExpanded, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleNoHerbe, first);
+      ExtendedSurfaceLevelGenerator.LinkSurface(middleHerbe, first);
 
       PatchLevelAsEndcap(previous);
     }
@@ -493,6 +571,12 @@ namespace Bunject.NewYardSystem
 
     public void CreateButtonFor(CustomWorld world)
     {
+      if (WorldPendingDeletion == world)
+      {
+        CreateDeleteConfirmationFor(world);
+        return;
+      }
+
       GUILayout.BeginHorizontal();
       GUILayout.Label(world.Title, GUILayout.ExpandWidth(true));
 
@@ -503,7 +587,26 @@ namespace Bunject.NewYardSystem
 
       if (GUILayout.Button("Delete", GUILayout.Width(100)))
       {
+        WorldPendingDeletion = world;
+      }
+
+      GUILayout.EndHorizontal();
+    }
+
+    private void CreateDeleteConfirmationFor(CustomWorld world)
+    {
+      GUILayout.BeginHorizontal();
+      GUILayout.Label($"Delete save?", GUILayout.ExpandWidth(true));
+
+      if (GUILayout.Button("Yes", GUILayout.Width(100)))
+      {
         DeleteWorldSave(world);
+        WorldPendingDeletion = null;
+      }
+
+      if (GUILayout.Button("No", GUILayout.Width(100)))
+      {
+        WorldPendingDeletion = null;
       }
 
       GUILayout.EndHorizontal();
@@ -516,7 +619,7 @@ namespace Bunject.NewYardSystem
       try
       {
         // TODO replace this behavior - its outdated
-        SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceMiddleLevel, AssetsManager.SurfaceRightLevel, null);
+        SurfaceBurrowsPatch.PatchSurfaceBurrows(AssetsManager.SurfaceRightLevel, null);
 
         // Ensure our bunburrows are registered.
         foreach (var bunburrow in BNYSModBurrows.Where(b => b.World == world))
@@ -533,9 +636,10 @@ namespace Bunject.NewYardSystem
         }
 
         //Now do our surface generation if it hasn't been done.
-        GenerateSurfaceLevels(AssetsManager.SurfaceMiddleLevel, world);
+        GenerateSurfaceLevels(world);
 
         BunjectAPI.LoadSave("BNYS", world.Title);
+
         CurrentCustomWorld = world;
       }
       catch (Exception ex)
@@ -555,16 +659,17 @@ namespace Bunject.NewYardSystem
       }
     }
 
-    public void GenerateTabs(ComputerTabManager manager)
+    #endregion
+
+    #region IComputerPageSource implementation
+    public void GeneratePages(ICustomPageGenerator pageMaker)
     {
       if (CurrentCustomWorld != null)
       {
-        var creditsTab = manager.CreateTab<CreditsTab>();
-
-        creditsTab.World = CurrentCustomWorld;
+        var creditsPage = pageMaker.CreateComputerPage<CreditsPage>();
+        creditsPage.World = CurrentCustomWorld;
       }
     }
-
     #endregion
   }
 }

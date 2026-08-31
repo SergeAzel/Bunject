@@ -1,9 +1,37 @@
 {
-    "Name": "Big Fishy",
-    "Tools":
+  "Name": "Big Fishy",
+  "Tools": {
+    "Traps": 1
+  },
+  "IsTemple": false,
+  "IsHell": false,
+  "Teleport": [ 9, 4 ],
+  "Hints": [
     {
-        "Traps": 1
-    },
-    "IsTemple": false,
-    "IsHell": false
+      "Position": [ 2, 5 ],
+      "Orientation": "Right"
+    }
+  ],
+  "Dialogues": [
+    {
+      "Lines": [
+        {
+          "Headshot": "PaqueretteSurprised",
+          "Content": "Oooh!"
+        },
+        {
+          "Headshot": "PaqueretteSmile",
+          "Content": "Very big <color=$bunburrowColor>fishy</color>!"
+        }
+      ],
+      "RequiresBunnyToPassBeforePlaying": false,
+      "RequiresNoBunnyCaptureThisLevel": false,
+      "RequiresSpecificEntryDirection": false,
+      "SpecificEntryDirection": "Right",
+      "RequiresBunnyAtSpecificRelativePositions": false,
+      "SpecificBunnyRelativePositions": [  ],
+      "ShouldForceTurnPaqueretteAtStart": true,
+      "ForceTurnPaqueretteDirection": "Left"
+    }
+  ]
 }

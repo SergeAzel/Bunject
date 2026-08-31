@@ -11,7 +11,6 @@ using Bunject.Computer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,8 +20,9 @@ namespace Bunject.Archipelago.Archipelago
   public class ArchipelagoClient : IDisposable
   {
     public const string GameName = "Paquerette Down The Bunburrows";
-    public const string APVersion = "0.5.6";
     public const bool Authenticated = false;
+
+    public static readonly Version ArchipelagoProtocolVersion = new Version(0, 6, 0);
 
     public string Seed { get; private set; }
     public int Slot { get; private set; }
@@ -48,10 +48,21 @@ namespace Bunject.Archipelago.Archipelago
 
       var client = new ArchipelagoClient(session);
 
-      var loginResult = session.TryConnectAndLogin(GameName, userName, ItemsHandlingFlags.AllItems, password: password, requestSlotData: true);
+      var loginResult = session.TryConnectAndLogin(GameName, userName, ItemsHandlingFlags.AllItems, version: ArchipelagoProtocolVersion, password: password, requestSlotData: true);
       if (loginResult.Successful && loginResult is LoginSuccessful successful)
       {
         client.Options = ArchipelagoOptions.ParseSlotData(successful.SlotData);
+
+        if (!client.Options.IsWorldVersionCompatible)
+        {
+          var seedVersion = client.Options.world_version?.ToString() ?? "pre-0.2.0 (no world_version in slot_data)";
+          var supported = ArchipelagoOptions.SupportedWorldVersion;
+          var msg = $"APWorld version mismatch: seed is {seedVersion}, this BunjectArchipelago build "
+                  + $"targets {supported.Major}.{supported.Minor}.x. Continuing anyway — update the mod "
+                  + "if items, locations, or the goal misbehave.";
+          ArchipelagoPlugin.BepinLogger.LogWarning(msg);
+          ArchipelagoConsole.LogMessage(msg);
+        }
         client.MissingTools = MissingToolsGenerator.Generate(client.Options.victory_condition != VictoryCondition.Credits);
 
         client.Seed = session.RoomState.Seed;
@@ -61,7 +72,7 @@ namespace Bunject.Archipelago.Archipelago
 
         client.deathLink = new DeathLinkHandler(session.CreateDeathLinkService(), userName, client.Options, client.trapHandler);
 
-        client.CheckForGoldenFluffles(false);
+        client.CheckForGoldenFluff(false);
 
         ArchipelagoConsole.LogMessage("Enabling Traps...");
         client.trapHandler.Enable();
@@ -81,11 +92,11 @@ namespace Bunject.Archipelago.Archipelago
       this.session = session;
       session.Items.ItemReceived += OnItemReceieved;
 
-      session.MessageLog.OnMessageReceived += message => ArchipelagoConsole.LogMessage(message.ToString());
+      session.MessageLog.OnMessageReceived += OnMessageReceived;
       session.Socket.ErrorReceived += OnSessionErrorReceived;
       session.Socket.SocketClosed += OnSessionSocketClosed;
 
-      AllItemsFound[GoldenFluffle] = 0;
+      AllItemsFound[GoldenFluff] = 0;
     }
 
     public bool HasToolsForLevel(string level)
@@ -159,34 +170,34 @@ namespace Bunject.Archipelago.Archipelago
             AllItemsFound.Add(itemReceived.ItemName, 1);
           }
 
-          CheckForGoldenFluffles(itemReceived.ItemName == GoldenFluffle);
+          CheckForGoldenFluff(itemReceived.ItemName == GoldenFluff);
         }
       }
       items.DequeueItem();
     }
 
-    const string GoldenFluffle = "Golden Fluffle";
-    private void CheckForGoldenFluffles(bool printProgress)
+    const string GoldenFluff = "Golden Fluff";
+    private void CheckForGoldenFluff(bool printProgress)
     {
-      if (Options?.victory_condition == VictoryCondition.GoldenFluffle && !GoalAchieved)
+      if (Options?.victory_condition == VictoryCondition.GoldenFluff && !GoalAchieved)
       {
-        if (AllItemsFound[GoldenFluffle] >= Options.golden_fluffles)
+        if (AllItemsFound[GoldenFluff] >= Options.golden_fluff)
         {
           SetGoalAchieved();
-          ArchipelagoConsole.LogMessage($"You found the last Golden Fluffle!  Game Complete!");
+          ArchipelagoConsole.LogMessage($"You found the last Golden Fluff!  Game Complete!");
         }
         else if (printProgress)
         {
-          ArchipelagoConsole.LogMessage($"You found a Golden Fluffle!  Only {Options.golden_fluffles - AllItemsFound[GoldenFluffle]} to go!");
+          ArchipelagoConsole.LogMessage($"You found a Golden Fluff!  Only {Options.golden_fluff - AllItemsFound[GoldenFluff]} to go!");
         }
       }
     }
 
-    public int GoldenFluffleCount
+    public int GoldenFluffCount
     {
       get
       {
-        return AllItemsFound.ContainsKey(GoldenFluffle) ? AllItemsFound[GoldenFluffle] : 0;
+        return AllItemsFound.ContainsKey(GoldenFluff) ? AllItemsFound[GoldenFluff] : 0;
       }
     }
 
@@ -207,6 +218,11 @@ namespace Bunject.Archipelago.Archipelago
           trapHandler?.TrapRecieved(Trap.Elevator);
           break;
       }
+    }
+
+    private void OnMessageReceived(LogMessage message)
+    {
+      ArchipelagoConsole.LogMessage(message.ToString());
     }
 
     private void OnSessionErrorReceived(Exception e, string message)
@@ -231,9 +247,17 @@ namespace Bunject.Archipelago.Archipelago
 
         try
         {
-          if (session != null && session.Socket.Connected)
+          if (session != null)
           {
-            Task.Run(() => session.Socket.DisconnectAsync().Wait());
+            session.Items.ItemReceived -= OnItemReceieved;
+            session.MessageLog.OnMessageReceived -= OnMessageReceived;
+            session.Socket.ErrorReceived -= OnSessionErrorReceived;
+            session.Socket.SocketClosed -= OnSessionSocketClosed;
+
+            if (session.Socket.Connected)
+            {
+              Task.Run(() => session.Socket.DisconnectAsync().Wait());
+            }
           }
           session = null;
         }
