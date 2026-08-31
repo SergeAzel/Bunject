@@ -92,7 +92,7 @@ namespace Bunject.Archipelago.Archipelago
       this.session = session;
       session.Items.ItemReceived += OnItemReceieved;
 
-      session.MessageLog.OnMessageReceived += message => ArchipelagoConsole.LogMessage(message.ToString());
+      session.MessageLog.OnMessageReceived += OnMessageReceived;
       session.Socket.ErrorReceived += OnSessionErrorReceived;
       session.Socket.SocketClosed += OnSessionSocketClosed;
 
@@ -220,6 +220,11 @@ namespace Bunject.Archipelago.Archipelago
       }
     }
 
+    private void OnMessageReceived(LogMessage message)
+    {
+      ArchipelagoConsole.LogMessage(message.ToString());
+    }
+
     private void OnSessionErrorReceived(Exception e, string message)
     {
       ArchipelagoPlugin.BepinLogger.LogError(e);
@@ -242,9 +247,17 @@ namespace Bunject.Archipelago.Archipelago
 
         try
         {
-          if (session != null && session.Socket.Connected)
+          if (session != null)
           {
-            Task.Run(() => session.Socket.DisconnectAsync().Wait());
+            session.Items.ItemReceived -= OnItemReceieved;
+            session.MessageLog.OnMessageReceived -= OnMessageReceived;
+            session.Socket.ErrorReceived -= OnSessionErrorReceived;
+            session.Socket.SocketClosed -= OnSessionSocketClosed;
+
+            if (session.Socket.Connected)
+            {
+              Task.Run(() => session.Socket.DisconnectAsync().Wait());
+            }
           }
           session = null;
         }
